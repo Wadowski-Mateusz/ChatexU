@@ -25,28 +25,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ChatexUTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val testChat = mainVM.modelData.collectAsState()
-                    Xyz(t = testChat.value)
+                    val testChat = mainVM.getChatRows().collectAsState(initial = emptyList())
+                    Text(text = testChat.value.toString())
                 }
 
             }
         }
     }
 }
-
-@Composable
-fun Xyz (t: String) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "test: $t")
-    }
-}
-
