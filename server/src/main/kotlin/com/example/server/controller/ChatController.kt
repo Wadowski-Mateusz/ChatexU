@@ -36,5 +36,15 @@ class ChatController(private val chatService: ChatService) {
         return ResponseEntity.ok(chatView)
     }
 
+    @GetMapping("/chat_view")
+    fun getChatView(): ResponseEntity<ChatView> {
+
+
+        val chatView = ChatView.Builder().fastBuild()
+
+
+        return ResponseEntity.ok(chatView)
+    }
+
 
 }

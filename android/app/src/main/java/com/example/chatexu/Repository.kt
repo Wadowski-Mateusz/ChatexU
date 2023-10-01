@@ -1,74 +1,87 @@
 package com.example.chatexu
 
 import android.content.Context
-import com.example.chatexu.data.LocalDB
-import com.example.chatexu.data.daos.ChatRowDao
+import android.util.Log
 import com.example.chatexu.data.models.ChatRow
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
-import kotlin.random.Random
+import com.example.chatexu.data.remote.RemoteSource
+import retrofit2.Response
+import java.time.Instant
+import java.util.UUID
 
 class Repository(context: Context) {
 
     private val _context = context
+    private val api = RemoteSource.apiChatRow
+//    suspend fun loadChatView(chatId: UUID, viewerId: UUID): List<ChatRow> {
+//            Log.d("HERE", "repo: loadChatView")
+////        return listOf(
+////            ChatRow.Builder()
+////                .chatId(UUID.randomUUID())
+////                .chatName("asdasd")
+////                .lastMessage("asdasd")
+////                .timestamp(Instant.now())
+////                .build()
+////        )
+//            return listOf(api.getChatRowFast().body()!!)
+//        }
 
     // TODO should inner classes be singletons?
-    inner class ChatRowRepo : ChatRowDao {
+    inner class ChatRowRepo {
+//    companion object ChatRowRepo {
 
-        private val chatRowDao = LocalDB.getLocalDB(_context).chatRowDao()
+//        private val chatRowDao = LocalDB.getLocalDB(_context).chatRowDao()
+        private val api = RemoteSource.apiChatRow
 
-        override suspend fun insertAll(chatRows: List<ChatRow>) = withContext(Dispatchers.IO) {
-            chatRowDao.insertAll(chatRows)
+        suspend fun loadChatViewResponse(chatId: UUID, viewerId: UUID): Response<ChatRow> {
+            return api.getChatRow(chatId, viewerId)
         }
 
-        override suspend fun insert(chatRow: ChatRow) {
-            chatRowDao.insert(chatRow)
+        suspend fun loadChatView(chatId: UUID, viewerId: UUID): List<ChatRow> {
+            Log.d("HERE", "repo: loadChatView")
+            return listOf(api.getChatRow(chatId, viewerId).body()!!)
         }
 
-        override suspend fun delete(chatRows: List<ChatRow>) = withContext(Dispatchers.IO) {
-            chatRowDao.delete(chatRows)
-        }
 
-        override fun getAll(): Flow<List<ChatRow>> {
-            return chatRowDao.getAll()
-        }
-
-        override suspend fun drop() = withContext(Dispatchers.IO) {
-            chatRowDao.drop()
+        suspend fun loadChatViewList(chatId: UUID, viewerId: UUID): List<ChatRow> {
+            val l = mutableListOf<ChatRow>()
+            for (i in 0..50)
+                l.add(
+                    api.getChatRow(chatId, viewerId).body()!!
+                )
+            return l.toList()
         }
 
     }
 
-    fun fetchChatList(): List<String> {
-//        val inputStream = applicationContext.resources.openRawResource(R.raw.testtenmoj)
+//    fun fetchChatList(): List<String> {
+////        val inputStream = applicationContext.resources.openRawResource(R.raw.testtenmoj)
+////
+////        // Read img
+////        val bitmap: android.graphics.Bitmap = BitmapFactory.decodeStream(inputStream)
+////
+////        // Close what is open
+////        inputStream.close()
+////
+////        bitmap.scale(64,64)
+////
+////        return Stream.generate {
+////            ChatViewData(
+////                bitmap,
+////                "name${Random.nextInt(0, 100)}",
+////                "message${Random.nextInt(0, 100)}"
+////            )   }
+////            .limit(n.toLong())
+////            .toList()
+////
+////
 //
-//        // Read img
-//        val bitmap: android.graphics.Bitmap = BitmapFactory.decodeStream(inputStream)
-//
-//        // Close what is open
-//        inputStream.close()
-//
-//        bitmap.scale(64,64)
-//
-//        return Stream.generate {
-//            ChatViewData(
-//                bitmap,
-//                "name${Random.nextInt(0, 100)}",
-//                "message${Random.nextInt(0, 100)}"
-//            )   }
-//            .limit(n.toLong())
+//        return generateSequence {
+//            "name${Random.nextInt(0, 100)}"
+//        }
+//            .take(50)
 //            .toList()
 //
-//
-
-        return generateSequence {
-            "name${Random.nextInt(0, 100)}"
-        }
-            .take(50)
-            .toList()
-
-    }
+//    }
 
 
 }

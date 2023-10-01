@@ -1,43 +1,60 @@
 package com.example.chatexu
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatexu.data.models.ChatRow
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Instant
+import java.util.UUID
 
 class MainViewModel(app: Application): AndroidViewModel(app) {
+
+
+
     private val repository = Repository(app.applicationContext)
 
-    fun getChatRows(): Flow<List<ChatRow>> = repository.ChatRowRepo().getAll()
+    private val _chatRowList = MutableStateFlow<List<ChatRow>>(emptyList())
+    val chatRowList = _chatRowList.asStateFlow()
 
+    fun getChatRows(chatId: UUID, viewerId: UUID) = viewModelScope.launch {
+        Log.d("HERE", "getChatRows 1")
+//        val rows = repository.loadChatView(chatId, viewerId)
+        val rows = repository.ChatRowRepo().loadChatViewList(chatId, viewerId)
+//        val rows = repository.ChatRowRepo().loadChatView(chatId, viewerId)
 
-    init {
-        populateDatabase()
+        Log.d("HERE", "getChatRows 2")
+        _chatRowList.update { rows }
+        Log.d("HERE", "getChatRows 3")
     }
 
-    private fun populateDatabase() {
-        val chatRows = generateSequence { ChatRow(
-            chatName = "Chat nickname",
-            message = "Message",
-            from = Instant.now(),
-            muted = false
-        ) }
-            .take(3)
-            .toList()
 
-        CoroutineScope(viewModelScope.coroutineContext).launch {
-            repository.ChatRowRepo().delete(
-                repository.ChatRowRepo().getAll().first()
-            )
-            repository.ChatRowRepo().insertAll(chatRows)
-        }
-    }
+// ROOM
+//    fun getChatRows(): Flow<List<ChatRow>> = repository.ChatRowRepo().getAll()
+//    init {
+//        populateDatabase()
+//    }
+//
+//    private fun populateDatabase() {
+//        val chatRows = generateSequence { ChatRow(
+//            chatName = "Chat nickname",
+//            message = "Message",
+//            from = Instant.now(),
+//            muted = false
+//        ) }
+//            .take(3)
+//            .toList()
+//
+//        CoroutineScope(viewModelScope.coroutineContext).launch {
+//            repository.ChatRowRepo().delete(
+//                repository.ChatRowRepo().getAll().first()
+//            )
+//            repository.ChatRowRepo().insertAll(chatRows)
+//        }
+//    }
 
 //    private val _modelData = MutableStateFlow("")
 //    val modelData = _modelData.asStateFlow()

@@ -11,6 +11,7 @@ data class ChatView(
     val lastMessage: String,
     val timestamp: Instant,
     //val icon: ?,
+//    val isMuted: Boolean,
     ) {
 
 
