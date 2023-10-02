@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,10 +22,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.chatexu.data.models.ChatRow
 import com.example.chatexu.ui.theme.ChatexUTheme
+import com.example.chatexu.ui.theme.PurpleGrey80
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -46,7 +50,7 @@ class MainActivity : ComponentActivity() {
 //                    val testChat = mainVM.getChatRows().collectAsState(initial = emptyList())
 //                    ChatList(chatRows = testChat.value)
 
-                    mainVM.getChatRows(UUID.randomUUID(), UUID.randomUUID())
+                    mainVM.getChatRows(UUID.randomUUID(), UUID.randomUUID(), context = applicationContext)
                     val rows = mainVM.chatRowList.collectAsState(initial = emptyList())
                     ChatList(chatRows = rows.value)
                 }
@@ -88,6 +92,13 @@ fun ChatRowRow(chatRow: ChatRow) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround
         ) {
+            Column (modifier = Modifier.weight(4.0f)) {
+                Image(
+                    bitmap = chatRow.icon!!.asImageBitmap(),
+                    contentDescription = "User icon",
+                )
+            }
+            
             Column(modifier = Modifier.weight(4.0f)) {
                 Text(text = chatRow.chatName, fontWeight = FontWeight.Bold)
                 Text(text = chatRow.lastMessage)

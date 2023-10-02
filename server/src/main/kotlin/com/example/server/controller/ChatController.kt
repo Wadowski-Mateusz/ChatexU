@@ -1,23 +1,20 @@
 package com.example.server.controller
 
 import com.example.server.dto.ChatView
-import com.example.server.model.Chat
-import com.example.server.repository.ChatRepository
 import com.example.server.service.ChatService
 import lombok.AllArgsConstructor
+import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.Resource
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import java.time.Instant
+import org.springframework.web.bind.annotation.*
 import java.util.*
+
 
 @RestController
 @RequestMapping("/chat")
 @AllArgsConstructor
 class ChatController(private val chatService: ChatService) {
-
 
     @GetMapping("/chat_view/{chatId}/{viewerId}")
     fun getChatView(@PathVariable("chatId") chatId: UUID,
@@ -44,6 +41,18 @@ class ChatController(private val chatService: ChatService) {
 
 
         return ResponseEntity.ok(chatView)
+    }
+
+    @GetMapping(value = ["/icon"], produces = [MediaType.IMAGE_JPEG_VALUE])
+    fun getPicture(@RequestParam userId: UUID?): ResponseEntity<ByteArray> {
+        return try {
+            // TODO change to URI
+            val resource: Resource = ClassPathResource("icons/${listOf("red","green","blue").random()}.png")
+            val inp = resource.inputStream.readAllBytes()
+            ResponseEntity.ok(inp)
+        } catch (e: Exception) {
+            ResponseEntity.internalServerError().build()
+        }
     }
 
 

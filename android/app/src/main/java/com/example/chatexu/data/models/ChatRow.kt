@@ -1,8 +1,10 @@
 package com.example.chatexu.data.models
 
 
+import android.graphics.Bitmap
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import retrofit2.http.Multipart
 import java.time.Instant
 import java.util.UUID
 
@@ -16,6 +18,10 @@ data class ChatRow(
     val lastMessage: String,
     @Json(name = "timestamp")
     val timestamp: Instant,
+
+    val icon: Bitmap? = null,
+
+
 ) {
 
 
@@ -24,13 +30,15 @@ data class ChatRow(
         var chatName: String? = null,
         var lastMessage: String? = null,
         var timestamp: Instant? = null,
+        var icon: Bitmap? = null,
     ) {
 
         fun chatId(chatId: UUID) = apply { this.chatId = chatId }
         fun chatName(chatName: String) = apply { this.chatName = chatName }
         fun lastMessage(lastMessage: String) = apply { this.lastMessage = lastMessage }
         fun timestamp(timestamp: Instant) = apply { this.timestamp = timestamp }
-        fun build() = ChatRow(chatId!!, chatName!!, lastMessage!!, timestamp!!)
+        fun icon(icon: Bitmap) = apply { this.icon = icon }
+        fun build() = ChatRow(chatId!!, chatName!!, lastMessage!!, timestamp!!, icon)
         fun fastBuild() =
             chatId(UUID.randomUUID())
                 .chatName("fastBuild: chatName")
