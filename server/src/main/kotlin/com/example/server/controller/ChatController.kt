@@ -1,6 +1,6 @@
 package com.example.server.controller
 
-import com.example.server.dto.ChatView
+import com.example.server.dto.ChatViewDto
 import com.example.server.service.ChatService
 import lombok.AllArgsConstructor
 import org.springframework.core.io.ClassPathResource
@@ -18,7 +18,7 @@ class ChatController(private val chatService: ChatService) {
 
     @GetMapping("/chat_view/{chatId}/{viewerId}")
     fun getChatView(@PathVariable("chatId") chatId: UUID,
-                    @PathVariable("viewerId") viewerId: UUID): ResponseEntity<ChatView> {
+                    @PathVariable("viewerId") viewerId: UUID): ResponseEntity<ChatViewDto> {
 
 //        val chatView = ChatView.Builder()
 //            .chatId(UUID.randomUUID())
@@ -27,20 +27,20 @@ class ChatController(private val chatService: ChatService) {
 //            .timestamp(Instant.now())
 //            .build()
 
-        val chatView = ChatView.Builder().fastBuild()
+        val chatViewDto = ChatViewDto.Builder().fastBuild()
 
 
-        return ResponseEntity.ok(chatView)
+        return ResponseEntity.ok(chatViewDto)
     }
 
     @GetMapping("/chat_view")
-    fun getChatView(): ResponseEntity<ChatView> {
+    fun getChatView(): ResponseEntity<ChatViewDto> {
 
 
-        val chatView = ChatView.Builder().fastBuild()
+        val chatViewDto = ChatViewDto.Builder().fastBuild()
 
 
-        return ResponseEntity.ok(chatView)
+        return ResponseEntity.ok(chatViewDto)
     }
 
     @GetMapping(value = ["/icon"], produces = [MediaType.IMAGE_JPEG_VALUE])

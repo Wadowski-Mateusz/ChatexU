@@ -1,7 +1,9 @@
 package com.example.server.controller
 
+import com.example.server.model.Message
 import com.example.server.model.TestDoc
 import com.example.server.repository.TestRepository
+import com.example.server.service.MessageService
 import lombok.AllArgsConstructor
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -11,9 +13,10 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/test")
 @AllArgsConstructor
-class TestController(private val testRepository: TestRepository) {
-
-
+class TestController(
+    private val testRepository: TestRepository,
+    private val messageService: MessageService
+) {
 
         @GetMapping("/hello")
         fun hello(): String {
@@ -26,6 +29,10 @@ class TestController(private val testRepository: TestRepository) {
             return testRepository.insert(testDoc)
         }
 
+        @GetMapping("/randomMessages")
+        fun randomMessages(): List<Message> {
+            return messageService.generateRandomMessages(5)
+        }
 
 
 }

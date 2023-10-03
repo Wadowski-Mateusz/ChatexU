@@ -4,7 +4,7 @@ import java.time.Instant
 import java.util.*
 
 
-data class ChatView(
+data class ChatViewDto(
     val chatId: UUID,
     val chatName: String,
     val lastMessage: String,
@@ -25,7 +25,7 @@ data class ChatView(
         fun chatName(chatName: String) = apply { this.chatName = chatName }
         fun lastMessage(lastMessage: String) = apply { this.lastMessage = lastMessage }
         fun timestamp(timestamp: Instant) = apply { this.timestamp = timestamp }
-        fun build() = ChatView(chatId!!, chatName!!, lastMessage!!, timestamp!!)
+        fun build() = ChatViewDto(chatId!!, chatName!!, lastMessage!!, timestamp!!)
         fun fastBuild() =
             chatId(UUID.randomUUID())
             .chatName("fastBuild: chatName")
