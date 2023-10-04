@@ -1,4 +1,4 @@
-package com.example.chatexu.ui.theme
+package com.example.chatexu.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

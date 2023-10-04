@@ -1,10 +1,9 @@
-package com.example.chatexu.data.models
+package com.example.chatexu.domain.model
 
 
 import android.graphics.Bitmap
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import retrofit2.http.Multipart
 import java.time.Instant
 import java.util.UUID
 

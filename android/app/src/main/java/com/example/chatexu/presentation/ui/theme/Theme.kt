@@ -1,4 +1,4 @@
-package com.example.chatexu.ui.theme
+package com.example.chatexu.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build

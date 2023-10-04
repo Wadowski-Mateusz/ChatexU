@@ -5,14 +5,12 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chatexu.data.models.ChatRow
-import kotlinx.coroutines.CoroutineScope
+import com.example.chatexu.domain.model.ChatRow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
-import kotlin.coroutines.CoroutineContext
 
 class MainViewModel(app: Application): AndroidViewModel(app) {
 
@@ -25,7 +23,7 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
 
     fun getChatRows(chatId: UUID, viewerId: UUID, context: Context) = viewModelScope.launch {
         Log.d("HERE", "getChatRows 1")
-        val rows = Repository.testChatList(context = context)
+        val rows = repository.testChatList(context = context)
 //        val rows = repository.ChatRowRepo().loadChatViewList(chatId, viewerId)
 //        val rows = repository.ChatRowRepo().loadChatView(chatId, viewerId)
         Log.d("HERE", "getChatRows 2")

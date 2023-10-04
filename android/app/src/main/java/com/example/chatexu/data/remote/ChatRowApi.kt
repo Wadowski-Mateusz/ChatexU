@@ -1,6 +1,6 @@
 package com.example.chatexu.data.remote
 
-import com.example.chatexu.data.models.ChatRow
+import com.example.chatexu.domain.model.ChatRow
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
