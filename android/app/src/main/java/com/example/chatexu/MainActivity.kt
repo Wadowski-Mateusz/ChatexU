@@ -1,11 +1,12 @@
 package com.example.chatexu
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,16 +24,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.chatexu.data.models.ChatRow
 import com.example.chatexu.ui.theme.ChatexUTheme
-import com.example.chatexu.ui.theme.PurpleGrey80
-import java.time.LocalDate
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import kotlin.random.Random
 
 
 class MainActivity : ComponentActivity() {
@@ -85,31 +88,51 @@ fun ChatRowRow(chatRow: ChatRow) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+//            .clickable {  }
             .padding(1.dp),
         shape = RoundedCornerShape(10.dp)
     ) {
         Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround
+//            horizontalArrangement = Arrangement.SpaceAround
         ) {
-            Column (modifier = Modifier.weight(4.0f)) {
+            // Chat icon
+            Column (
+//                modifier = Modifier.weight(1.0f)
+            ) {
                 Image(
                     bitmap = chatRow.icon!!.asImageBitmap(),
                     contentDescription = "User icon",
                 )
             }
-            
-            Column(modifier = Modifier.weight(4.0f)) {
+
+            // Chat name and last message
+            Column(
+                modifier = Modifier
+                //                .weight(4.0f)
+                    .padding(horizontal = 8.dp),
+//                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Top,
+            ) {
                 Text(text = chatRow.chatName, fontWeight = FontWeight.Bold)
                 Text(text = chatRow.lastMessage)
             }
-            Column(modifier = Modifier.weight(2f)) {
+
+            // Time of last activity
+            Column(
+//                modifier = Modifier.
+            //                weight(2f)
+                horizontalAlignment = Alignment.End
+            ) {
 
                 val zoneId = ZoneId.systemDefault()
                 val datetime  = LocalDateTime.ofInstant(chatRow.timestamp, zoneId)
                 val formatted = DateTimeFormatter.ofPattern("d LLL yyyy hh:mm:ss").format(datetime)
                 Text(text = formatted)
             }
+
+            // TODO
+            // is chat muted icon
         }
 
     }
@@ -119,16 +142,30 @@ fun ChatRowRow(chatRow: ChatRow) {
 //@Preview(showBackground = true)
 //@Composable
 //fun ChatRowPreview() {
-//    val list = generateSequence{ ChatRow(chatId = UUID.randomUUID(), chatName = "User${Random.nextInt()%10}", lastMessage = "Message".repeat(Math.abs(Random.nextInt()%10)), timestamp = Instant.now()) }
-//        .take(50)
-//        .toList()
-//    val chat1 = ChatRow(chatId = UUID.randomUUID(), chatName = "User1", lastMessage = "Message", timestamp = Instant.now())
-//    val chat2 = ChatRow(chatId = UUID.randomUUID(), chatName = "User2", lastMessage = "Message", timestamp = Instant.now())
-////    ChatRowRow(chatRow = chat1)
+//    val context = LocalContext.current
+//    val input = context.resources.openRawResource(R.raw.green)
+//    val bitmap = BitmapFactory.decodeStream(input)
+//    input.close()
+//
+//    val chat1 = ChatRow(chatId = UUID.randomUUID(), chatName = "User1", lastMessage = "Message", timestamp = Instant.now(), icon = bitmap)
+//    ChatRowRow(chatRow = chat1)
+////    val chat2 = ChatRow(chatId = UUID.randomUUID(), chatName = "User2", lastMessage = "Message", timestamp = Instant.now())
 ////    ChatRowRow(chatRow = chat2)
-//    ChatListLazyColumn(listOf(chat1, chat2))
-//    ChatListLazyColumn(list)
-////    ChatRowRow(chatRow = ChatRow(chatName = "User2", message = "Message", muted = false, from = Instant.now()))
+//
+////    ChatListLazyColumn(listOf(chat1, chat2))
+////
+////    val list = generateSequence{
+////        ChatRow(
+////            chatId = UUID.randomUUID(),
+////            chatName = "User${Random.nextInt() % 10 + 1}",
+////            lastMessage = "Message".repeat(Math.abs(Random.nextInt() % 10 + 1)),
+////            timestamp = Instant.now(),
+////            icon = bitmap
+////        )
+////    }
+////        .take(32)
+////        .toList()
+////    ChatListLazyColumn(list)
 //}
 
 
@@ -179,19 +216,4 @@ fun ChatRowRow(chatRow: ChatRow) {
 //
 //    }
 //
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun ChatRowPreview() {
-//    val list = generateSequence{ ChatRow(chatName = "User${Random.nextInt()%10}", message = "Message".repeat(Math.abs(Random.nextInt()%10)), muted = false, from = Instant.now()) }
-//        .take(50)
-//        .toList()
-//    val chat1 = ChatRow(chatName = "User1", message = "Message", muted = false, from = Instant.now())
-//    val chat2 = ChatRow(chatName = "User2", message = "Message", muted = false, from = Instant.now())
-////    ChatRowRow(chatRow = chat1)
-////    ChatRowRow(chatRow = chat2)
-//    ChatListLazyColumn(listOf(chat1, chat2))
-//    ChatListLazyColumn(list)
-////    ChatRowRow(chatRow = ChatRow(chatName = "User2", message = "Message", muted = false, from = Instant.now()))
 //}
