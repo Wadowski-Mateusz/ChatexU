@@ -1,8 +1,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
-    id 'com.google.devtools.ksp'
-    id 'kotlin-kapt'
+    id "com.google.devtools.ksp"
+//    id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
 
 }
@@ -51,14 +51,21 @@ android {
 }
 
 dependencies {
+    implementation platform(libs.compose.bom)
+    androidTestImplementation platform(libs.compose.bom)
 
 
     // user
 
-    // REST API
+    // Retrofit
     def retrofit_version = "2.9.0"
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+
+    def okhttp_version = "5.0.0-alpha.11"
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
 
     // JSON PARSER
     def moshi_version = "1.14.0"
@@ -73,10 +80,24 @@ dependencies {
 //    implementation "io.realm.kotlin:library-sync:$mongodb_realm_version" // If using Device Sync
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0'
 
+    // Nav
+    def nav_version = "2.7.4"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-compose:$nav_version"
+
+
+
     // Hilt
-    def hilt_version = "2.44"
+    def hilt_version = "2.48"
     implementation "com.google.dagger:hilt-android:$hilt_version"
-    kapt "com.google.dagger:hilt-compiler:$hilt_version"
+//    kapt "com.google.dagger:hilt-compiler:$hilt_version"
+    ksp "com.google.dagger:dagger-compiler:$hilt_version" // Dagger compiler
+    ksp "com.google.dagger:hilt-compiler:$hilt_version"   // Hilt compiler
+
+
+    implementation 'androidx.hilt:hilt-navigation-compose:1.1.0-beta01'
+//    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0"
 
 
     // default
@@ -97,7 +118,7 @@ dependencies {
     debugImplementation libs.ui.test.manifest
 }
 
-// some magic for hilt
-kapt {
-    correctErrorTypes true
-}
+//// some magic for hilt
+//kapt {
+//    correctErrorTypes true
+//}

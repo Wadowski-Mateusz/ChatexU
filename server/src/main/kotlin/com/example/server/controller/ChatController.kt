@@ -35,12 +35,19 @@ class ChatController(private val chatService: ChatService) {
 
     @GetMapping("/chat_view")
     fun getChatView(): ResponseEntity<ChatViewDto> {
-
-
         val chatViewDto = ChatViewDto.Builder().fastBuild()
-
-
         return ResponseEntity.ok(chatViewDto)
+    }
+
+    @GetMapping("/chat_views_test")
+    fun getChatViewsTest(): ResponseEntity<List<ChatViewDto>> {
+        val l =
+            generateSequence {
+                ChatViewDto.Builder().fastBuild()
+            }
+                .take(25)
+                .toList()
+        return ResponseEntity.ok(l)
     }
 
     @GetMapping(value = ["/icon"], produces = [MediaType.IMAGE_JPEG_VALUE])

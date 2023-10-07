@@ -1,5 +1,6 @@
-package com.example.chatexu.domain.use_case
+package com.example.chatexu.domain.use_case.get_chat_row
 
+import com.example.chatexu.common.DataWrapper
 import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.Flow
@@ -11,9 +12,10 @@ import javax.inject.Inject
 class GetChatRowUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke(): Flow<ChatRow> = flow {
+    operator fun invoke(): Flow<DataWrapper<ChatRow>> = flow {
         try {
-//            emit() // ???
+            TODO("Not yet implemented")
+            // emit() // ???
 
 
         } catch (e: HttpException) {
