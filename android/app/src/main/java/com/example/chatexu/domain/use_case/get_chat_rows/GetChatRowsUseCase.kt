@@ -20,9 +20,9 @@ class GetChatRowsUseCase @Inject constructor(
         try {
             emit(DataWrapper.Loading<List<ChatRow>>())
             Log.d(DebugConsts.TODO, "GetChatRowsUseCase() - user id")
-//            val coins = repository.getUserChatRows(UUID.randomUUID())//.map { it.toChatRow() }
-            val coins = repository.getUserChatRows()
-            emit(DataWrapper.Success<List<ChatRow>>(coins))
+//            val chats = repository.getUserChatRows(UUID.randomUUID())//.map { it.toChatRow() }
+            val chats = repository.getUserChatRows()
+            emit(DataWrapper.Success<List<ChatRow>>(chats))
         } catch(e: HttpException) {
             emit(DataWrapper.Error<List<ChatRow>>(e.localizedMessage ?: "Unknown error"))
         } catch(e: IOException) {

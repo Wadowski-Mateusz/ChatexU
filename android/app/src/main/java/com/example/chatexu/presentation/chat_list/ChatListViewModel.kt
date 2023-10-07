@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.chatexu.common.DataWrapper
 import com.example.chatexu.common.DebugConsts
 import com.example.chatexu.domain.model.ChatRow
+import com.example.chatexu.domain.use_case.get_chat_row.GetChatRowUseCase
 import com.example.chatexu.domain.use_case.get_chat_rows.GetChatRowsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
-    private val getChatListUseCase: GetChatRowsUseCase
+    private val getChatListUseCase: GetChatRowsUseCase,
+    private val getChatRowUseCase: GetChatRowUseCase,
     // etc...
 ): ViewModel() {
 
@@ -27,14 +29,39 @@ class ChatListViewModel @Inject constructor(
 
     init {
 //        getRandList()
-        getChatList()
+//        getChatList()
+        getSingleChatRowAsList()
     }
 
+
+    private fun getSingleChatRowAsList() {
+        getChatRowUseCase() .onEach { result ->
+            when(result) {
+                is DataWrapper.Success -> {
+                    _state.value = ChatListState(
+                        chatRows = listOfNotNull(result.data)
+                    )
+                }
+                is DataWrapper.Loading -> {
+                    Log.d(DebugConsts.VM_ERR, "Error in: ChatListViewModel.")
+                    _state.value = ChatListState(
+                        error = result.message ?: "Unknown error"
+                    )
+                }
+                is DataWrapper.Error -> {
+                    _state.value = ChatListState(isLoading = true)
+                }
+
+            }
+        } .launchIn(viewModelScope)
+
+    }
 
     private fun getRandList() {
         val rows = generateSequence { ChatRow.Builder().fastBuild() }
             .take(50)
             .toList()
+
         _state.value = ChatListState(chatRows = rows)
     }
 

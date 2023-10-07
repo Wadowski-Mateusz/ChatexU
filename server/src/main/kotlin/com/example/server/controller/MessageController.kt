@@ -15,7 +15,7 @@ import org.springframework.web.servlet.function.EntityResponse
 @RestController
 @RequestMapping("/message")
 @AllArgsConstructor
-//@CrossOrigin ??
+@CrossOrigin
 class MessageController(private val messageService: MessageService) {
 
 

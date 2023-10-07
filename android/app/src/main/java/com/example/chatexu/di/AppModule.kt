@@ -36,12 +36,17 @@ object AppModule {
 //            ))
 //            .build()
 //            .create(ChatApi::class.java)
+
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
+//            .baseUrl("http://172.31.0.1:8091/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ChatApi::class.java)
     }
+
+
+
 
     @Provides
     @Singleton

@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,9 +26,7 @@ import kotlin.random.Random
 fun ChatsListLazy(
     chatRows: List<ChatRow>,
     navController: NavController,
-    viewModel: ChatListViewModel = hiltViewModel(), // ?
 ) {
-    val state = viewModel.state.value
     LazyColumn() {
         items(items = chatRows, key = {it.chatId}) { chatRow ->
             ChatListItem(
@@ -41,19 +38,9 @@ fun ChatsListLazy(
         }
     }
 
-    if(state.error.isNotBlank()) {
-        Text(
-            text =state.error,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp)
-        )
-
-    }
-
-    if (state.isLoading) {
-        CircularProgressIndicator()
-    }
+//    if (state.isLoading) {
+//        CircularProgressIndicator()
+//    }
 }
 
 

@@ -1,6 +1,7 @@
 package com.example.chatexu.data.remote
 
 import com.example.chatexu.common.Constants
+import com.example.chatexu.data.remote.dto.ChatRowDto
 import com.example.chatexu.domain.model.ChatRow
 import retrofit2.Response
 import retrofit2.http.GET
@@ -14,5 +15,8 @@ interface ChatApi {
 
     @GET("${Constants.CHAT_MAPPING}/chat_views_test")
     suspend fun getChatRowFast(): Response<List<ChatRow>>
+
+    @GET("${Constants.CHAT_MAPPING}/chat_view/{chatId}")
+    suspend fun getChatRowById(@Path("chatId") chatId: String): Response<ChatRowDto>
 
 }
