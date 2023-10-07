@@ -11,20 +11,23 @@ import java.util.*
 @Service
 class MessageService(private val messageRepository: MessageRepository) {
 
-    fun generateRandomMessages(n: Int = 50): List<Message> {
-        val messageList: List<Message> = generateSequence {
-            Message.Builder().fastBuild()
-        }
-            .take(n)
-            .toList()
-        return messageList
-    }
-
-
-    fun getMessage(messageId: UUID): Message {
-        return messageRepository.findById(ObjectId(messageId.toString()))
+    fun findMessageById(messageId: String): Message {
+        return messageRepository.findById(ObjectId(messageId))
             .orElseThrow { (MessageNotFoundException("Message not found. Id: $messageId")) }
     }
+
+    fun getAllMessages(): List<Message> {
+        return messageRepository.findAll()
+    }
+
+    fun save(message: Message): Message {
+        return messageRepository.save(message)
+    }
+
+    fun saveAll(messages: List<Message>): List<Message> {
+        return messageRepository.saveAll(messages)
+    }
+
 
     fun getMessageFromChatInterval(chatId: UUID, from: Instant, to: Instant): List<Message> {
         TODO("MISSING IMPLEMENTATION")

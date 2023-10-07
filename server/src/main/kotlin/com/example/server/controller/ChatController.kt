@@ -1,7 +1,10 @@
 package com.example.server.controller
 
 import com.example.server.dto.ChatViewDto
+import com.example.server.dto.MessageDto
+import com.example.server.dto.toDto
 import com.example.server.service.ChatService
+import com.example.server.service.MessageService
 import lombok.AllArgsConstructor
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
@@ -14,7 +17,12 @@ import java.util.*
 @RestController
 @RequestMapping("/chat")
 @AllArgsConstructor
-class ChatController(private val chatService: ChatService) {
+class ChatController(
+    private val chatService: ChatService,
+    private val messageService: MessageService,
+) {
+
+
 
     @GetMapping("/chat_view/{chatId}/{viewerId}")
     fun getChatView(@PathVariable("chatId") chatId: UUID,

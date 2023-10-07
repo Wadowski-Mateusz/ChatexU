@@ -1,5 +1,7 @@
 package com.example.server.controller
 
+import com.example.server.dto.MessageDto
+import com.example.server.dto.toDto
 import com.example.server.model.Message
 import com.example.server.model.TestDoc
 import com.example.server.repository.TestRepository
@@ -23,16 +25,39 @@ class TestController(
             return "Hello World!"
         }
 
+
         @PostMapping("/add")
         fun add(): TestDoc {
             val testDoc = TestDoc().copy(testMsg = "sample")
             return testRepository.insert(testDoc)
         }
 
-        @GetMapping("/randomMessages")
-        fun randomMessages(): List<Message> {
-            return messageService.generateRandomMessages(5)
+        @PostMapping("/msg1")
+        fun msg1(): List<MessageDto> {
+            val l = listOf<Message>(
+                Message.Builder().fastBuild(),
+                Message.Builder().fastBuild(),
+                Message.Builder().fastBuild(),
+                Message.Builder().fastBuild(),
+                Message.Builder().fastBuild(),
+            )
+            messageService.saveAll(messages = l)
+            val listMessages = messageService.getAllMessages()
+            val listDto: List<MessageDto> = listMessages
+                .map{
+                    it.toDto()
+                }
+                .toList()
+            return listDto
         }
+
+
+
+    @PostMapping("/msg2")
+    fun msg2(): MessageDto {
+        val msg = Message.Builder().fastBuild()
+        return messageService.save(msg).toDto()
+    }
 
 
 }
