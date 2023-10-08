@@ -1,6 +1,6 @@
-package com.example.server
+package com.example.server.exceptions
 
-class MessageNotFoundException: Exception {
+class DataAlreadyInTheDatabaseException: Exception {
     constructor() : super()
     constructor(message: String) : super(message)
     constructor(message: String, cause: Throwable) : super(message, cause)

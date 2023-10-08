@@ -6,6 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository
 import java.util.*
 
 interface UserRepository: MongoRepository<User, ObjectId> {
-    fun findByUserId(restaurantId: String): User?
+    fun findByUserId(userId: ObjectId): User?
 
 }

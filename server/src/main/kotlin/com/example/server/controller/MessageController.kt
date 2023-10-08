@@ -1,16 +1,13 @@
 package com.example.server.controller
 
-import com.example.server.MessageNotFoundException
+import com.example.server.exceptions.MessageNotFoundException
 import com.example.server.dto.MessageDto
 import com.example.server.dto.toDto
-import com.example.server.repository.MessageRepository
 import com.example.server.service.MessageService
 import lombok.AllArgsConstructor
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.servlet.function.EntityResponse
 
 @RestController
 @RequestMapping("/message")

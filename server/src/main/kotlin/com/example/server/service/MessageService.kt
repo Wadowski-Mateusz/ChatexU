@@ -1,6 +1,6 @@
 package com.example.server.service
 
-import com.example.server.MessageNotFoundException
+import com.example.server.exceptions.MessageNotFoundException
 import com.example.server.model.Message
 import com.example.server.repository.MessageRepository
 import org.bson.types.ObjectId

@@ -19,9 +19,6 @@ import java.util.*
 @CrossOrigin
 class UserController(private val userService: UserService) {
 
-    @PostMapping("/add")
-    fun addUser(): User = userService.insert(User())
-
     @GetMapping("/get")
     fun getUser(): ResponseEntity<User> {
         val users: List<User> = userService.findAll()
@@ -32,7 +29,5 @@ class UserController(private val userService: UserService) {
              ResponseEntity.noContent().build()
 
     }
-
-
 
 }

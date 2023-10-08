@@ -2,8 +2,10 @@ package com.example.server.model
 
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
+import java.time.Instant
 
 @Document("users")
 data class User(
@@ -11,26 +13,34 @@ data class User(
     @Id
     @Field("id")
     val userId: ObjectId = ObjectId(),
+    // to use with custom getter for fast ObjectId.toHexString()
+//    private val _userId: ObjectId = ObjectId(),
 
-    val nickname: String = "",
-    val email: String = "",
-    val password: String = "",
-    val login: String = "",
+    @Indexed
+    val nickname: String,
 
-    val settings: Settings = Settings(),
-    // val blockedUsers: List<ObjectId>,
-)
+    @Indexed
+    val email: String,
+    val login: String,
+    val password: String, // TODO change to hash
+
+//    val lastPassword: String = "",
+//    val passwordResetTime: Instant = Instant.MIN
+
+    val profilePictureUri: String,
+
+    val listOfBlockedUsers: List<String> = emptyList(),
+    val lastTimeOnline: Instant = Instant.MIN,
 
 
-data class Settings(
-    val notifications: Notifications = Notifications.OFF,
-)
+//    val listOfFriends: List<String> = emptyList(),
+//    val status: ,    // sealed class, enum?
+//    val tokens // sessions , security
+//    val role(s) //
+//    val settings // languages
 
-enum class Notifications {
-    ALL,
-    POP_UP,
-    VIBRATION,
-    SOUND,
-    OFF,
-    //BLOCK_SCREEN_ONLY_NUMBER_OF_MESSAGES,
+) {
+
+//    val userId: String
+//        get() = _userId.toHexString()
 }

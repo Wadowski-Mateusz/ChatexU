@@ -28,40 +28,10 @@ class ChatController(
     private val messageService: MessageService,
 ) {
 
-
-
-    @GetMapping("/chat_view/{chatId}/{viewerId}")
-    fun getChatView(@PathVariable("chatId") chatId: UUID,
-                    @PathVariable("viewerId") viewerId: UUID): ResponseEntity<ChatViewDto> {
-
-//        val chatView = ChatView.Builder()
-//            .chatId(UUID.randomUUID())
-//            .chatName("Sample Chat")
-//            .lastMessage("Hello, World!")
-//            .timestamp(Instant.now())
-//            .build()
-
-        val chatViewDto = ChatViewDto.Builder().fastBuild()
-
-
-        return ResponseEntity.ok(chatViewDto)
-    }
-
     @GetMapping("/chat_view")
     fun getChatView(): ResponseEntity<ChatViewDto> {
         val chatViewDto = ChatViewDto.Builder().fastBuild()
         return ResponseEntity.ok(chatViewDto)
-    }
-
-    @GetMapping("/chat_views_test")
-    fun getChatViewsTest(): ResponseEntity<List<ChatViewDto>> {
-        val l =
-            generateSequence {
-                ChatViewDto.Builder().fastBuild()
-            }
-                .take(25)
-                .toList()
-        return ResponseEntity.ok(l)
     }
 
     @GetMapping(value = ["/icon"], produces = [MediaType.IMAGE_JPEG_VALUE])
@@ -80,11 +50,12 @@ class ChatController(
     @GetMapping(
         value = ["/chat_view/{chatId}"],
 //        produces = [MediaType.IMAGE_JPEG_VALUE],
-    ) fun getPicture(
+    ) fun getChatView(
         @PathVariable("chatId") chatId: String
     ): ResponseEntity<ChatViewIconDto> {
-        println("TEST")
         return try {
+            // TODO
+            println("Add URIs")
             val resource: Resource = ClassPathResource("icons/${listOf("red","green","blue").random()}.png")
             val inp = resource.inputStream.readAllBytes()
 
@@ -100,7 +71,5 @@ class ChatController(
             ResponseEntity.internalServerError().build()
         }
     }
-
-
 
 }
