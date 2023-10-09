@@ -4,6 +4,7 @@ import com.example.server.dto.ChatViewDto
 import com.example.server.dto.ChatViewIconDto
 import com.example.server.exceptions.ChatNotFoundException
 import com.example.server.exceptions.UserNotFoundException
+import com.example.server.model.Chat
 import com.example.server.model.ChatType
 import com.example.server.service.ChatService
 import com.example.server.service.MessageService
@@ -33,8 +34,13 @@ class ChatController(
         return try {
             val chatList = chatService.findAllByUserId(userId)
 
-            TODO("Converting to dtos")
-//            ResponseEntity.ok(chatList)
+            val chatViewDtoList = chatList. map {
+                return@map when(it.typeOfChat) {
+                    is ChatType.UserToUser -> chatService.convertUserToUserChatToChatView(it, userId)
+                    is ChatType.Group -> chatService.convertGroupChatToChatView(it)
+                }
+            }
+            return ResponseEntity(chatViewDtoList, HttpStatus.OK)
         } catch (e: UserNotFoundException) {
             ResponseEntity.badRequest().build()
         } catch (e: Exception) {
