@@ -1,20 +1,18 @@
 package com.example.chatexu.di
 
+import android.util.Log
 import com.example.chatexu.common.Constants
-import com.example.chatexu.data.adapters.InstantAdapter
-import com.example.chatexu.data.adapters.UUIDAdapter
+import com.example.chatexu.common.DebugConsts
 import com.example.chatexu.data.remote.ChatApi
 import com.example.chatexu.data.repository.ChatRepositoryImpl
-import com.example.chatexu.domain.model.ChatRow
+import com.example.chatexu.data.repository.ChatRepositoryTestImpl
 import com.example.chatexu.domain.repository.ChatRepository
-import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -24,34 +22,48 @@ object AppModule {
     @Provides
     @Singleton
     fun provideChatApi(): ChatApi {
-//        return Retrofit.Builder()
-//            .baseUrl(Constants.BASE_URL)
-//            .addConverterFactory(
-//                MoshiConverterFactory.create(
-//                Moshi.Builder()
-//                    .add(UUIDAdapter())
-//                    .add(InstantAdapter())
-//                    .add(GsonConverterFactory.create())
-//                    .build()
-//            ))
-//            .build()
-//            .create(ChatApi::class.java)
+
+        Log.w(
+            /* tag = */ DebugConsts.POTENTIAL_BUG,
+            /* msg = */
+            "If cannot connect to the server, check the base url." +
+                    "Use 'ipconfig' in cmd to get new base url."
+        )
+
+        val url: String = when (UsedApi.API) {
+            UsedApi.PRODUCTION_API -> {
+                Log.i(DebugConsts.INFO, "Using production API.")
+                Constants.BASE_URL
+            }
+            UsedApi.TEST_API -> {
+                Log.i(DebugConsts.INFO, "Using test API.")
+                Constants.BASE_URL_TEST
+            }
+            else -> throw IllegalAccessException("No url for ${UsedApi.API}.")
+        }
 
         return Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-//            .baseUrl("http://172.31.0.1:8091/")
+            .baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ChatApi::class.java)
+
     }
-
-
-
 
     @Provides
     @Singleton
     fun provideChatRepository(api: ChatApi): ChatRepository {
-        return ChatRepositoryImpl(api)
+        return when (UsedApi.API) {
+            UsedApi.PRODUCTION_API -> ChatRepositoryImpl(api)
+            UsedApi.TEST_API -> ChatRepositoryTestImpl(api)
+            else -> throw IllegalAccessException("No url for ${UsedApi.API}.")
+        }
+    }
+
+    private object UsedApi {
+        const val TEST_API = "TEST"
+        const val PRODUCTION_API = "PRODUCTION"
+        const val API = TEST_API
     }
 
 }
