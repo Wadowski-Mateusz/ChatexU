@@ -17,6 +17,7 @@ data class Chat(
 //    val bannedBy: List<ObjectId>,
 //    val files: List<String>, // list of URIs
 //    val chatIcon: ?,
+    // who viewed which messages
     val typeOfChat: ChatType
 
 )
