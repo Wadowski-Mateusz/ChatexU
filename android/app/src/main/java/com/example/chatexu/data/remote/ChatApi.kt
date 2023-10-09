@@ -8,7 +8,7 @@ import retrofit2.http.Path
 
 interface ChatApi {
 
-    @GET("${Constants.CHAT_MAPPING}/chat_list/{userId}")
+    @GET("${Constants.CHAT_MAPPING}/chat_view/chat_list/{userId}")
     suspend fun getUserChatList(@Path("userId") userId: String): Response<List<ChatRowDto>>
 
     @GET("${Constants.CHAT_MAPPING}/chat_view/{chatId}/{viewerId}")
