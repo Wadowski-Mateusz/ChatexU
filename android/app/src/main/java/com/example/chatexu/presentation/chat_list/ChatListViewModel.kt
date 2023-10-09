@@ -10,7 +10,7 @@ import com.example.chatexu.common.DataWrapper
 import com.example.chatexu.common.DebugConsts
 import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.use_case.get_chat_row.GetChatRowUseCase
-import com.example.chatexu.domain.use_case.get_chat_rows.GetChatRowsUseCase
+import com.example.chatexu.domain.use_case.get_chat_rows.GetChatListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
-    private val getChatListUseCase: GetChatRowsUseCase,
+    private val getChatListUseCase: GetChatListUseCase,
     private val getChatRowUseCase: GetChatRowUseCase,
     // etc...
 ): ViewModel() {

@@ -13,6 +13,10 @@ import java.util.*
 @AllArgsConstructor
 class UserService(private val userRepository: UserRepository) {
 
+    fun getUserIconURI(userId: String): String {
+        TODO("Not yet implemented")
+    }
+
     fun save(user: User): User {
         return userRepository.insert(user)
     }

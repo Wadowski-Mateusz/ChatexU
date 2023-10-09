@@ -15,6 +15,11 @@ class MessageService(private val messageRepository: MessageRepository) {
         return messageRepository.findById(ObjectId(messageId))
             .orElseThrow { (MessageNotFoundException("Message not found. Id: $messageId")) }
     }
+    fun findMessageById(messageId: ObjectId): Message {
+        return messageRepository.findById(messageId)
+            .orElseThrow { (MessageNotFoundException("Message not found. Id: ${messageId.toHexString()}")) }
+    }
+
 
     fun getAllMessages(): List<Message> {
         return messageRepository.findAll()

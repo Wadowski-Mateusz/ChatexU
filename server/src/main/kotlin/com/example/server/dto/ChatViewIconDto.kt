@@ -1,5 +1,6 @@
 package com.example.server.dto
 
+import com.example.server.model.MessageContent
 import java.time.Instant
 
 data class ChatViewIconDto(
@@ -8,4 +9,5 @@ data class ChatViewIconDto(
     val lastMessage: String,
     val timestamp: Instant,
     val icon: ByteArray,
+    // val isMuted
 )

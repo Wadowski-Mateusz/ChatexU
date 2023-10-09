@@ -18,7 +18,8 @@ class GetChatRowUseCase @Inject constructor(
         try {
             emit(DataWrapper.Loading<ChatRow>())
             // TODO id
-            val chat = repository.getChatRowById("123")
+            Log.i(DebugConsts.TODO, "GetChatRowUseCase() - ids")
+            val chat = repository.getChatRow("123", "123")
             emit(DataWrapper.Success<ChatRow>(chat))
         } catch(e: HttpException) {
             emit(DataWrapper.Error<ChatRow>(e.localizedMessage ?: "Unknown error"))

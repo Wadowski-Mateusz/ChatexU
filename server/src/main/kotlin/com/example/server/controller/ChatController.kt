@@ -2,15 +2,16 @@ package com.example.server.controller
 
 import com.example.server.dto.ChatViewDto
 import com.example.server.dto.ChatViewIconDto
-import com.example.server.dto.MessageDto
-import com.example.server.dto.toDto
+import com.example.server.exceptions.ChatNotFoundException
+import com.example.server.exceptions.UserNotFoundException
+import com.example.server.model.Chat
+import com.example.server.model.ChatType
 import com.example.server.service.ChatService
 import com.example.server.service.MessageService
+import com.example.server.service.UserService
 import lombok.AllArgsConstructor
-import org.bson.types.ObjectId
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -25,14 +26,58 @@ import java.util.*
 @CrossOrigin
 class ChatController(
     private val chatService: ChatService,
-    private val messageService: MessageService,
 ) {
 
-    @GetMapping("/chat_view")
-    fun getChatView(): ResponseEntity<ChatViewDto> {
-        val chatViewDto = ChatViewDto.Builder().fastBuild()
-        return ResponseEntity.ok(chatViewDto)
+
+    @GetMapping("/chat_view/chat_list/{userId}")
+    fun getChatList(@PathVariable("userId") userId: String): ResponseEntity<List<ChatViewDto>> {
+        return try {
+            val chatList = chatService.findAllByUserId(userId)
+
+            val chatViewDtoList = chatList. map {
+                return@map when(it.typeOfChat) {
+                    is ChatType.UserToUser -> chatService.convertUserToUserChatToChatView(it, userId)
+                    is ChatType.Group -> chatService.convertGroupChatToChatView(it)
+                }
+            }
+            return ResponseEntity(chatViewDtoList, HttpStatus.OK)
+        } catch (e: UserNotFoundException) {
+            ResponseEntity.badRequest().build()
+        } catch (e: Exception) {
+            println("ChatController.getChatList() - ${e.message}")
+            ResponseEntity.internalServerError().build()
+        }
     }
+
+
+    @GetMapping("/chat_view/{chatId}/{viewerId}")
+    fun getChatView(@PathVariable("chatId") chatId: String, @PathVariable("viewerId") viewerId: String): ResponseEntity<ChatViewDto> {
+
+        return try {
+            val chat = chatService.findChatById(chatId)
+
+            return when (chat.typeOfChat) {
+                is ChatType.UserToUser -> {
+                    val chatViewDto = chatService.convertUserToUserChatToChatView(chat, viewerId)
+                    ResponseEntity(chatViewDto, HttpStatus.OK)
+                }
+                is ChatType.Group -> {
+                    TODO("Not yet implemented")
+                }
+            }
+
+        } catch (e: ChatNotFoundException) {
+            ResponseEntity.badRequest().build()
+        } catch(e: Exception) {
+            println("ChatController.getChatView() - ${e.message}")
+            ResponseEntity.internalServerError().build()
+        }
+    }
+
+
+    /*
+    * UNUSED BELOW
+    * */
 
     @GetMapping(value = ["/icon"], produces = [MediaType.IMAGE_JPEG_VALUE])
     fun getPicture(@RequestParam userId: UUID?): ResponseEntity<ByteArray> {
