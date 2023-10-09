@@ -30,13 +30,15 @@ class MessageController(private val messageService: MessageService) {
         } catch (e: MessageNotFoundException) {
             ResponseEntity(HttpStatus.NOT_FOUND)
         } catch (e: Exception) {
+            e.printStackTrace()
+            println("MessageController.finMessageById() ${e.message}")
             ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
     @PostMapping("/send")
     fun sendMessage(@RequestBody messageDto: MessageDto): ResponseEntity<MessageDto> {
-        val message = messageService.convertMessageDtoToMessageAsSender(messageDto)
+        val message = messageService.convertMessageDtoToMessage(messageDto)
         val savedMessage = messageService.save(message)
 
         return ResponseEntity(

@@ -10,8 +10,8 @@ data class MessageDto(
     val timestamp: String,
     val messageContent: MessageContent,
     val isEdited: Boolean,
-    val isDeletedForViewer: Boolean, // if
-    val viewedBy: List<String>,
+    val isDeletedForViewer: Boolean,
+    val answerTo: String?,
     ) {
 
 //     Jackson needs either a no-argument constructor (default constructor) or properly annotated properties.

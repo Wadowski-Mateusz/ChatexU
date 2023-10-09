@@ -13,7 +13,6 @@ import java.lang.IllegalArgumentException
 @Service
 @AllArgsConstructor
 class ChatService(
-    private val chatRepository: ChatRepository,
     private val userService: UserService,
     private val messageService: MessageService,
 ) {

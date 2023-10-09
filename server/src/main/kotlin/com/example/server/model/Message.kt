@@ -6,13 +6,11 @@ import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
-import org.springframework.data.mongodb.core.mapping.Field
 import java.time.Instant
 
 @Document("messages")
 data class Message(
     @Id
-    @Field("id")
     val messageId: ObjectId = ObjectId(),
     val senderId: ObjectId,
     @Indexed
@@ -26,17 +24,18 @@ data class Message(
     )
 
 
-
-sealed class MessageContent(val type: String) {
+// why it doesnt work with val?
+// if it is val, finding in the database throw error
+sealed class MessageContent(var type: String) {
 
     data class Text(val text: String): MessageContent(type = TYPE_TEXT)
     data class Resource(val uri: String): MessageContent(type = TYPE_RESOURCE)
     class Deleted: MessageContent(type = TYPE_DELETED)
 
-    private companion object {
+    companion object {
         const val TYPE_TEXT = "text"
         const val TYPE_RESOURCE = "resource"
-        const val TYPE_DELETED = "resource"
+        const val TYPE_DELETED = "deleted"
 
         @JsonCreator
         @JvmStatic
@@ -46,13 +45,12 @@ sealed class MessageContent(val type: String) {
             @JsonProperty("uri") uri: String?,
         ): MessageContent {
             return when (type) {
-                TYPE_RESOURCE -> Resource(uri!!)
                 TYPE_TEXT -> Text(text!!)
+                TYPE_RESOURCE -> Resource(uri!!)
                 TYPE_DELETED -> Deleted()
                 else -> throw IllegalArgumentException("Invalid Content type")
             }
         }
     }
-
 
 }

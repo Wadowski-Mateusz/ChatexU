@@ -1,12 +1,14 @@
 package com.example.server.service
 
 import com.example.server.dto.MessageDto
+import com.example.server.exceptions.ErrorMessageCommons
 import com.example.server.exceptions.MessageNotFoundException
 import com.example.server.model.Message
 import com.example.server.model.MessageContent
 import com.example.server.repository.MessageRepository
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
+import java.lang.IllegalArgumentException
 import java.time.Instant
 import java.util.*
 
@@ -16,8 +18,8 @@ class MessageService(
 ) {
 
     fun findMessageById(messageId: String): Message {
-        return messageRepository.findById(ObjectId(messageId))
-            .orElseThrow { (MessageNotFoundException("Message not found. Id: $messageId")) }
+        return messageRepository.findMessageByMessageId(messageId)
+            ?: throw MessageNotFoundException("Message not found. Id: $messageId")
     }
 
     fun findMessageById(messageId: ObjectId): Message {
@@ -29,12 +31,20 @@ class MessageService(
         return messageRepository.findAll()
     }
 
+    fun getMessageList(messageIds: List<String>): List<Message> {
+        return messageIds.mapNotNull { messageRepository.findMessageByMessageId(it) }
+    }
+
     fun save(message: Message): Message {
         return messageRepository.save(message)
     }
 
     fun saveAll(messages: List<Message>): List<Message> {
         return messageRepository.saveAll(messages)
+    }
+
+    fun getMessagesFromChat(chatId: String): List<Message> {
+        return messageRepository.findAllByChatId(chatId)
     }
 
     fun getMessageFromChatInterval(chatId: UUID, from: Instant, to: Instant): List<Message> {
@@ -45,59 +55,76 @@ class MessageService(
         TODO("MISSING IMPLEMENTATION")
     }
 
-    fun postMessage(message: Message): Message {
-        TODO("MISSING IMPLEMENTATION")
-    }
 
     fun deleteMessage(messageId: String, userId: String): Message {
         val message = this.findMessageById(messageId)
 
         val deletedMessage =
             if (message.senderId.toHexString().equals(userId))
-                Message(
-                    messageId = message.messageId,
-                    senderId = message.senderId,
-                    chatId = message.chatId,
-                    timestamp = message.timestamp,
+                message.copy(
                     messageContent = MessageContent.Deleted(),
                     isEdited = true,
                     deletedBy = emptyList(),
-                    answerTo = message.answerTo,
+                    answerTo = null,
                 )
             else
-                Message(
-                    messageId = message.messageId,
-                    senderId = message.senderId,
-                    chatId = message.chatId,
-                    timestamp = message.timestamp,
-                    messageContent = message.messageContent,
-                    isEdited = message.isEdited,
-                    deletedBy = message.deletedBy + userId,
-                    answerTo = message.answerTo,
-                )
+                message.copy(deletedBy = message.deletedBy + userId,)
 
         return messageRepository.save(deletedMessage)
     }
 
     fun updateTextMessage(messageId: String, newContent: String): Message {
-        TODO("MISSING IMPLEMENTATION")
+        val message = messageRepository.findMessageByMessageId(messageId)
+            ?: throw MessageNotFoundException(ErrorMessageCommons.idNotFound("message", messageId))
+        if (message.messageContent !is MessageContent.Text)
+            throw IllegalArgumentException("Unexpected content type.")
+
+        val newMessage = message.copy(
+            messageContent = MessageContent.Text("newContent"),
+            isEdited = true,
+        )
+        return messageRepository.save(newMessage)
     }
 
-    fun convertMessageToDtoAsSender(message: Message): MessageDto {
-        TODO("Not yet implemented")
+    fun convertMessageToDtoAsSender(message: Message, deletedBy: List<String> = emptyList()): MessageDto {
+        return MessageDto(
+            messageId = message.messageId.toHexString(),
+            senderId = message.senderId.toHexString(),
+            chatId = message.chatId.toHexString(),
+            timestamp = message.timestamp.toString(),
+            messageContent = message.messageContent,
+            isEdited = message.isEdited,
+            isDeletedForViewer = message.messageContent is MessageContent.Deleted,
+            answerTo = message.answerTo
+        )
     }
 
     fun convertMessageToDto(message: Message, viewerId: String): MessageDto {
-        TODO("Not yet implemented")
+        return MessageDto(
+            messageId = message.messageId.toHexString(),
+            senderId = message.senderId.toHexString(),
+            chatId = message.chatId.toHexString(),
+            timestamp = message.timestamp.toString(),
+            messageContent = message.messageContent,
+            isEdited = message.isEdited,
+            isDeletedForViewer = message.messageContent is MessageContent.Deleted || viewerId in message.deletedBy,
+            answerTo = message.answerTo
+        )
     }
 
-    fun convertMessageDtoToMessageAsSender(messageDto: MessageDto): Message {
-        TODO("Not yet implemented")
+    fun convertMessageDtoToMessage(messageDto: MessageDto, deletedBy: List<String> = emptyList()): Message {
+        return Message(
+            messageId = ObjectId(messageDto.messageId),
+            senderId = ObjectId(messageDto.senderId),
+            chatId = ObjectId(messageDto.chatId),
+            timestamp = Instant.parse(messageDto.timestamp),
+            messageContent = messageDto.messageContent,
+            isEdited =  messageDto.isEdited,
+            deletedBy = deletedBy,
+            answerTo = messageDto.answerTo
+        )
     }
 
-    fun convertMessageDtoToMessage(messageDto: MessageDto, viewerId: String): Message {
-        TODO("Not yet implemented")
-    }
 
 
 
