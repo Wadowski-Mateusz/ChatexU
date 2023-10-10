@@ -18,6 +18,7 @@ data class Chat(
 //    val files: List<String>, // list of URIs
 //    val chatIcon: ?,
     // who viewed which messages
+    // mutedBy
     val typeOfChat: ChatType
 
 )

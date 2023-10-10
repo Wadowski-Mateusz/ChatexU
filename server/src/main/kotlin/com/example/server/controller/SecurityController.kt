@@ -3,19 +3,13 @@ package com.example.server.controller
 import com.example.server.commons.Constants
 import com.example.server.dto.RegisterDto
 import com.example.server.dto.UserDto
-import com.example.server.dto.toDto
 import com.example.server.exceptions.DataAlreadyInTheDatabaseException
 import com.example.server.model.User
 import com.example.server.service.UserService
 import lombok.AllArgsConstructor
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 
 @RestController
@@ -32,7 +26,8 @@ class SecurityController(
         return try {
             val user = createUserFromRegisterDto(registerDto)
             val savedUser = userService.save(user)
-            ResponseEntity.ok(savedUser.toDto())
+
+            ResponseEntity(userService.convertToDto(savedUser), HttpStatus.OK)
         } catch (exception: DataAlreadyInTheDatabaseException) {
             ResponseEntity.status(HttpStatus.CONFLICT).build()
         } catch (exception: Exception) {
@@ -49,9 +44,10 @@ class SecurityController(
         val user = User(
             nickname = registerDto.nickname,
             email = registerDto.email,
-            login = registerDto.login,
             password = registerDto.password,
             profilePictureUri = Constants.DEFAULT_PROFILE_URI,
+            friends = setOf(),
+            blockedUsers = setOf(),
         )
 
         return userService.save(user)
@@ -62,6 +58,26 @@ class SecurityController(
     private fun verifyRegisterDto(registerDto: RegisterDto) {
         TODO("Not yet implemented - check if data is already in the database")
         //
+    }
+
+    // TODO move to security controller
+    @PutMapping("/change_email/{userId}/{password}/{email}")
+    fun changeEmail(
+        @PathVariable("userId") userId: String,
+        @PathVariable("password") password: String,
+        @PathVariable("email") nickname: String,
+    ): ResponseEntity<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    // TODO move to security controller
+    @PutMapping("/change_password/{userId}/{oldPassword}/{newPassword}")
+    fun changePassword(
+        @PathVariable("userId") userId: String,
+        @PathVariable("oldPassword") oldPassword: String,
+        @PathVariable("newPassword") newPassword: String,
+    ): ResponseEntity<Boolean> {
+        TODO("Not yet implemented")
     }
 
 }

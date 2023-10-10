@@ -36,6 +36,7 @@ class MessageService(
     }
 
     fun save(message: Message): Message {
+        // TODO check if user is blocked
         return messageRepository.save(message)
     }
 
