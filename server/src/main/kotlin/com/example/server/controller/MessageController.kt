@@ -2,7 +2,7 @@ package com.example.server.controller
 
 import com.example.server.exceptions.MessageNotFoundException
 import com.example.server.dto.MessageDto
-import com.example.server.model.MessageContent
+import com.example.server.model.MessageType
 import com.example.server.service.MessageService
 import lombok.AllArgsConstructor
 import org.springframework.http.HttpStatus
@@ -49,11 +49,11 @@ class MessageController(private val messageService: MessageService) {
 
     @PutMapping("/update_message")
     fun updateMessage(@RequestBody messageDto: MessageDto): ResponseEntity<MessageDto> {
-        if (messageDto.messageContent !is MessageContent.Text)
+        if (messageDto.messageType !is MessageType.Text)
             return ResponseEntity(null, HttpStatus.BAD_REQUEST)
 
         return try {
-            val updatedMessage = messageService.updateTextMessage(messageDto.messageId, messageDto.messageContent.text)
+            val updatedMessage = messageService.updateTextMessage(messageDto.messageId, messageDto.messageType.text)
             ResponseEntity(
                 messageService.convertMessageToDtoAsSender(updatedMessage),
                 HttpStatus.OK

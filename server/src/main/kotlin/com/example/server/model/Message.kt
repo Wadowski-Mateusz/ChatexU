@@ -1,5 +1,6 @@
 package com.example.server.model
 
+import com.example.server.commons.default
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.bson.types.ObjectId
@@ -7,6 +8,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant
+import java.util.*
 
 @Document("messages")
 data class Message(
@@ -17,25 +19,28 @@ data class Message(
     val chatId: ObjectId,
     @Indexed
     val timestamp: Instant,
-    val messageContent: MessageContent,
+    val messageType: MessageType,
     val isEdited: Boolean = false,
     val deletedBy: List<String>,
-    val answerTo: String? = null,
+    val answerTo: ObjectId = ObjectId().default(),
     )
 
 
-// why it doesnt work with val?
+// why it doesn't work with val?
 // if it is val, finding in the database throw error
-sealed class MessageContent(var type: String) {
+sealed class MessageType(var type: String) {
 
-    data class Text(val text: String): MessageContent(type = TYPE_TEXT)
-    data class Resource(val uri: String): MessageContent(type = TYPE_RESOURCE)
-    class Deleted: MessageContent(type = TYPE_DELETED)
+    data class Text(val text: String): MessageType(type = TYPE_TEXT)
+    data class Resource(val uri: String): MessageType(type = TYPE_RESOURCE)
+    class Deleted: MessageType(type = TYPE_DELETED)
+    class Initialization: MessageType(type = TYPE_INIT) // first message in the chat, that or null as "last message"
+
 
     companion object {
         const val TYPE_TEXT = "text"
         const val TYPE_RESOURCE = "resource"
         const val TYPE_DELETED = "deleted"
+        const val TYPE_INIT = "init"
 
         @JsonCreator
         @JvmStatic
@@ -43,11 +48,12 @@ sealed class MessageContent(var type: String) {
             @JsonProperty("type") type: String,
             @JsonProperty("text") text: String?,
             @JsonProperty("uri") uri: String?,
-        ): MessageContent {
+        ): MessageType {
             return when (type) {
                 TYPE_TEXT -> Text(text!!)
                 TYPE_RESOURCE -> Resource(uri!!)
                 TYPE_DELETED -> Deleted()
+                TYPE_INIT -> Initialization()
                 else -> throw IllegalArgumentException("Invalid Content type")
             }
         }

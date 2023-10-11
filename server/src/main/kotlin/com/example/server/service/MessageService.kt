@@ -1,21 +1,27 @@
 package com.example.server.service
 
+import com.example.server.commons.default
 import com.example.server.dto.MessageDto
 import com.example.server.exceptions.ErrorMessageCommons
 import com.example.server.exceptions.MessageNotFoundException
 import com.example.server.model.Message
-import com.example.server.model.MessageContent
+import com.example.server.model.MessageType
 import com.example.server.repository.MessageRepository
 import org.bson.types.ObjectId
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
-import java.lang.IllegalArgumentException
 import java.time.Instant
 import java.util.*
 
 @Service
-class MessageService(
-    private val messageRepository: MessageRepository,
-) {
+class MessageService(private val messageRepository: MessageRepository) {
+
+    // circular reference hack
+    @Lazy @Autowired
+    private val _chatService: ChatService? = null
+    private val chatService: ChatService by lazy { _chatService!! }
+
 
     fun findMessageById(messageId: String): Message {
         return messageRepository.findMessageByMessageId(messageId)
@@ -23,7 +29,7 @@ class MessageService(
     }
 
     fun findMessageById(messageId: ObjectId): Message {
-        return messageRepository.findById(messageId)
+        return messageRepository.findById(messageId.toHexString())
             .orElseThrow { (MessageNotFoundException("Message not found. Id: ${messageId.toHexString()}")) }
     }
 
@@ -37,15 +43,17 @@ class MessageService(
 
     fun save(message: Message): Message {
         // TODO check if user is blocked
-        return messageRepository.save(message)
+        // change last message in the chat document
+
+        val savedMessage = messageRepository.save(message)
+
+//        chatService.updateLastMessage(message.chatId, savedMessage)
+
+        return savedMessage
     }
 
     fun saveAll(messages: List<Message>): List<Message> {
         return messageRepository.saveAll(messages)
-    }
-
-    fun getMessagesFromChat(chatId: String): List<Message> {
-        return messageRepository.findAllByChatId(chatId)
     }
 
     fun getMessageFromChatInterval(chatId: UUID, from: Instant, to: Instant): List<Message> {
@@ -63,13 +71,13 @@ class MessageService(
         val deletedMessage =
             if (message.senderId.toHexString().equals(userId))
                 message.copy(
-                    messageContent = MessageContent.Deleted(),
+                    messageType = MessageType.Deleted(),
                     isEdited = true,
                     deletedBy = emptyList(),
-                    answerTo = null,
+                    answerTo = ObjectId().default(),
                 )
             else
-                message.copy(deletedBy = message.deletedBy + userId,)
+                message.copy(deletedBy = message.deletedBy + userId)
 
         return messageRepository.save(deletedMessage)
     }
@@ -77,11 +85,11 @@ class MessageService(
     fun updateTextMessage(messageId: String, newContent: String): Message {
         val message = messageRepository.findMessageByMessageId(messageId)
             ?: throw MessageNotFoundException(ErrorMessageCommons.idNotFound("message", messageId))
-        if (message.messageContent !is MessageContent.Text)
+        if (message.messageType !is MessageType.Text)
             throw IllegalArgumentException("Unexpected content type.")
 
         val newMessage = message.copy(
-            messageContent = MessageContent.Text("newContent"),
+            messageType = MessageType.Text("newContent"),
             isEdited = true,
         )
         return messageRepository.save(newMessage)
@@ -93,10 +101,10 @@ class MessageService(
             senderId = message.senderId.toHexString(),
             chatId = message.chatId.toHexString(),
             timestamp = message.timestamp.toString(),
-            messageContent = message.messageContent,
+            messageType = message.messageType,
             isEdited = message.isEdited,
-            isDeletedForViewer = message.messageContent is MessageContent.Deleted,
-            answerTo = message.answerTo
+            isDeletedForViewer = message.messageType is MessageType.Deleted,
+            answerTo = message.answerTo.toHexString()
         )
     }
 
@@ -106,10 +114,10 @@ class MessageService(
             senderId = message.senderId.toHexString(),
             chatId = message.chatId.toHexString(),
             timestamp = message.timestamp.toString(),
-            messageContent = message.messageContent,
+            messageType = message.messageType,
             isEdited = message.isEdited,
-            isDeletedForViewer = message.messageContent is MessageContent.Deleted || viewerId in message.deletedBy,
-            answerTo = message.answerTo
+            isDeletedForViewer = message.messageType is MessageType.Deleted || viewerId in message.deletedBy,
+            answerTo = message.answerTo.toHexString()
         )
     }
 
@@ -119,14 +127,16 @@ class MessageService(
             senderId = ObjectId(messageDto.senderId),
             chatId = ObjectId(messageDto.chatId),
             timestamp = Instant.parse(messageDto.timestamp),
-            messageContent = messageDto.messageContent,
+            messageType = messageDto.messageType,
             isEdited =  messageDto.isEdited,
             deletedBy = deletedBy,
-            answerTo = messageDto.answerTo
+            answerTo = ObjectId(messageDto.answerTo)
         )
     }
 
-
+    fun getAllMessagesFromChat(chatId: String): List<Message> {
+        return messageRepository.findAllMessagesByChatId(ObjectId(chatId))
+    }
 
 
 }

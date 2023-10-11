@@ -1,8 +1,9 @@
 package com.example.server.controller
 
+import com.example.server.commons.default
 import com.example.server.dto.MessageDto
 import com.example.server.model.Message
-import com.example.server.model.MessageContent
+import com.example.server.model.MessageType
 import com.example.server.model.TestDoc
 import com.example.server.repository.TestRepository
 import com.example.server.service.MessageService
@@ -44,10 +45,10 @@ class TestController(
             senderId = ObjectId(),
             chatId = ObjectId(),
             timestamp = Instant.now(),
-            messageContent =MessageContent.Text("Content for testing purpouse"),
+            messageType =MessageType.Text("Content for testing purpouse"),
             isEdited = false,
             deletedBy = listOf(),
-            answerTo = null
+            answerTo = ObjectId().default()
         )
         return m
     }
@@ -60,10 +61,10 @@ class TestController(
             senderId = ObjectId(),
             chatId = ObjectId(),
             timestamp = Instant.now(),
-            messageContent =MessageContent.Text("Content for testing purpouse"),
+            messageType =MessageType.Text("Content for testing purpouse"),
             isEdited = false,
             deletedBy = listOf(),
-            answerTo = null
+            answerTo = ObjectId().default()
         )
         return messageService.convertMessageToDtoAsSender(m)
     }
@@ -76,6 +77,4 @@ class TestController(
     }
 
 
-
-    
 }

@@ -51,13 +51,13 @@ class UserController(private val userService: UserService) {
             val updatedBlockedUsersSet = blockingUser.blockedUsers + blockedUserId
             userService.save(blockingUser.copy(blockedUsers = updatedBlockedUsersSet))
 
-            ResponseEntity(null, HttpStatus.OK)
+            ResponseEntity(HttpStatus.OK)
 
         } catch (e: UserNotFoundException) {
-            ResponseEntity(null, HttpStatus.NOT_FOUND)
+            ResponseEntity(HttpStatus.NOT_FOUND)
         } catch (e: Exception) {
             e.printStackTrace()
-            ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR)
+            ResponseEntity( HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -78,12 +78,12 @@ class UserController(private val userService: UserService) {
             val friends = addingUser.friends + addedUserId
             userService.save(addingUser.copy(friends = friends))
 
-            ResponseEntity(null, HttpStatus.OK)
+            ResponseEntity(HttpStatus.OK)
         } catch (e: UserNotFoundException) {
-            ResponseEntity(null, HttpStatus.NOT_FOUND)
+            ResponseEntity(HttpStatus.NOT_FOUND)
         } catch (e: Exception) {
             e.printStackTrace()
-            ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR)
+            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
     }

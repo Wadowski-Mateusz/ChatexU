@@ -1,6 +1,5 @@
 package com.example.server.dto
 
-import com.example.server.model.MessageContent
 import java.time.Instant
 
 data class ChatViewIconDto(

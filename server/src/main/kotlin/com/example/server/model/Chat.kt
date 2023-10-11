@@ -6,24 +6,27 @@ import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
+import java.time.Instant
 
 @Document("chats")
 data class Chat(
     @Id
     @Field("id")
     val chatId: ObjectId = ObjectId(),
-    val participants: List<ObjectId>,
     val lastMessage: ObjectId,
-//    val bannedBy: List<ObjectId>,
+    val typeOfChat: ChatType,
+
+    val participants: Set<ObjectId>,
+    val lastViewedBy: Map<ObjectId, Instant> = emptyMap(),  // when user has been seeing chat last chat, to show him how many unread messages he has
+    val mutedBy: Map<ObjectId, Instant> = emptyMap(),       // how long conversation is muted for user
+
+
+//    val bannedBy: Set<ObjectId>, // users who banned conversation
 //    val files: List<String>, // list of URIs
-//    val chatIcon: ?,
-    // who viewed which messages
-    // mutedBy
-    val typeOfChat: ChatType
 
 )
 
-sealed class ChatType(val type: String) {
+sealed class ChatType(var type: String) {
     class UserToUser: ChatType(USER_TO_USER)
     data class Group(val iconUri: String): ChatType(GROUP)
 
@@ -45,5 +48,3 @@ sealed class ChatType(val type: String) {
         }
     }
 }
-
-
