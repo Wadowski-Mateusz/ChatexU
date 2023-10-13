@@ -1,11 +1,14 @@
 package com.example.server.controller
 
+import com.example.server.commons.Constants
 import com.example.server.commons.default
 import com.example.server.dto.MessageDto
 import com.example.server.model.Message
 import com.example.server.model.MessageType
 import com.example.server.model.TestDoc
+import com.example.server.model.User
 import com.example.server.repository.TestRepository
+import com.example.server.repository.UserRepository
 import com.example.server.service.MessageService
 import lombok.AllArgsConstructor
 import org.bson.types.ObjectId
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.time.Instant
+import kotlin.math.abs
+import kotlin.random.Random
 
 @RestController
 @RequestMapping("/test")
@@ -23,7 +28,8 @@ import java.time.Instant
 @CrossOrigin
 class TestController(
     private val testRepository: TestRepository,
-    private val messageService: MessageService
+    private val messageService: MessageService,
+    private val userRepository: UserRepository
 ) {
 
     @GetMapping("/hello")
@@ -45,7 +51,7 @@ class TestController(
             senderId = ObjectId(),
             chatId = ObjectId(),
             timestamp = Instant.now(),
-            messageType =MessageType.Text("Content for testing purpouse"),
+            messageType =MessageType.Text("Content for testing purpose"),
             isEdited = false,
             deletedBy = listOf(),
             answerTo = ObjectId().default()
@@ -61,7 +67,7 @@ class TestController(
             senderId = ObjectId(),
             chatId = ObjectId(),
             timestamp = Instant.now(),
-            messageType =MessageType.Text("Content for testing purpouse"),
+            messageType =MessageType.Text("Content for testing purpose"),
             isEdited = false,
             deletedBy = listOf(),
             answerTo = ObjectId().default()
@@ -75,6 +81,24 @@ class TestController(
         val m3 = messageService.save(m2)
         return messageService.convertMessageToDtoAsSender(m3)
     }
+
+
+    @PostMapping("/register")
+    fun addUserFast(): String {
+        val random = abs(Random.nextInt())
+        val user = User(
+            userId = ObjectId(),
+            nickname = "User$random",
+            email = "email${random}@mail.com",
+            password = "pass",
+            profilePictureUri = Constants.DEFAULT_PROFILE_URI,
+            friends = setOf(),
+            blockedUsers = setOf()
+        )
+        userRepository.save(user)
+        return user.userId.toHexString()
+    }
+
 
 
 }
