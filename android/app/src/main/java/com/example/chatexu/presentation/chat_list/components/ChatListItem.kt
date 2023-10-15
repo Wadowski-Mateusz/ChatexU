@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.chatexu.R
 import com.example.chatexu.domain.model.ChatRow
+import com.example.chatexu.domain.model.MessageType
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -68,7 +69,11 @@ fun ChatListItem(
 //                    , modifier = Modifier.align(Alignment.Start)
             )
             Text(
-                text = chatRow.lastMessage,
+                text = when (chatRow.lastMessage) {
+                    is MessageType.Text -> chatRow.lastMessage.text
+                    is MessageType.Initialization -> "No messages yet."
+                    else -> "Message type not implemented - ChatListItem"
+                },
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
@@ -99,7 +104,7 @@ fun ChatRowPreview() {
     val chat1 = ChatRow(
         chatId = UUID.randomUUID().toString(),
         chatName = "User1",
-        lastMessage = "Message",
+        lastMessage = MessageType.Text("Message"),
         timestamp = Instant.now(),
         icon = bitmap
     )

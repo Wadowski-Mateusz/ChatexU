@@ -1,6 +1,7 @@
 package com.example.chatexu.data.repository
 
 import com.example.chatexu.data.remote.ChatApi
+import com.example.chatexu.data.remote.dto.ChatRowDto
 import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.repository.ChatRepository
 import javax.inject.Inject

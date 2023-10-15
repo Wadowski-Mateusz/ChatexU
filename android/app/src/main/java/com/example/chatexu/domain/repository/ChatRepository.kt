@@ -1,6 +1,5 @@
 package com.example.chatexu.domain.repository
 
-
 import com.example.chatexu.domain.model.ChatRow
 
 interface ChatRepository {

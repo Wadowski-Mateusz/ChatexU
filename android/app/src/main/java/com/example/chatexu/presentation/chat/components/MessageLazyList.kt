@@ -6,6 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.chatexu.common.DebugConsts
 import com.example.chatexu.domain.model.Message
+import com.example.chatexu.domain.model.MessageType
+import org.mongodb.kbson.BsonObjectId
+import org.mongodb.kbson.ObjectId
 import java.time.Instant
 
 
@@ -16,7 +19,19 @@ fun MessageLazyList(
 ) {
     LazyColumn() {
         items(items = messages, key = {it.messageId}) { message ->
-            ChatMessageItem(testStr = message.content)
+            ChatMessageItem(testStr =
+            when(message.messageType) {
+                is MessageType.Text -> {
+                    message.messageType.text
+                }
+                is MessageType.Initialization -> {
+                    "No messages yet."
+                }
+                else -> {
+                    throw NotImplementedError("MessageLazyList")
+                }
+            }
+            )
         }
     }
 }
@@ -25,15 +40,17 @@ fun MessageLazyList(
 @Composable
 fun ChatRowPreview() {
     val m = Message(
-        messageId = "123",
-        senderId = "321",
-        content = DebugConsts.lorem(10),
+        messageId = ObjectId(),
+        senderId = ObjectId(),
+        chatId = ObjectId(),
+        messageType = MessageType.Text(DebugConsts.lorem(10)),
         timestamp = Instant.now()
     )
     val m2 = Message(
-        messageId = "123",
-        senderId = "321",
-        content = DebugConsts.lorem(5),
+        messageId = ObjectId(),
+        senderId = ObjectId(),
+        chatId = ObjectId(),
+        messageType = MessageType.Text(DebugConsts.lorem(5)),
         timestamp = Instant.now()
     )
 

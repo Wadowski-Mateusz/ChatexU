@@ -1,6 +1,7 @@
 package com.example.chatexu.domain.use_case.get_chat_rows
 
 import android.util.Log
+import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DataWrapper
 import com.example.chatexu.common.DebugConsts
 import com.example.chatexu.domain.model.ChatRow
@@ -19,13 +20,15 @@ class GetChatListUseCase @Inject constructor(
         try {
             emit(DataWrapper.Loading<List<ChatRow>>())
             // TODO id
-            Log.i(DebugConsts.TODO, "GetChatListUseCase() - id")
-//            val chats = repository.getUserChatRows(UUID.randomUUID())//.map { it.toChatRow() }
-            val chats = repository.getUserChatList("213")
+            Log.i(DebugConsts.TODO, "GetChatListUseCase() - hardcoded id")
+            val chats = repository.getUserChatList(DebugConsts.HARD_USER_ID)
+            Log.i("peek", chats.size.toString())
             emit(DataWrapper.Success<List<ChatRow>>(chats))
         } catch(e: HttpException) {
-            emit(DataWrapper.Error<List<ChatRow>>(e.localizedMessage ?: "Unknown error"))
+            Log.e("peek", "e1 ${e.message.toString()}")
+            emit(DataWrapper.Error<List<ChatRow>>(e.localizedMessage ?: e.message.toString()))
         } catch(e: IOException) {
+            Log.e("peek", "e2 ${e.message.toString()}")
             emit(DataWrapper.Error<List<ChatRow>>("No internet connection."))
         }
 

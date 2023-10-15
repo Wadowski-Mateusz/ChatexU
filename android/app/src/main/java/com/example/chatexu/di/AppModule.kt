@@ -13,11 +13,20 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.jackson.JacksonConverterFactory
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    private object UsedApi {
+        const val TEST_API = "TEST"
+        const val PRODUCTION_API = "PRODUCTION"
+
+//        const val API = TEST_API
+        const val API = PRODUCTION_API
+    }
 
     @Provides
     @Singleton
@@ -44,6 +53,7 @@ object AppModule {
 
         return Retrofit.Builder()
             .baseUrl(url)
+            .addConverterFactory(JacksonConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ChatApi::class.java)
@@ -60,10 +70,6 @@ object AppModule {
         }
     }
 
-    private object UsedApi {
-        const val TEST_API = "TEST"
-        const val PRODUCTION_API = "PRODUCTION"
-        const val API = TEST_API
-    }
+
 
 }

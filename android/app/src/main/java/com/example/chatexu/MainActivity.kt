@@ -11,8 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chatexu.presentation.Screen
-import com.example.chatexu.presentation.chat.components.ChatScreen
-import com.example.chatexu.presentation.chat_list.components.ChatListScreen
+import com.example.chatexu.presentation.chat.ChatScreen
+import com.example.chatexu.presentation.chat_list.ChatListScreen
 import com.example.chatexu.ui.theme.ChatexUTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = Screen.ChatScreen.route + "/{chatId}"
                         ) {
-                            ChatScreen()
+                            ChatScreen(navController)
                         }
 
                     }

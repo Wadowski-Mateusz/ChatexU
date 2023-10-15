@@ -16,10 +16,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatexu.R
 import com.example.chatexu.domain.model.ChatRow
+import com.example.chatexu.domain.model.MessageType
 import com.example.chatexu.presentation.Screen
 import com.example.chatexu.presentation.chat_list.ChatListViewModel
 import java.time.Instant
 import java.util.UUID
+import kotlin.math.abs
 import kotlin.random.Random
 
 @Composable
@@ -53,11 +55,14 @@ fun ChatsListLazyPreview() {
     val bitmap = BitmapFactory.decodeStream(input)
     input.close()
 
+
+
     val list = generateSequence{
         ChatRow(
             chatId = UUID.randomUUID().toString(),
-            chatName = "User${Math.abs(Random.nextInt()) % 10 + 1}",
-            lastMessage = "Message".repeat(Math.abs(Random.nextInt() % 10 + 1)),
+            chatName = "User${abs(Random.nextInt()) % 10 + 1}",
+            lastMessage =
+            MessageType.Text("Message".repeat(abs(Random.nextInt() % 100 + 1))),
             timestamp = Instant.now(),
             icon = bitmap
         )

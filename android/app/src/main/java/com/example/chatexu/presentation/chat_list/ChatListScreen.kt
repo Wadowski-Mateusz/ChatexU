@@ -1,6 +1,7 @@
-package com.example.chatexu.presentation.chat_list.components
+package com.example.chatexu.presentation.chat_list
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,12 +11,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatexu.presentation.Screen
-import com.example.chatexu.presentation.chat_list.ChatListViewModel
+import com.example.chatexu.presentation.chat_list.components.ChatListItem
 
 @Composable
 fun ChatListScreen(
@@ -24,12 +26,19 @@ fun ChatListScreen(
 ) {
     val state = viewModel.state.value
 
-    Box(
-        modifier = Modifier.fillMaxSize()
+    Column(
+        modifier = Modifier.fillMaxSize().background(Color.LightGray)
     ) {
 //        ChatsListLazy(chatRows = state.chatRows, navController = navController)
 
-        LazyColumn() {
+
+        Text(
+            text = "CHAT LIST SCREEN",
+            modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Cyan)
+        )
+        LazyColumn(modifier = Modifier.fillMaxWidth().background(Color.Magenta)) {
             items(items = state.chatRows, key = {it.chatId}) { chatRow ->
                 ChatListItem(
                     chatRow = chatRow,
