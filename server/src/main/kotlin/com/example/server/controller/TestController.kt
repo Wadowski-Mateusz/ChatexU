@@ -3,15 +3,21 @@ package com.example.server.controller
 import com.example.server.commons.Constants
 import com.example.server.commons.default
 import com.example.server.dto.MessageDto
+import com.example.server.exceptions.UserIsBlockedException
+import com.example.server.exceptions.UserNotFoundException
 import com.example.server.model.Message
 import com.example.server.model.MessageType
 import com.example.server.model.TestDoc
 import com.example.server.model.User
 import com.example.server.repository.TestRepository
 import com.example.server.repository.UserRepository
+import com.example.server.service.ChatService
 import com.example.server.service.MessageService
 import lombok.AllArgsConstructor
 import org.bson.types.ObjectId
+import org.jetbrains.annotations.TestOnly
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -29,14 +35,14 @@ import kotlin.random.Random
 class TestController(
     private val testRepository: TestRepository,
     private val messageService: MessageService,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val chatService: ChatService,
 ) {
 
     @GetMapping("/hello")
     fun hello(): String {
         return "Hello World!" 
     }
-
 
     @PostMapping("/add")
     fun add(): TestDoc {
@@ -85,7 +91,7 @@ class TestController(
 
     @PostMapping("/register")
     fun addUserFast(): String {
-        val random = abs(Random.nextInt())
+        val random = abs(Random.nextInt() % 100)
         val user = User(
             userId = ObjectId(),
             nickname = "User$random",
@@ -99,6 +105,44 @@ class TestController(
         return user.userId.toHexString()
     }
 
+
+    @TestOnly
+    @PostMapping("/users_chat")
+    fun createUsersAndChat(): List<String> {
+        val random = { abs(Random.nextInt() % 100) }
+        val user = User(
+            userId = ObjectId(),
+            nickname = "User${random()}",
+            email = "email${random()}@mail.com",
+            password = "pass",
+            profilePictureUri = Constants.DEFAULT_PROFILE_URI,
+            friends = setOf(),
+            blockedUsers = setOf()
+        )
+        userRepository.save(user)
+        val user2 = User(
+            userId = ObjectId(),
+            nickname = "User${random()}",
+            email = "email${random()}@mail.com",
+            password = "pass",
+            profilePictureUri = Constants.DEFAULT_PROFILE_URI,
+            friends = setOf(),
+            blockedUsers = setOf()
+        )
+        userRepository.save(user)
+        userRepository.save(user2)
+
+        val participants = listOf(user.userId.toHexString(), user2.userId.toHexString())
+
+        val chatId: String = chatService.createChat(participants.toSet()).chatId.toHexString()
+
+        return listOf(
+            "user1: ${user.userId.toHexString()}",
+            "user2: ${user2.userId.toHexString()}",
+            "chat: $chatId"
+        )
+
+    }
 
 
 }

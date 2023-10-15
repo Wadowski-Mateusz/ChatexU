@@ -113,13 +113,14 @@ class ChatController(
             val chatList = chatService.findAllByUserId(userId)
 
             val chatViewDtoList = chatList. map {
-                return@map when(it.typeOfChat) {
+                when(it.typeOfChat) {
                     is ChatType.UserToUser -> chatService.convertUserToUserChatToChatView(it, userId)
                     is ChatType.Group -> chatService.convertGroupChatToChatView(it)
                 }
             }
             return ResponseEntity(chatViewDtoList, HttpStatus.OK)
         } catch (e: UserNotFoundException) {
+            println("ChatController.getUserChats() - ${e.message}")
             ResponseEntity.badRequest().build()
         } catch (e: Exception) {
             println("ChatController.getChatList() - ${e.message}")

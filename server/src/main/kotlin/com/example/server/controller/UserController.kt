@@ -23,7 +23,7 @@ class UserController(private val userService: UserService) {
     @GetMapping("/get/{userId}")
     fun getUser(@PathVariable("userId") userId: String): ResponseEntity<UserDto> {
         return try {
-            val user = userService.findUserById(userId)
+            val user = userService.getById(userId)
             ResponseEntity(userService.convertToDto(user), HttpStatus.OK)
         } catch(e: UserNotFoundException) {
             ResponseEntity(null, HttpStatus.NOT_FOUND)
@@ -46,8 +46,8 @@ class UserController(private val userService: UserService) {
         @PathVariable("blockedUserId") blockedUserId: String
     ): ResponseEntity<Any> {
         return try {
-            val blockingUser = userService.findUserById(blockedUserId)
-            userService.findUserById(blockedUserId) // just to check if user exists
+            val blockingUser = userService.getById(blockedUserId)
+            userService.getById(blockedUserId) // just to check if user exists
             val updatedBlockedUsersSet = blockingUser.blockedUsers + blockedUserId
             userService.save(blockingUser.copy(blockedUsers = updatedBlockedUsersSet))
 
@@ -73,8 +73,8 @@ class UserController(private val userService: UserService) {
 
         return try {
 
-            val addingUser = userService.findUserById(addingUserId)
-            userService.findUserById(addedUserId) // just to check if user exists
+            val addingUser = userService.getById(addingUserId)
+            userService.getById(addedUserId) // just to check if user exists
             val friends = addingUser.friends + addedUserId
             userService.save(addingUser.copy(friends = friends))
 

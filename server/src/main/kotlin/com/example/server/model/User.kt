@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field
 data class User(
 
     @Id
-    @Field("id")
+    @Field("_id")
     val userId: ObjectId = ObjectId(),
 
     @Indexed

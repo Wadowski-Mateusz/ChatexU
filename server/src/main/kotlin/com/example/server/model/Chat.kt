@@ -11,12 +11,12 @@ import java.time.Instant
 @Document("chats")
 data class Chat(
     @Id
-    @Field("id")
     val chatId: ObjectId = ObjectId(),
     val lastMessage: ObjectId,
     val typeOfChat: ChatType,
+    val created: Instant,
 
-    val participants: Set<ObjectId>,
+    val participants: List<ObjectId>,
     val lastViewedBy: Map<ObjectId, Instant> = emptyMap(),  // when user has been seeing chat last chat, to show him how many unread messages he has
     val mutedBy: Map<ObjectId, Instant> = emptyMap(),       // how long conversation is muted for user
 

@@ -5,7 +5,6 @@ import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
 import java.util.*
 
-interface UserRepository: MongoRepository<User, ObjectId> {
-    fun findByUserId(userId: ObjectId): User?
+interface UserRepository: MongoRepository<User, String> {
 
 }

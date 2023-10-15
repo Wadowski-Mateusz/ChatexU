@@ -4,6 +4,7 @@ import com.example.server.commons.default
 import com.example.server.dto.ChatViewDto
 import com.example.server.exceptions.ChatNotFoundException
 import com.example.server.exceptions.ErrorMessageCommons
+import com.example.server.exceptions.MessageNotFoundException
 import com.example.server.model.*
 import com.example.server.repository.ChatRepository
 import org.bson.types.ObjectId
@@ -30,7 +31,8 @@ class ChatService(private val chatRepository: ChatRepository) {
 
 
     fun findAllByUserId(userId: String): List<Chat> {
-        return chatRepository.findByParticipantsContains(userId)
+        return chatRepository.findByParticipantsContains(ObjectId(userId))
+//        return chatRepository.findByParticipantsContains(userId)
     }
 
     fun findChatById(chatId: String): Chat {
@@ -63,12 +65,20 @@ class ChatService(private val chatRepository: ChatRepository) {
 
         // TODO what if second participant delete his account?
         val secondParticipantId = chat.participants.first { !it.toHexString().equals(viewerId) }
-        val secondParticipant = userService.findUserById(secondParticipantId)
+        val secondParticipant = userService.getById(secondParticipantId)
+//        val secondParticipant = userService.findUserById(secondParticipantId)
 
-        val lastMessage = messageService.findMessageById(chat.lastMessage)
+        val lastMessage = try {
+            messageService.findMessageById(chat.lastMessage)
+        } catch (err: MessageNotFoundException) {
+            if (chat.lastMessage == ObjectId().default()) {
+                Message.initMessage(chat)
+            } else
+                throw err
+        }
 
         val iconUri = userService.getUserIconURI(viewerId)
-        val iconResource: Resource = ClassPathResource("icons/$iconUri")
+        val iconResource: Resource = ClassPathResource("$iconUri")
         val iconAsByteArray = iconResource.inputStream.readAllBytes()
 
 
@@ -106,7 +116,8 @@ class ChatService(private val chatRepository: ChatRepository) {
             chatId = ObjectId(),
             lastMessage = ObjectId().default(),
             typeOfChat = ChatType.UserToUser(),
-            participants = participants.map { ObjectId(it) }.toSet(),
+            participants = participants.map { ObjectId(it) },
+            created = Instant.now(),
             lastViewedBy = mapOf(),
             mutedBy = mapOf()
         )

@@ -1,7 +1,6 @@
 package com.example.server.service
 
 import com.example.server.commons.Constants
-import com.example.server.dto.ChatViewIconDto
 import com.example.server.dto.UserDto
 import com.example.server.exceptions.ErrorMessageCommons
 import com.example.server.exceptions.UserNotFoundException
@@ -27,16 +26,17 @@ class UserService(private val userRepository: UserRepository) {
         return userRepository.insert(user)
     }
 
-    fun findUserById(userId: String): User {
-        return userRepository.findByUserId(ObjectId(userId))
-            ?: throw UserNotFoundException(ErrorMessageCommons.idNotFound(type = "user", id = userId))
+    fun getById(id: ObjectId): User {
+        return userRepository.findById(id.toHexString()).orElseThrow {
+                throw UserNotFoundException(ErrorMessageCommons.idNotFound(type = "user", id = id.toHexString()))
+            }
     }
 
-    fun findUserById(userId: ObjectId): User {
-        return userRepository.findByUserId(userId)
-            ?: throw UserNotFoundException(ErrorMessageCommons.idNotFound(type = "user", id = userId.toHexString()))
+    fun getById(id: String): User {
+        return userRepository.findById(id).orElseThrow {
+                throw UserNotFoundException(ErrorMessageCommons.idNotFound(type = "user", id = id))
+            }
     }
-
 
 
 

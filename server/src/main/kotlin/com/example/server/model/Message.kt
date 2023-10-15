@@ -23,7 +23,23 @@ data class Message(
     val isEdited: Boolean = false,
     val deletedBy: List<String>,
     val answerTo: ObjectId = ObjectId().default(),
-    )
+    ) {
+
+    companion object {
+        fun initMessage(chat: Chat): Message {
+            return Message(
+                messageId = ObjectId().default(),
+                senderId = ObjectId().default(),
+                chatId = chat.chatId,
+                timestamp = chat.created,
+                messageType = MessageType.Initialization(),
+                isEdited = false,
+                deletedBy = emptyList(),
+                answerTo = ObjectId().default(),
+            )
+        }
+    }
+}
 
 
 // why it doesn't work with val?
@@ -36,7 +52,7 @@ sealed class MessageType(var type: String) {
     class Initialization: MessageType(type = TYPE_INIT) // first message in the chat, that or null as "last message"
 
 
-    companion object {
+    private companion object {
         const val TYPE_TEXT = "text"
         const val TYPE_RESOURCE = "resource"
         const val TYPE_DELETED = "deleted"
