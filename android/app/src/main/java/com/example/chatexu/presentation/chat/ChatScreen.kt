@@ -1,35 +1,50 @@
 package com.example.chatexu.presentation.chat
 
-
-import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.chatexu.common.Constants
-import com.example.chatexu.domain.model.MessageType
-import com.example.chatexu.presentation.chat.components.ChatMessageItem
+import com.example.chatexu.presentation.chat.components.MessageLazyList
 import com.example.chatexu.presentation.commons.composable.ScreenName
+import kotlinx.coroutines.launch
+import kotlin.math.max
+
 
 @Composable
 fun ChatScreen(
     navController: NavController,
     viewModel: ChatViewModel = hiltViewModel()
     ) {
+    
     val state = viewModel.state.value
-    var lastMessageSender = Constants.ID_DEFAULT
+
+    val inputMessage = remember { mutableStateOf(TextFieldValue()) }
+
+//    val scope = rememberCoroutineScope()
+//    val listState = rememberLazyListState()
 
     Column(
         modifier = Modifier
@@ -37,50 +52,49 @@ fun ChatScreen(
             .background(Color.Green)
     ) {
 
-        ScreenName(screenName = "Chat")
+        Row(verticalAlignment = Alignment.Top) { ScreenName(screenName = "Chat") }
 
 
 
-        LazyColumn(
-            Modifier
+        MessageLazyList(
+            messages = state.messages, userId = state.userId,
+//            state = listState,
+            modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Magenta)
                 .padding(5.dp)
+                .weight(1f)
+        )
+
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            items(items = state.messages, key = { it.messageId }) { message ->
-
-                val verticalPadding =
-                    if (lastMessageSender == message.senderId)
-                        2.dp
-                    else
-                        5.dp
-                lastMessageSender = message.senderId
-
-                Log.d("msgarr", "ChatMessageItem - uId: ${state.userId}; sId = ${message.senderId}")
-                val arrangement =
-                    if(message.senderId == state.userId){
-                        Log.d("msgarr", "ChatMessageItem - arrangement end")
-                        Arrangement.End
-                    }
-                    else{
-//                        Log.d("msgarr", "ChatMessageItem - arrangement start")
-                        Arrangement.Start
-                    }
+            TextField(
+                modifier = Modifier
+                    .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 8.dp)
+                    .weight(1f)
+//                    .fillMaxWidth()
+                        ,
+                value = inputMessage.value,
+                onValueChange = { inputMessage.value = it },
+                placeholder = { Text(text = "Enter your message") },
+                maxLines = 3
+            )
 
 
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(start = 5.dp, end = 5.dp, top = verticalPadding),
-                    horizontalArrangement = arrangement,
-                ) {
-                    ChatMessageItem(
-                        message = message,
-                        viewerId = state.userId
-                    )
-
-                }
-            }
+            Icon(
+                Icons.Rounded.ArrowForward,
+//                contentDescription = stringResource(id = R.string.shopping_cart_content_desc)
+                contentDescription = "Send message",
+                modifier = Modifier
+                    .padding(top = 16.dp, bottom = 16.dp, start = 8.dp, end = 16.dp)
+//                    .weight(1f)
+//                    .clickable {  }
+            )
         }
 
-
     }
+
 }

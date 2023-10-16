@@ -1,6 +1,6 @@
 * ChatScreen:
     * User name
-
+    * scroll to newest message
 * User dto
   * sealed class for profile picture: or byre array or uri 
 
