@@ -30,8 +30,6 @@ fun ChatListScreen(
         modifier = Modifier.fillMaxSize().background(Color.LightGray)
     ) {
 //        ChatsListLazy(chatRows = state.chatRows, navController = navController)
-
-
         Text(
             text = "CHAT LIST SCREEN",
             modifier = Modifier

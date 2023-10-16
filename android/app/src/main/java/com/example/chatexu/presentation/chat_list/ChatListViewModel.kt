@@ -20,7 +20,6 @@ import javax.inject.Inject
 class ChatListViewModel @Inject constructor(
     private val getChatListUseCase: GetChatListUseCase,
     private val getChatRowUseCase: GetChatRowUseCase,
-    // etc...
 ): ViewModel() {
 
     private val _state = mutableStateOf<ChatListState>(ChatListState())
@@ -30,15 +29,9 @@ class ChatListViewModel @Inject constructor(
     init {
 //        getRandList()
         getChatList()
-        debug()
-
 //        getSingleChatRowAsList()
     }
 
-
-    private fun debug() {
-
-    }
     private fun getSingleChatRowAsList() {
         getChatRowUseCase() .onEach { result ->
             when(result) {
@@ -67,20 +60,20 @@ class ChatListViewModel @Inject constructor(
         chats.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
-                    Log.d("peek", "Success")
+                    Log.d("peek", "Success ChatListViewModel")
                     _state.value = ChatListState(
                         chatRows = result.data ?: emptyList<ChatRow>()
                     )
                 }
                 is DataWrapper.Loading -> {
-                    Log.d("peek", "Loading")
+                    Log.d("peek", "Loading ChatListViewModel")
                     Log.d(DebugConsts.VM_ERR, "Loading in: ChatListViewModel.")
                     _state.value = ChatListState(
                         error = result.message ?: "Unknown error"
                     )
                 }
                 is DataWrapper.Error -> {
-                    Log.d("peek", "Error")
+                    Log.d("peek", "Error ChatListViewModel")
                     _state.value = ChatListState(isLoading = true)
                 }
 

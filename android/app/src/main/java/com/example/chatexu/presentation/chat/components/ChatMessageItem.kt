@@ -11,23 +11,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.chatexu.common.DebugConsts
+import com.example.chatexu.domain.model.Message
 
 // TODO long messages
 
 @Composable
 fun ChatMessageItem(
 //    content: Content
-    testStr: String
+    message: Message
 ) {
 
     val rounder = 25
 
     Row(
-//        modifier = Modifier
-//            .border(1.dp, Color.Red, RoundedCornerShape(rounder))
+        Modifier.padding(5.dp)
     ) {
         Text(
-            text = testStr,
+            text = "Message test",
             color = Color.White,
             softWrap = true,
             modifier = Modifier
@@ -39,10 +39,10 @@ fun ChatMessageItem(
     }
 }
 
-@Preview
-@Composable
-fun PreviewChatMessage() {
-//    ChatMessageItem(testStr = DebugConsts.lorem(10))
-//    ChatMessageItem(testStr = DebugConsts.lorem(100))
-    ChatMessageItem(testStr = DebugConsts.lorem(1000))
-}
+//@Preview
+//@Composable
+//fun PreviewChatMessage() {
+////    ChatMessageItem(testStr = DebugConsts.lorem(10))
+////    ChatMessageItem(testStr = DebugConsts.lorem(100))
+//    ChatMessageItem(testStr = DebugConsts.lorem(1000))
+//}

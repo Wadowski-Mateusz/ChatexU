@@ -2,9 +2,11 @@ package com.example.chatexu.data.repository
 
 import android.util.Log
 import com.example.chatexu.converters.ChatMapper
+import com.example.chatexu.converters.MessageMapper
 import com.example.chatexu.data.remote.ChatApi
-import com.example.chatexu.data.remote.dto.ChatRowDto
+import com.example.chatexu.data.remote.dto.MessageDto
 import com.example.chatexu.domain.model.ChatRow
+import com.example.chatexu.domain.model.Message
 import com.example.chatexu.domain.repository.ChatRepository
 import javax.inject.Inject
 
@@ -25,6 +27,15 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun getChatRow(chatId: String, viewerId: String): ChatRow {
         // TODO null
         return ChatMapper.toChatRow(api.getChatRow(chatId, viewerId).body()!!)
+    }
+
+    override suspend fun getAllChatMessages(chatId: String, userId: String): List<Message> {
+        val messagesDtos: List<MessageDto> = api.getAllChatMessages(chatId, userId).body()
+            ?: let{
+                Log.d("peek", "empty message list")
+                emptyList<MessageDto>()
+            }
+        return messagesDtos.map { MessageMapper.toMessage(it) }
     }
 
 }

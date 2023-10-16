@@ -9,6 +9,7 @@ object DebugConsts {
     const val INFO = "INFO"
 
     const val HARD_USER_ID = "652c15ac97d36836b3af44e4"
+    const val HARD_CHAT_ID = "652c15ad97d36836b3af44e6"
 
     val lorem: (Int) -> String = { words: Int -> LoremIpsum(words).values.reduce { acc, s -> acc + s }}
 }

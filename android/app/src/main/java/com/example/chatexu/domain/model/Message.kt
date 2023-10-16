@@ -1,27 +1,23 @@
 package com.example.chatexu.domain.model
 
-import com.example.chatexu.common.default
+import com.example.chatexu.common.Constants
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.mongodb.kbson.ObjectId
 import java.time.Instant
 
 
 
 data class Message(
-    val messageId: ObjectId = ObjectId(),
-    val senderId: ObjectId,
-    val chatId: ObjectId,
+    val messageId: String,
+    val senderId: String,
+    val chatId: String,
     val timestamp: Instant,
     val messageType: MessageType,
     val isEdited: Boolean = false,
-    val deletedBy: List<String> = emptyList(),
-    val answerTo: ObjectId = ObjectId().default(),
+    val answerTo: String = Constants.ID_DEFAULT,
 )
 
 
-// why it doesn't work with val?
-// if it is val, finding in the database throw error
 sealed class MessageType(var type: String) {
 
     data class Text(val text: String): MessageType(type = TYPE_TEXT)
