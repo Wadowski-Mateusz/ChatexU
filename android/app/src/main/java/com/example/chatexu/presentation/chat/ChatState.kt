@@ -6,5 +6,6 @@ data class ChatState (
     var isLoading: Boolean = false,
     var messages: List<Message> = emptyList(),
     var chatId: String = "",
-    var error:String = ""
+    var userId: String = "",
+    var error: String = ""
 )

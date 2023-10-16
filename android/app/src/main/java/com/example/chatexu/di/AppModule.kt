@@ -2,7 +2,7 @@ package com.example.chatexu.di
 
 import android.util.Log
 import com.example.chatexu.common.Constants
-import com.example.chatexu.common.DebugConsts
+import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.data.remote.ChatApi
 import com.example.chatexu.data.repository.ChatRepositoryImpl
 import com.example.chatexu.data.repository.ChatRepositoryTestImpl
@@ -33,7 +33,7 @@ object AppModule {
     fun provideChatApi(): ChatApi {
 
         Log.w(
-            /* tag = */ DebugConsts.POTENTIAL_BUG,
+            /* tag = */ DebugConstants.POTENTIAL_BUG,
             /* msg = */
             "If cannot connect to the server, check the base url." +
                     "Use 'ipconfig' in cmd to get new base url."
@@ -41,11 +41,11 @@ object AppModule {
 
         val url: String = when (UsedApi.API) {
             UsedApi.PRODUCTION_API -> {
-                Log.i(DebugConsts.INFO, "Using production API.")
+                Log.i(DebugConstants.INFO, "Using production API.")
                 Constants.BASE_URL
             }
             UsedApi.TEST_API -> {
-                Log.i(DebugConsts.INFO, "Using test API.")
+                Log.i(DebugConstants.INFO, "Using test API.")
                 Constants.BASE_URL_TEST
             }
             else -> throw IllegalAccessException("No url for ${UsedApi.API}.")

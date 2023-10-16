@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatexu.common.DataWrapper
-import com.example.chatexu.common.DebugConsts
+import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.domain.use_case.debug.get_all_users.GetAllUsersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -37,7 +37,7 @@ class AuthViewModel @Inject constructor(
 
                 is DataWrapper.Loading -> {
                     Log.d("peek", "Loading AuthViewModel")
-                    Log.d(DebugConsts.VM_ERR, "Loading in: AuthViewModel.")
+                    Log.d(DebugConstants.VM_ERR, "Loading in: AuthViewModel.")
                     _state.value = AuthState(
                         error = result.message ?: "Unknown error"
                     )

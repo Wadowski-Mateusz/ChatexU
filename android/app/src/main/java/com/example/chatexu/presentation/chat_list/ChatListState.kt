@@ -5,5 +5,6 @@ import com.example.chatexu.domain.model.ChatRow
 data class ChatListState(
     val isLoading: Boolean = false,
     val chatRows: List<ChatRow> = emptyList(),
+    val userId: String = "",
     val error: String = ""
 )

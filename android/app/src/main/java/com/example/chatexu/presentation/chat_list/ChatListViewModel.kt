@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DataWrapper
-import com.example.chatexu.common.DebugConsts
+import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.use_case.get_chat_row.GetChatRowUseCase
 import com.example.chatexu.domain.use_case.get_chat_rows.GetChatListUseCase
@@ -43,19 +43,23 @@ class ChatListViewModel @Inject constructor(
                 is DataWrapper.Success -> {
                     Log.d("peek", "Success ChatListViewModel")
                     _state.value = ChatListState(
-                        chatRows = result.data ?: emptyList<ChatRow>()
+                        chatRows = result.data ?: emptyList<ChatRow>(),
+                        userId = userId
                     )
                 }
                 is DataWrapper.Loading -> {
                     Log.d("peek", "Loading ChatListViewModel")
-                    Log.d(DebugConsts.VM_ERR, "Loading in: ChatListViewModel.")
+                    Log.d(DebugConstants.VM_ERR, "Loading in: ChatListViewModel.")
                     _state.value = ChatListState(
                         error = result.message ?: "Unknown error"
                     )
                 }
                 is DataWrapper.Error -> {
                     Log.d("peek", "Error ChatListViewModel")
-                    _state.value = ChatListState(isLoading = true)
+                    _state.value = ChatListState(
+                        isLoading = true,
+                        userId = userId
+                    )
                 }
 
             }
@@ -73,7 +77,7 @@ class ChatListViewModel @Inject constructor(
                     )
                 }
                 is DataWrapper.Loading -> {
-                    Log.d(DebugConsts.VM_ERR, "Error in: ChatListViewModel.")
+                    Log.d(DebugConstants.VM_ERR, "Error in: ChatListViewModel.")
                     _state.value = ChatListState(
                         error = result.message ?: "Unknown error"
                     )

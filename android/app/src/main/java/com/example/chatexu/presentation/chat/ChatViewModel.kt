@@ -8,18 +8,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DataWrapper
-import com.example.chatexu.common.DebugConsts
-import com.example.chatexu.domain.model.ChatRow
-import com.example.chatexu.domain.model.Message
-import com.example.chatexu.domain.model.MessageType
+import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.domain.use_case.get_chat_messages.GetAllChatMessagesUseCase
-import com.example.chatexu.presentation.chat_list.ChatListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 
-import java.time.Instant
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,33 +30,46 @@ class ChatViewModel @Inject constructor(
 
 
     init {
-        savedStateHandle.get<String>(Constants.PARAM_CHAT_ID)?.let { chatId ->
-            getMessages(chatId)
+        val chatId: String? = savedStateHandle.get<String>(Constants.PARAM_CHAT_ID)
+        val userId: String? = savedStateHandle.get<String>(Constants.PARAM_USER_ID)
+
+        Log.d("peek", "ChatViewModel - ids: chatId: $chatId, userId: $userId")
+
+        chatId?.let {
+            userId?. let {
+                getMessages(chatId, userId)
+            }
         }
+
+
+
     }
 
-    private fun getMessages(chatId: String) {
-        val messages = getAllChatMessagesUseCase()
+    private fun getMessages(chatId: String, userId: String) {
+        val messages = getAllChatMessagesUseCase(chatId, userId)
         messages.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
-                    Log.d("peek", "Success ChatViewModel; number of loaded messages: ${(result.data ?: emptyList<Message>()).size}")
+                    Log.d("peek", "Success ChatViewModel; number of loaded messages: ${(result.data ?: emptyList()).size}")
                     _state.value = ChatState(
-                        chatId = _state.value.chatId,
-                        messages = result.data ?: emptyList<Message>()
+                        chatId = chatId,
+                        userId = userId,
+                        messages = result.data ?: emptyList()
                     )
                 }
                 is DataWrapper.Loading -> {
                     Log.d("peek", "Loading ChatViewModel")
-                    Log.d(DebugConsts.VM_ERR, "Loading in: ChatViewModel.")
+                    Log.d(DebugConstants.VM_ERR, "Loading in: ChatViewModel.")
                     _state.value = ChatState(
-                        error = result.message ?: "Unknown error"
+                        error = result.message
+                            ?: "Unknown error"
                     )
                 }
                 is DataWrapper.Error -> {
                     Log.d("peek", "Error ChatViewModel")
                     _state.value = ChatState(
-                        chatId = _state.value.chatId,
+                        chatId = chatId,
+                        userId = userId,
                         isLoading = true
                     )
                 }

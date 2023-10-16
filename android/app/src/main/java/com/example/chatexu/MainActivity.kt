@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(
-                            route = Screen.ChatScreen.route + "/{${Constants.PARAM_CHAT_ID}}"
+                            route = Screen.ChatScreen.route + "/{${Constants.PARAM_USER_ID}}/{${Constants.PARAM_CHAT_ID}}"
                         ) {
                             ChatScreen(navController)
                         }

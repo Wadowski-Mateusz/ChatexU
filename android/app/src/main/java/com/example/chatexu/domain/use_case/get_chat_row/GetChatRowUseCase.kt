@@ -2,7 +2,7 @@ package com.example.chatexu.domain.use_case.get_chat_row
 
 import android.util.Log
 import com.example.chatexu.common.DataWrapper
-import com.example.chatexu.common.DebugConsts
+import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +18,7 @@ class GetChatRowUseCase @Inject constructor(
         try {
             emit(DataWrapper.Loading<ChatRow>())
             // TODO id
-            Log.e(DebugConsts.TODO, "GetChatRowUseCase() - hardcoded ids")
+            Log.e(DebugConstants.TODO, "GetChatRowUseCase() - hardcoded ids")
             val chat = repository.getChatRow("123", "123")
             emit(DataWrapper.Success<ChatRow>(chat))
         } catch(e: HttpException) {

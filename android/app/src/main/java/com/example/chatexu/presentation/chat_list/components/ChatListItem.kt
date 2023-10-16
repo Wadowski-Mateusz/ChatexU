@@ -32,8 +32,8 @@ fun ChatListItem(
     onItemClick: (ChatRow) -> Unit
 ) {
     Row(modifier = Modifier
-        .padding(8.dp)
-        .clickable { onItemClick(chatRow) },
+        .clickable { onItemClick(chatRow) }
+        .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
 //        horizontalArrangement = Arrangement.SpaceAround
     ) {

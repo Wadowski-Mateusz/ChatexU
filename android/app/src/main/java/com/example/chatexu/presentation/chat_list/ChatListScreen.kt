@@ -37,7 +37,7 @@ fun ChatListScreen(
                 ChatListItem(
                     chatRow = chatRow,
                     onItemClick = {
-                        navController.navigate(Screen.ChatScreen.route + "/${chatRow.chatId}")
+                        navController.navigate(Screen.ChatScreen.route + "/${state.userId}/${chatRow.chatId}")
                     }
                 )
             }
