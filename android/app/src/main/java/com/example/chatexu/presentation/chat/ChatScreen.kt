@@ -17,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatexu.domain.model.MessageType
 import com.example.chatexu.presentation.chat.components.ChatMessageItem
+import com.example.chatexu.presentation.commons.composable.ScreenName
 
 @Composable
 fun ChatScreen(
@@ -28,11 +29,8 @@ fun ChatScreen(
     Column(
         modifier = Modifier.fillMaxSize().background(Color.Green)
     ) {
-        Text(
-            text = "Chat screen for id: ${state.chatId}",
-            modifier = Modifier.fillMaxWidth().background(Color.Cyan)
-        )
 
+        ScreenName(screenName = "Chat")
 
         LazyColumn(
             Modifier.fillMaxSize()

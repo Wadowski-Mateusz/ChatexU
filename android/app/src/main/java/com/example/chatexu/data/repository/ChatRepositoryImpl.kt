@@ -3,10 +3,13 @@ package com.example.chatexu.data.repository
 import android.util.Log
 import com.example.chatexu.converters.ChatMapper
 import com.example.chatexu.converters.MessageMapper
+import com.example.chatexu.converters.UserMapper
 import com.example.chatexu.data.remote.ChatApi
 import com.example.chatexu.data.remote.dto.MessageDto
+import com.example.chatexu.data.remote.dto.UserDto
 import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.model.Message
+import com.example.chatexu.domain.model.User
 import com.example.chatexu.domain.repository.ChatRepository
 import javax.inject.Inject
 
@@ -36,6 +39,15 @@ class ChatRepositoryImpl @Inject constructor(
                 emptyList<MessageDto>()
             }
         return messagesDtos.map { MessageMapper.toMessage(it) }
+    }
+
+    override suspend fun getAllUsers(): List<User> {
+        val userDtos: List<UserDto> = api.getAllUsers().body()
+            ?: let {
+                Log.d("peek", "getAllUsers - empty user list")
+                emptyList()
+            }
+        return userDtos.map { UserMapper.toUser(it) }
     }
 
 }

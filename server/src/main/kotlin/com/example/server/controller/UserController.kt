@@ -33,7 +33,7 @@ class UserController(private val userService: UserService) {
         }
     }
 
-    @GetMapping("get_all")
+    @GetMapping("/get_all")
     fun getAllUsers(): ResponseEntity<List<UserDto>> {
         val users = userService.findAll()
         val userDtos = users.map { userService.convertToDto(it) }

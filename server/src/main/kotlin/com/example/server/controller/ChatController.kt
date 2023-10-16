@@ -38,7 +38,7 @@ class ChatController(
     private val messageRepository: MessageRepository
 ) {
 
-    @GetMapping("/full_history/{chatId}/{viewerId}")
+    @GetMapping("/messages/all/{chatId}/{viewerId}")
     fun getFullChatHistory(
         @PathVariable("chatId") chatId: String,
         @PathVariable("viewerId") viewerId: String
@@ -57,7 +57,7 @@ class ChatController(
 
     }
 
-    @GetMapping("/after/{chatId}/{after}/{viewerId}")
+    @GetMapping("/messages/after/{chatId}/{after}/{viewerId}")
     fun getChatHistoryAfter(
         @PathVariable("chatId") chatId: String,
         @PathVariable("after") after: String,
@@ -109,6 +109,8 @@ class ChatController(
     fun getUserChats(
         @PathVariable("userId") userId: String
     ): ResponseEntity<List<ChatViewDto>> {
+        // TODO
+        println("Request - getUserChats()")
         return try {
             val chatList = chatService.findAllByUserId(userId)
 
@@ -118,7 +120,9 @@ class ChatController(
                     is ChatType.Group -> chatService.convertGroupChatToChatView(it)
                 }
             }
+            println("size = w${chatViewDtoList.size}, time = ${Instant.now()}")
             return ResponseEntity(chatViewDtoList, HttpStatus.OK)
+
         } catch (e: UserNotFoundException) {
             println("ChatController.getUserChats() - ${e.message}")
             ResponseEntity.badRequest().build()

@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatexu.presentation.Screen
 import com.example.chatexu.presentation.chat_list.components.ChatListItem
+import com.example.chatexu.presentation.commons.composable.ScreenName
 
 @Composable
 fun ChatListScreen(
@@ -30,12 +31,7 @@ fun ChatListScreen(
         modifier = Modifier.fillMaxSize().background(Color.LightGray)
     ) {
 //        ChatsListLazy(chatRows = state.chatRows, navController = navController)
-        Text(
-            text = "CHAT LIST SCREEN",
-            modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Cyan)
-        )
+        ScreenName(screenName = "Chat List")
         LazyColumn(modifier = Modifier.fillMaxWidth().background(Color.Magenta)) {
             items(items = state.chatRows, key = {it.chatId}) { chatRow ->
                 ChatListItem(
@@ -59,6 +55,5 @@ fun ChatListScreen(
             )
         }
     }
-
 
 }

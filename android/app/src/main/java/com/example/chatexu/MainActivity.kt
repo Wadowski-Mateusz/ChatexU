@@ -10,7 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.chatexu.common.Constants
 import com.example.chatexu.presentation.Screen
+import com.example.chatexu.presentation.auth.AuthScreen
 import com.example.chatexu.presentation.chat.ChatScreen
 import com.example.chatexu.presentation.chat_list.ChatListScreen
 import com.example.chatexu.ui.theme.ChatexUTheme
@@ -30,19 +32,26 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.ChatListScreen.route,
+                        startDestination = Screen.AuthScreen.route,
                     ) {
                         composable(
-                            route = Screen.ChatListScreen.route
+                            route = Screen.AuthScreen.route
+                        ) {
+                            AuthScreen(navController)
+                        }
+                        composable(
+                            route = Screen.ChatListScreen.route + "/{${Constants.PARAM_USER_ID}}"
                         ) {
                             ChatListScreen(navController)
                         }
 
                         composable(
-                            route = Screen.ChatScreen.route + "/{chatId}"
+                            route = Screen.ChatScreen.route + "/{${Constants.PARAM_CHAT_ID}}"
                         ) {
                             ChatScreen(navController)
                         }
+
+
 
                     }
                 }

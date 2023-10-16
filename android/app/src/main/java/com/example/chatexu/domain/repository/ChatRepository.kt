@@ -2,6 +2,8 @@ package com.example.chatexu.domain.repository
 
 import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.model.Message
+import com.example.chatexu.domain.model.User
+import org.jetbrains.annotations.TestOnly
 
 interface ChatRepository {
 
@@ -10,5 +12,8 @@ interface ChatRepository {
     suspend fun getChatRow(chatId: String, viewerId: String): ChatRow
 
     suspend fun getAllChatMessages(chatId: String, userId: String): List<Message>
+
+    @TestOnly
+    suspend fun getAllUsers(): List<User>
 
 }
