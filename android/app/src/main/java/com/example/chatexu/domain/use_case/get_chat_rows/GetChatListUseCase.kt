@@ -1,9 +1,7 @@
 package com.example.chatexu.domain.use_case.get_chat_rows
 
 import android.util.Log
-import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DataWrapper
-import com.example.chatexu.common.DebugConsts
 import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.Flow
@@ -15,13 +13,14 @@ import javax.inject.Inject
 class GetChatListUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke(): Flow<DataWrapper<List<ChatRow>>> = flow {
+    operator fun invoke(userId: String): Flow<DataWrapper<List<ChatRow>>> = flow {
 
         try {
             emit(DataWrapper.Loading<List<ChatRow>>())
             // TODO id
-            Log.i(DebugConsts.TODO, "GetChatListUseCase() - hardcoded id")
-            val chats = repository.getUserChatList(DebugConsts.HARD_USER_ID)
+//            Log.i(DebugConsts.TODO, "GetChatListUseCase() - hardcoded id")
+//            val chats = repository.getUserChatList(DebugConsts.HARD_USER_ID)
+            val chats = repository.getUserChatList(userId)
             Log.i("peek", chats.size.toString())
             emit(DataWrapper.Success<List<ChatRow>>(chats))
         } catch(e: HttpException) {
