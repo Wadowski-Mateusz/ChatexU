@@ -1,7 +1,6 @@
 package com.example.chatexu.data.repository
 
 import com.example.chatexu.data.remote.ChatApi
-import com.example.chatexu.data.remote.dto.ChatRowDto
 import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.model.Message
 import com.example.chatexu.domain.model.User
@@ -23,6 +22,10 @@ class ChatRepositoryTestImpl @Inject constructor(
     }
 
     override suspend fun getAllChatMessages(chatId: String, userId: String): List<Message> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun sendMessage(message: Message): Message {
         TODO("Not yet implemented")
     }
 

@@ -1,6 +1,7 @@
 package com.example.chatexu.data.repository
 
 import android.util.Log
+import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.converters.ChatMapper
 import com.example.chatexu.converters.MessageMapper
 import com.example.chatexu.converters.UserMapper
@@ -39,6 +40,17 @@ class ChatRepositoryImpl @Inject constructor(
                 emptyList<MessageDto>()
             }
         return messagesDtos.map { MessageMapper.toMessage(it) }
+    }
+
+    override suspend fun sendMessage(message: Message): Message {
+        val messageDto = MessageMapper.toDto(message)
+        val response = api.sendMessage(messageDto)
+        Log.d(DebugConstants.TODO, "ChatRepositoryImpl.sendMessage() - handle response.")
+        return MessageMapper.toMessage(
+            response.body() ?: let { Message.getEmpty() }
+            )
+        
+
     }
 
     override suspend fun getAllUsers(): List<User> {

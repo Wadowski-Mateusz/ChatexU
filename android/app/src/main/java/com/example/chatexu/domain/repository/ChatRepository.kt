@@ -13,6 +13,8 @@ interface ChatRepository {
 
     suspend fun getAllChatMessages(chatId: String, userId: String): List<Message>
 
+    suspend fun sendMessage(message: Message): Message
+
     @TestOnly
     suspend fun getAllUsers(): List<User>
 

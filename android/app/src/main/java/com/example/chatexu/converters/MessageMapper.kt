@@ -16,4 +16,18 @@ object MessageMapper {
             answerTo = msg.answerTo,
         )
     }
+
+    fun toDto(msg: Message): MessageDto {
+        return MessageDto(
+            messageId = msg.messageId,
+            senderId = msg.senderId,
+            chatId = msg.chatId,
+            timestamp = msg.timestamp.toString(),
+            messageType = msg.messageType,
+            isEdited = msg.isEdited,
+            isDeletedForViewer = false, // TODO no field in the Message class
+            answerTo = msg.answerTo
+
+        )
+    }
 }

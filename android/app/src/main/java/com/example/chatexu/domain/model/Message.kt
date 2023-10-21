@@ -15,7 +15,19 @@ data class Message(
     val messageType: MessageType,
     val isEdited: Boolean = false,
     val answerTo: String = Constants.ID_DEFAULT,
-)
+) {
+    companion object {
+        fun getEmpty(): Message = Message(
+            messageId = Constants.ID_DEFAULT,
+            senderId = Constants.ID_DEFAULT,
+            chatId = Constants.ID_DEFAULT,
+            timestamp = Instant.MIN,
+            messageType = MessageType.Initialization(),
+            isEdited = false,
+            answerTo = Constants.ID_DEFAULT
+        )
+    }
+}
 
 
 sealed class MessageType(var type: String) {
@@ -24,7 +36,6 @@ sealed class MessageType(var type: String) {
     data class Resource(val uri: String): MessageType(type = TYPE_RESOURCE)
     class Deleted: MessageType(type = TYPE_DELETED)
     class Initialization: MessageType(type = TYPE_INIT) // first message in the chat, that or null as "last message"
-
 
     private companion object {
         const val TYPE_TEXT = "text"
