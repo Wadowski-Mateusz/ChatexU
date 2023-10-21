@@ -13,7 +13,7 @@ data class MessageDto(
     val messageType: MessageType,
     val isEdited: Boolean,
     val isDeletedForViewer: Boolean,
-    val answerTo: String = ObjectId().default().toHexString(),
+    val replyTo: String = ObjectId().default().toHexString(),
     ) {
 
 //     Jackson needs either a no-argument constructor (default constructor) or properly annotated properties.

@@ -43,13 +43,14 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
     override suspend fun sendMessage(message: Message): Message {
-        val messageDto = MessageMapper.toDto(message)
+        val messageDto = MessageMapper.toSend(message)
         val response = api.sendMessage(messageDto)
         Log.d(DebugConstants.TODO, "ChatRepositoryImpl.sendMessage() - handle response.")
-        return MessageMapper.toMessage(
-            response.body() ?: let { Message.getEmpty() }
-            )
-        
+        val body = response.body()
+
+        return if(response.body() != null)
+            MessageMapper.toMessage(body!!)
+        else Message.getEmpty()
 
     }
 

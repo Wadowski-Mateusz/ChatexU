@@ -1,13 +1,20 @@
 package com.example.server.controller
 
+import com.example.server.commons.default
+import com.example.server.converters.MessageMapper
 import com.example.server.exceptions.MessageNotFoundException
 import com.example.server.dto.MessageDto
+import com.example.server.dto.SendedMessageDto
 import com.example.server.model.MessageType
 import com.example.server.service.MessageService
 import lombok.AllArgsConstructor
+import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.io.ObjectInput
+import java.time.Instant
+import java.util.Objects
 
 @RestController
 @RequestMapping("/message")
@@ -37,8 +44,13 @@ class MessageController(private val messageService: MessageService) {
     }
 
     @PostMapping("/send")
-    fun sendMessage(@RequestBody messageDto: MessageDto): ResponseEntity<MessageDto> {
-        val message = messageService.convertMessageDtoToMessage(messageDto)
+    fun sendMessage(@RequestBody sendedMessageDto: SendedMessageDto): ResponseEntity<MessageDto> {
+
+        println("incoming message ${Instant.now()}") // TODO delete
+        println(ObjectId().default()) // TODO delete
+        println(sendedMessageDto.replyTo)
+        val message = MessageMapper.toMessage(sendedMessageDto)
+        println(message.replyTo)
         val savedMessage = messageService.save(message)
 
         return ResponseEntity(

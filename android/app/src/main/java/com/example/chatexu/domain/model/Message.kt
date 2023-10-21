@@ -14,7 +14,7 @@ data class Message(
     val timestamp: Instant,
     val messageType: MessageType,
     val isEdited: Boolean = false,
-    val answerTo: String = Constants.ID_DEFAULT,
+    val replyTo: String = Constants.ID_DEFAULT,
 ) {
     companion object {
         fun getEmpty(): Message = Message(
@@ -24,7 +24,7 @@ data class Message(
             timestamp = Instant.MIN,
             messageType = MessageType.Initialization(),
             isEdited = false,
-            answerTo = Constants.ID_DEFAULT
+            replyTo = Constants.ID_DEFAULT
         )
     }
 }

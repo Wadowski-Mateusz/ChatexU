@@ -3,6 +3,7 @@ package com.example.chatexu.data.remote
 import com.example.chatexu.common.Constants
 import com.example.chatexu.data.remote.dto.ChatRowDto
 import com.example.chatexu.data.remote.dto.MessageDto
+import com.example.chatexu.data.remote.dto.SendedMessageDto
 import com.example.chatexu.data.remote.dto.UserDto
 import retrofit2.Response
 import retrofit2.http.Body
@@ -33,5 +34,5 @@ interface ChatApi {
 
 
     @POST("${Constants.MESSAGE_MAPPING}/send")
-    suspend fun sendMessage(@Body messageDto: MessageDto): Response<MessageDto>
+    suspend fun sendMessage(@Body sendedMessageDto: SendedMessageDto): Response<MessageDto>
 }

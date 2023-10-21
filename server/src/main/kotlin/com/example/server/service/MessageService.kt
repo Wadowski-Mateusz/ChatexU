@@ -74,7 +74,7 @@ class MessageService(private val messageRepository: MessageRepository) {
                     messageType = MessageType.Deleted(),
                     isEdited = true,
                     deletedBy = emptyList(),
-                    answerTo = ObjectId().default(),
+                    replyTo = ObjectId().default(),
                 )
             else
                 message.copy(deletedBy = message.deletedBy + userId)
@@ -104,7 +104,7 @@ class MessageService(private val messageRepository: MessageRepository) {
             messageType = message.messageType,
             isEdited = message.isEdited,
             isDeletedForViewer = message.messageType is MessageType.Deleted,
-            answerTo = message.answerTo.toHexString()
+            replyTo = message.replyTo.toHexString()
         )
     }
 
@@ -117,7 +117,7 @@ class MessageService(private val messageRepository: MessageRepository) {
             messageType = message.messageType,
             isEdited = message.isEdited,
             isDeletedForViewer = message.messageType is MessageType.Deleted || viewerId in message.deletedBy,
-            answerTo = message.answerTo.toHexString()
+            replyTo = message.replyTo.toHexString()
         )
     }
 
@@ -130,7 +130,7 @@ class MessageService(private val messageRepository: MessageRepository) {
             messageType = messageDto.messageType,
             isEdited =  messageDto.isEdited,
             deletedBy = deletedBy,
-            answerTo = ObjectId(messageDto.answerTo)
+            replyTo = ObjectId(messageDto.replyTo)
         )
     }
 

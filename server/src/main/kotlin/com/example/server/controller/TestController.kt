@@ -3,8 +3,6 @@ package com.example.server.controller
 import com.example.server.commons.Constants
 import com.example.server.commons.default
 import com.example.server.dto.MessageDto
-import com.example.server.exceptions.UserIsBlockedException
-import com.example.server.exceptions.UserNotFoundException
 import com.example.server.model.Message
 import com.example.server.model.MessageType
 import com.example.server.model.TestDoc
@@ -16,8 +14,6 @@ import com.example.server.service.MessageService
 import lombok.AllArgsConstructor
 import org.bson.types.ObjectId
 import org.jetbrains.annotations.TestOnly
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -60,7 +56,7 @@ class TestController(
             messageType =MessageType.Text("Content for testing purpose"),
             isEdited = false,
             deletedBy = listOf(),
-            answerTo = ObjectId().default()
+            replyTo = ObjectId().default()
         )
         return m
     }
@@ -76,7 +72,7 @@ class TestController(
             messageType =MessageType.Text("Content for testing purpose"),
             isEdited = false,
             deletedBy = listOf(),
-            answerTo = ObjectId().default()
+            replyTo = ObjectId().default()
         )
         return messageService.convertMessageToDtoAsSender(m)
     }

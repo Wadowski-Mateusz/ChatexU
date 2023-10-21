@@ -1,6 +1,7 @@
 package com.example.chatexu.converters
 
 import com.example.chatexu.data.remote.dto.MessageDto
+import com.example.chatexu.data.remote.dto.SendedMessageDto
 import com.example.chatexu.domain.model.Message
 import java.time.Instant
 
@@ -13,7 +14,7 @@ object MessageMapper {
             timestamp = Instant.parse(msg.timestamp),
             messageType = msg.messageType,
             isEdited = msg.isEdited,
-            answerTo = msg.answerTo,
+            replyTo = msg.replyTo,
         )
     }
 
@@ -26,8 +27,17 @@ object MessageMapper {
             messageType = msg.messageType,
             isEdited = msg.isEdited,
             isDeletedForViewer = false, // TODO no field in the Message class
-            answerTo = msg.answerTo
+            replyTo = msg.replyTo
 
+        )
+    }
+
+    fun toSend(msg: Message): SendedMessageDto {
+        return SendedMessageDto(
+            messageType = msg.messageType,
+            senderId = msg.senderId,
+            chatId = msg.chatId,
+            replyTo = msg.replyTo,
         )
     }
 }

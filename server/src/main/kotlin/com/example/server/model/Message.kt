@@ -22,7 +22,7 @@ data class Message(
     val messageType: MessageType,
     val isEdited: Boolean = false,
     val deletedBy: List<String>,
-    val answerTo: ObjectId = ObjectId().default(),
+    val replyTo: ObjectId = ObjectId().default(),
     ) {
 
     companion object {
@@ -35,7 +35,7 @@ data class Message(
                 messageType = MessageType.Initialization(),
                 isEdited = false,
                 deletedBy = emptyList(),
-                answerTo = ObjectId().default(),
+                replyTo = ObjectId().default(),
             )
         }
     }

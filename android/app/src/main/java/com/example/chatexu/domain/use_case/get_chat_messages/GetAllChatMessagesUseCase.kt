@@ -3,7 +3,6 @@ package com.example.chatexu.domain.use_case.get_chat_messages
 import android.util.Log
 import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DataWrapper
-import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.domain.model.Message
 import com.example.chatexu.domain.model.MessageType
 import com.example.chatexu.domain.repository.ChatRepository
@@ -52,7 +51,7 @@ class GetAllChatMessagesUseCase @Inject constructor(
             timestamp = Instant.now(),
             messageType = MessageType.Text("Message 1"),
             isEdited = false,
-            answerTo = Constants.ID_DEFAULT
+            replyTo = Constants.ID_DEFAULT
         )
         val a = generateSequence { m.copy(messageId = (Random.nextInt()).toString()) }
             .take(50)

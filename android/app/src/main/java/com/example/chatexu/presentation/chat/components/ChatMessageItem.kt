@@ -27,12 +27,7 @@ fun ChatMessageItem(
 
     val rounder = 25
 
-
-
-
-
-
-        when(message.messageType) {
+    when(message.messageType) {
             // TODO messages types
             is MessageType.Text -> {
                 Text(

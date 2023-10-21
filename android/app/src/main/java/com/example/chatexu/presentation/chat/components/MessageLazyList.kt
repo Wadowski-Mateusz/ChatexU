@@ -8,26 +8,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.chatexu.common.Constants
 import com.example.chatexu.domain.model.Message
-import kotlinx.coroutines.launch
-import kotlin.math.max
 
 
 @Composable
 fun MessageLazyList(
     messages: List<Message>,
     userId: String,
-    modifier: Modifier? = null,
+    modifier: Modifier? = null, //TODO delete
 //    state: LazyListState
 ) {
         var lastMessageSender = Constants.ID_DEFAULT
@@ -50,16 +44,12 @@ fun MessageLazyList(
                         5.dp
                 lastMessageSender = message.senderId
 
-                Log.d("msgarr", "ChatMessageItem - uId: $userId; sId = ${message.senderId}")
+//                Log.d("msgarr", "ChatMessageItem - uId: $userId; sId = ${message.senderId}")
                 val arrangement =
-                    if(message.senderId == userId){
-                        Log.d("msgarr", "ChatMessageItem - arrangement end")
+                    if(message.senderId == userId)
                         Arrangement.End
-                    }
-                    else{
-//                        Log.d("msgarr", "ChatMessageItem - arrangement start")
-                        Arrangement.Start
-                    }
+                    else Arrangement.Start
+
 
 
                 Row(
