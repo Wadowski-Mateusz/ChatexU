@@ -13,8 +13,10 @@ import com.example.chatexu.domain.model.Message
 import com.example.chatexu.domain.use_case.get_chat_messages.GetAllChatMessagesUseCase
 import com.example.chatexu.domain.use_case.post_message.PostMessageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 import javax.inject.Inject
 
@@ -38,12 +40,23 @@ class ChatViewModel @Inject constructor(
 
         chatId?.let {
             userId?. let {
-                getMessages(chatId, userId)
+                getMessagesPeriodically(chatId, userId)
+//                getMessages(chatId, userId)
             }
         }
     }
 
-    public fun sendMessage(message: Message) {
+    private fun getMessagesPeriodically(chatId: String, userId: String) {
+        viewModelScope.launch {
+            while (true) {
+                Log.d(DebugConstants.TODO, "pulling messages fix pls")
+                getMessages(chatId, userId)
+                delay(1000)
+            }
+        }
+    }
+
+    fun sendMessage(message: Message) {
         val responseMessage = postMessageUseCase(message)
 
         responseMessage.onEach { result -> // TODO what to use instead of 'onEach'
@@ -105,18 +118,26 @@ class ChatViewModel @Inject constructor(
                 is DataWrapper.Loading -> {
                     Log.d("peek", "Loading ChatViewModel")
                     Log.d(DebugConstants.VM_ERR, "Loading in: ChatViewModel.")
-                    _state.value = ChatState(
-                        error = result.message
-                            ?: "Unknown error"
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        error = result.message ?: "Unknown error"
                     )
+//                        ChatState(
+//                        error = result.message
+//                            ?: "Unknown error"
+//                    )
                 }
                 is DataWrapper.Error -> {
                     Log.d("peek", "Error ChatViewModel")
-                    _state.value = ChatState(
-                        chatId = chatId,
-                        userId = userId,
-                        isLoading = true
+                    _state.value = _state.value.copy(
+                        isLoading = true,
+                        error = ""
                     )
+//                    ChatState(
+//                        chatId = chatId,
+//                        userId = userId,
+//                        isLoading = true
+//                    )
                 }
 
             }

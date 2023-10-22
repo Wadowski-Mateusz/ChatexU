@@ -67,7 +67,6 @@ fun ChatScreen(
         Row(verticalAlignment = Alignment.Top) { ScreenName(screenName = "Chat") }
 
 
-
         MessageLazyList(
             messages = state.messages, userId = state.userId,
             modifier = Modifier

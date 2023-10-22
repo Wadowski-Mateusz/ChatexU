@@ -21,19 +21,14 @@ import com.example.chatexu.domain.model.Message
 fun MessageLazyList(
     messages: List<Message>,
     userId: String,
-    modifier: Modifier? = null, //TODO delete
+    modifier: Modifier = Modifier,
 //    state: LazyListState
 ) {
         var lastMessageSender = Constants.ID_DEFAULT
 
 
         LazyColumn(
-//            state = state,
-            modifier = modifier ?:
-                Modifier
-                    .fillMaxSize()
-                    .background(Color.Magenta)
-                    .padding(5.dp)
+            modifier = modifier
         ) {
             items(items = messages, key = { it.messageId }) { message ->
 

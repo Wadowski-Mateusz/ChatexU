@@ -45,6 +45,8 @@ class ChatController(
 //    ): ResponseEntity<List<Message>> {
     ): ResponseEntity<List<MessageDto>> {
 
+        println("get all messages")
+
         val messages: List<Message> = chatService.getAllChatMessages(chatId)
 
         return if (messages.isNotEmpty())
