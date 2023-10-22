@@ -18,4 +18,7 @@ interface ChatRepository {
     @TestOnly
     suspend fun getAllUsers(): List<User>
 
+    @TestOnly
+    suspend fun createUsersAndChat(): Boolean
+
 }

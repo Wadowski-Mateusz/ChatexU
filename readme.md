@@ -1,39 +1,121 @@
-## Requirements:
+# Requirements:
 * Docker
+* Android Studio (for UI) + device with Android 10-13
+* Postman (for server only)
+* Internet connection (if required images are not in local repository)
 
+*Tested under Linux and Windows*
 
-## Set up:
+# Set up
 
-Start containers:
+## Docker 
+### Start Docker
+
+Linux:
 ```
-$ docker build -t chatexu-server:0.1.0 .
-$ docker comose up
+sudo systemctl start docker.service
 ```
 
-## Cleaning up:
+### Start containers:
+```
+docker build -t chatexu-server:0.1.0 .
+```
+```
+docker compose up
+```
 
-Check if containers are running. If they are, stop them:
+### Check if everything is running:
 ```
-$ docker ps
-$ docker stop chatexu-db
-$ docker stop chatexu-server
+curl http://localhost:8091/test/hello
 ```
+You should see: `Hello world!`
+
+
+
+
+
+## Android Studio
+
+### (If application is not working) Set IPv4 address of server
+
+Go to *android/app/src/main/java/com/example/chatexu/common/Constants.kt* 
+
+
+1) Uncomment line with Your operating System
+
+![Alt text](readme_screens/urls.png)
+
+2) If application is still not working
+
+### Find and copy paste Docker's IP
+\
+Windows 
+``` 
+ipconfig 
+```
+Example:
+`Ethernet adapter vEthernet (WSL):  IPv4 Address. . . . . . . . . . . : 172.29.96.1 `
 
 \
-Remove containers:
+Linux:
 ```
-$ docker rm chatexu-db
-$ docker rm chatexu-server
+ip a | grep docker
 ```
+Example: `3: docker0: 172.17.0.1`
+
 \
-Remove `ChatexU Server` image:
+Change `BASE_URL`
+
+![Alt text](readme_screens/base_url.png)
+
+
+
+
+
+## Cleaning up
+
+### Check if containers are running. 
 ```
-$ docker rmi chatexu-server:0.1.0
+docker ps
 ```
-\
-Remove other images, if unwanted:
+### If they are, stop them:
 ```
-$ docker rmi mongo
-$ docker rmi openjdk:17-jdk
+docker stop chatexu-db
+```
+```
+docker stop chatexu-server
 ```
 
+
+### Remove containers:
+```
+docker rm chatexu-db
+```
+```
+docker rm chatexu-server
+```
+
+### Remove `chatexu server` image:
+```
+docker rmi chatexu-server:0.1.0
+```
+
+### (Optional) Remove other images, if no longer needed:
+```
+docker rmi mongo
+```
+```
+docker rmi openjdk:17-jdk
+```
+
+# App overview
+
+For now, UI is, well, poor. You can create users by button, open chats, and write messages. Chat is live, so You can write from two emulators to each other.
+
+
+![Alt text](readme_screens/image.png)
+![Alt text](readme_screens/image-1.png)
+![Alt text](readme_screens/image-2.png)
+![Alt text](readme_screens/image-3.png)
+![Alt text](readme_screens/image-4.png)
+![Alt text](readme_screens/image-5.png)

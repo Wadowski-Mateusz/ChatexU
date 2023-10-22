@@ -63,4 +63,10 @@ class ChatRepositoryImpl @Inject constructor(
         return userDtos.map { UserMapper.toUser(it) }
     }
 
+    override suspend fun createUsersAndChat(): Boolean {
+        Log.d(DebugConstants.PEEK, "Creating two users and chat.")
+        val result = api.createUsersAndChat()
+        return result.isSuccessful
+    }
+
 }

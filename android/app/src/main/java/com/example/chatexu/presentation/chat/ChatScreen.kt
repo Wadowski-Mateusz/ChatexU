@@ -61,7 +61,7 @@ fun ChatScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Green)
+            .background(Color.Gray)
     ) {
 
         Row(verticalAlignment = Alignment.Top) { ScreenName(screenName = "Chat") }
@@ -71,7 +71,7 @@ fun ChatScreen(
             messages = state.messages, userId = state.userId,
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Magenta)
+                .background(Color.LightGray)
                 .padding(5.dp)
                 .weight(1f)
         )

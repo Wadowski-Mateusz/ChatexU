@@ -33,5 +33,9 @@ class ChatRepositoryTestImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override suspend fun createUsersAndChat(): Boolean {
+        TODO("Not yet implemented")
+    }
+
 
 }

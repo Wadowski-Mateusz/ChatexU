@@ -5,6 +5,7 @@ import com.example.chatexu.data.remote.dto.ChatRowDto
 import com.example.chatexu.data.remote.dto.MessageDto
 import com.example.chatexu.data.remote.dto.SendedMessageDto
 import com.example.chatexu.data.remote.dto.UserDto
+import org.jetbrains.annotations.TestOnly
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -29,10 +30,18 @@ interface ChatApi {
         @Path("viewerId") viewerId: String
     ): Response<List<MessageDto>>
 
-    @GET("${Constants.USER_MAPPING}/get_all")
-    suspend fun getAllUsers(): Response<List<UserDto>>
-
 
     @POST("${Constants.MESSAGE_MAPPING}/send")
     suspend fun sendMessage(@Body sendedMessageDto: SendedMessageDto): Response<MessageDto>
+
+
+    @TestOnly
+    @GET("${Constants.USER_MAPPING}/get_all")
+    suspend fun getAllUsers(): Response<List<UserDto>>
+
+    @TestOnly
+    @POST("test/users_chat")
+    suspend fun createUsersAndChat(): Response<List<String>>
+
+
 }
