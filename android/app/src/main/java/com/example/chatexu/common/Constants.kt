@@ -2,9 +2,9 @@ package com.example.chatexu.common
 
 object Constants {
 //    const val BASE_URL = "http://172.17.0.1:8091/" // linux
-    const val BASE_URL = "http://172.29.96.1:8091/" // windows + docker + wsl
+    const val BASE_URL = "http://172.19.240.1:8091/" // windows + docker + wsl
 
-    const val BASE_URL_TEST = "http://192.168.56.1:8091/test/"
+    const val BASE_URL_TEST = "http://172.19.240.1:8091/test/"
     const val CHAT_MAPPING = "chat"
     const val USER_MAPPING = "user"
     const val MESSAGE_MAPPING = "message"

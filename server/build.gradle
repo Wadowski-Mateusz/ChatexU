@@ -41,6 +41,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
 
+    // https://mvnrepository.com/artifact/com.google.dagger/dagger
+    implementation 'com.google.dagger:dagger:2.48.1'
+
+
     // test env
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
