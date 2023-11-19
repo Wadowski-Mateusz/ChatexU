@@ -15,6 +15,10 @@ interface ChatRepository {
 
     suspend fun sendMessage(message: Message): Message
 
+    suspend fun login(email: String, password: String): String
+
+    suspend fun register(email: String, password: String, nickname: String): User
+
     @TestOnly
     suspend fun getAllUsers(): List<User>
 

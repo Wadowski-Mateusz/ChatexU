@@ -1,8 +1,8 @@
 package com.example.server.controller
 
-import com.example.server.commons.Constants
+import com.example.server.dto.LoginDto
 import com.example.server.dto.RegisterDto
-import com.example.server.dto.UserDto
+import com.example.server.exceptions.BadLoginDataException
 import com.example.server.exceptions.DataAlreadyInTheDatabaseException
 import com.example.server.model.User
 import com.example.server.service.UserService
@@ -21,46 +21,43 @@ class SecurityController(
 ) {
 
     @PostMapping("/register")
-    fun registerUser(@RequestBody registerDto: RegisterDto): ResponseEntity<UserDto> {
-        // TODO exceptions
-        return try {
-            val user = createUserFromRegisterDto(registerDto)
-            val savedUser = userService.save(user)
+    fun registerUser(@RequestBody registerDto: RegisterDto)
+    : ResponseEntity<Any /*UserDto or error*/> {
 
-            ResponseEntity(userService.convertToDto(savedUser), HttpStatus.OK)
+        return try {
+            val user = userService.createUserFromRegisterDto(registerDto)
+
+            ResponseEntity(userService.convertToDto(user), HttpStatus.OK)
         } catch (exception: DataAlreadyInTheDatabaseException) {
-            ResponseEntity.status(HttpStatus.CONFLICT).build()
+
+            println("registerUser() - DataAlreadyInTheDatabase ${exception.message}")
+            ResponseEntity.status(HttpStatus.CONFLICT).body(exception.message)
+
         } catch (exception: Exception) {
             println("registerUser() - ${exception.message}")
             ResponseEntity.internalServerError().build()
         }
     }
 
-    private fun createUserFromRegisterDto(registerDto: RegisterDto): User {
 
-        // TODO uncomment this line
-//        verifyRegisterDto(registerDto)
+    @PostMapping("/login")
+    fun login(@RequestBody loginDto: LoginDto): ResponseEntity<String> {
 
-        val user = User(
-            nickname = registerDto.nickname,
-            email = registerDto.email,
-            password = registerDto.password,
-            profilePictureUri = Constants.DEFAULT_PROFILE_URI,
-            friends = setOf(),
-            blockedUsers = setOf(),
-        )
-
-        return userService.save(user)
-
+        println("login")
+        return try {
+            val user: User = userService.login(loginDto)
+            println("success")
+            ResponseEntity.status(HttpStatus.OK).body(user.userId.toString())
+        } catch (e: BadLoginDataException) {
+            println("failure")
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        } catch (e: Exception) {
+            println("failure")
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        }
     }
 
 
-    private fun verifyRegisterDto(registerDto: RegisterDto) {
-        TODO("Not yet implemented - check if data is already in the database")
-        //
-    }
-
-    // TODO move to security controller
     @PutMapping("/change_email/{userId}/{password}/{email}")
     fun changeEmail(
         @PathVariable("userId") userId: String,
@@ -70,7 +67,6 @@ class SecurityController(
         TODO("Not yet implemented")
     }
 
-    // TODO move to security controller
     @PutMapping("/change_password/{userId}/{oldPassword}/{newPassword}")
     fun changePassword(
         @PathVariable("userId") userId: String,

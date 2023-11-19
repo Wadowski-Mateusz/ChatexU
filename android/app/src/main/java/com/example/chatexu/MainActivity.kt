@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.chatexu.common.Constants
 import com.example.chatexu.presentation.Screen
 import com.example.chatexu.presentation.auth.AuthScreen
+import com.example.chatexu.presentation.auth.AuthScreenDebug
 import com.example.chatexu.presentation.chat.ChatScreen
 import com.example.chatexu.presentation.chat_list.ChatListScreen
 import com.example.chatexu.ui.theme.ChatexUTheme
@@ -39,6 +40,12 @@ class MainActivity : ComponentActivity() {
                         ) {
                             AuthScreen(navController)
                         }
+                        composable(
+                            route = Screen.AuthScreenDebug.route
+                        ) {
+                            AuthScreenDebug(navController)
+                        }
+
                         composable(
                             route = Screen.ChatListScreen.route + "/{${Constants.PARAM_USER_ID}}"
                         ) {

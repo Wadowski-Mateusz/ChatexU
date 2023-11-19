@@ -29,6 +29,14 @@ class ChatRepositoryTestImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override suspend fun login(email: String, password: String): String {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun register(email: String, password: String, nickname: String): User {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getAllUsers(): List<User> {
         TODO("Not yet implemented")
     }

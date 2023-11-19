@@ -63,6 +63,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-jackson:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-scalars:$retrofit_version" // convert String's etc from server response
 
     def okhttp_version = "5.0.0-alpha.11"
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"

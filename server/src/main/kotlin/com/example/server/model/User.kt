@@ -13,10 +13,10 @@ data class User(
     @Field("_id")
     val userId: ObjectId = ObjectId(),
 
-    @Indexed
+    @Indexed(unique = true)
     val nickname: String,
 
-    @Indexed
+    @Indexed(unique = true)
     val email: String,
     val password: String, // TODO change to hash
     val profilePictureUri: String,

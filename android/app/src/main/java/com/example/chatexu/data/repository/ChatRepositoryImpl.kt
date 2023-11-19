@@ -1,12 +1,15 @@
 package com.example.chatexu.data.repository
 
 import android.util.Log
+import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.converters.ChatMapper
 import com.example.chatexu.converters.MessageMapper
 import com.example.chatexu.converters.UserMapper
 import com.example.chatexu.data.remote.ChatApi
+import com.example.chatexu.data.remote.dto.LoginDto
 import com.example.chatexu.data.remote.dto.MessageDto
+import com.example.chatexu.data.remote.dto.RegisterDto
 import com.example.chatexu.data.remote.dto.UserDto
 import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.model.Message
@@ -53,6 +56,24 @@ class ChatRepositoryImpl @Inject constructor(
         else Message.getEmpty()
 
     }
+
+    override suspend fun login(email: String, password: String): String {
+        val loginDto = LoginDto(email, password)
+        val response = api.login(loginDto)
+        Log.d("PEEK", "login() - repository: $response")
+        return response.body()
+            ?: Constants.ID_DEFAULT
+    }
+
+    override suspend fun register(email: String, password: String, nickname: String): User {
+        // TODO already in use
+        val registerDto = RegisterDto(nickname, email, password)
+        val response = api.register(registerDto)
+        Log.d("PEEK", "register() - repository: $response")
+        val user = UserMapper.toUser(response.body()!!)
+        return user
+    }
+
 
     override suspend fun getAllUsers(): List<User> {
         val userDtos: List<UserDto> = api.getAllUsers().body()
