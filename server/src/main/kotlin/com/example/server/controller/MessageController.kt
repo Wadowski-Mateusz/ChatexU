@@ -48,7 +48,7 @@ class MessageController(private val messageService: MessageService) {
         println("incoming message ${Instant.now()}") // TODO delete
         println(ObjectId().default()) // TODO delete
         println(sendedMessageDto.replyTo)
-        val message = MessageMapper.toMessage(sendedMessageDto)
+        val message = MessageMapper.fromSendedMessage(sendedMessageDto)
         println(message.replyTo)
         val savedMessage = messageService.save(message)
 

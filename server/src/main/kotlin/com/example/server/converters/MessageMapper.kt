@@ -6,10 +6,9 @@ import com.example.server.model.Message
 import com.example.server.model.MessageType
 import org.bson.types.ObjectId
 import java.time.Instant
-import java.util.UUID
 
 object MessageMapper {
-    fun messageToDto(message: Message, viewerId: String): MessageDto {
+    fun toDto(message: Message, viewerId: String): MessageDto {
         return MessageDto(
             messageId = message.messageId.toHexString(),
             senderId = message.senderId.toHexString(),
@@ -22,7 +21,7 @@ object MessageMapper {
         )
     }
 
-    fun toMessage(sendedMessageDto: SendedMessageDto): Message {
+    fun fromSendedMessage(sendedMessageDto: SendedMessageDto): Message {
         return Message(
             messageId = ObjectId(),
             senderId = ObjectId(sendedMessageDto.senderId),

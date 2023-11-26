@@ -7,7 +7,6 @@ import com.example.server.dto.ChatViewDto
 import com.example.server.dto.ChatViewIconDto
 import com.example.server.dto.MessageDto
 import com.example.server.exceptions.ChatNotFoundException
-import com.example.server.exceptions.MessageNotFoundException
 import com.example.server.exceptions.UserIsBlockedException
 import com.example.server.exceptions.UserNotFoundException
 import com.example.server.model.ChatType
@@ -15,14 +14,12 @@ import com.example.server.model.Message
 import com.example.server.repository.MessageRepository
 import com.example.server.service.ChatService
 import lombok.AllArgsConstructor
-import org.bson.types.ObjectId
 import org.jetbrains.annotations.TestOnly
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.http.codec.DecoderHttpMessageReader
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.time.format.DateTimeParseException
@@ -51,7 +48,7 @@ class ChatController(
 
         return if (messages.isNotEmpty())
             ResponseEntity(
-                messages.map {MessageMapper.messageToDto(it, viewerId)},
+                messages.map {MessageMapper.toDto(it, viewerId)},
                 HttpStatus.OK
             )
         else
@@ -69,7 +66,7 @@ class ChatController(
             val messages: List<Message> = chatService.getChatMessagesAfter(chatId, Instant.parse(after))
             if (messages.isNotEmpty())
                 ResponseEntity(
-                    messages.map {MessageMapper.messageToDto(it, viewerId)},
+                    messages.map {MessageMapper.toDto(it, viewerId)},
                     HttpStatus.OK
                 )
                 else ResponseEntity(HttpStatus.NO_CONTENT)
@@ -171,7 +168,7 @@ class ChatController(
     @GetMapping("/all")
     fun getAllChats(): ResponseEntity<List<ChatDto>> {
         return ResponseEntity(
-            chatService.getAll().map{ChatMapper.convertToDto(it)},
+            chatService.getAll().map{ChatMapper.toDto(it)},
             HttpStatus.OK
         )
     }

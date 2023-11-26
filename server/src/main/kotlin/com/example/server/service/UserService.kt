@@ -5,43 +5,62 @@ import com.example.server.dto.LoginDto
 import com.example.server.dto.RegisterDto
 import com.example.server.dto.UserDto
 import com.example.server.enums.RegisterVerificationPoints
-import com.example.server.exceptions.BadLoginDataException
-import com.example.server.exceptions.DataAlreadyInTheDatabaseException
-import com.example.server.exceptions.ErrorMessageCommons
-import com.example.server.exceptions.UserNotFoundException
+import com.example.server.exceptions.*
+import com.example.server.model.FriendRequest
 import com.example.server.model.User
 import com.example.server.repository.UserRepository
 import lombok.AllArgsConstructor
 import org.bson.types.ObjectId
+import org.jetbrains.annotations.TestOnly
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import kotlin.jvm.optionals.getOrNull
 import kotlin.math.pow
 
 @Service
 @AllArgsConstructor
-class UserService(private val userRepository: UserRepository) {
+class UserService(
+    private val userRepository: UserRepository,
+) {
+    @Lazy
+    @Autowired
+    private val _friendRequestService: FriendRequestService? = null
+    private val friendRequestService: FriendRequestService by lazy { _friendRequestService!! }
 
     fun getUserIconURI(userId: String): String {
         // TODO
+        println("getUserIconURO TODO")
         return Constants.DEFAULT_PROFILE_URI
     }
 
+    fun getUserByNickname(nickname: String): User {
+        return userRepository.findByNickname(nickname)
+            ?: throw UserNotFoundException()
+    }
+
+
+    @Transactional
     fun save(user: User): User {
-        return userRepository.insert(user)
+        return userRepository.save(user)
+    }
+
+    @Transactional
+    fun saveAll(users: List<User>): List<User> {
+        return userRepository.saveAll(users)
     }
 
     fun getById(id: ObjectId): User {
-        return userRepository.findById(id.toHexString()).orElseThrow {
-                throw UserNotFoundException(ErrorMessageCommons.idNotFound(type = "user", id = id.toHexString()))
-            }
+        return userRepository.findById(id.toHexString()).getOrNull()
+            ?: throw UserNotFoundException(ErrorMessageCommons.idNotFound(type = "user", id = id.toHexString()))
     }
 
     fun getById(id: String): User {
-        return userRepository.findById(id).orElseThrow {
-                throw UserNotFoundException(ErrorMessageCommons.idNotFound(type = "user", id = id))
-            }
+        return userRepository.findById(id).getOrNull()
+            ?: throw UserNotFoundException(ErrorMessageCommons.idNotFound(type = "user", id = id))
     }
 
 
@@ -73,6 +92,7 @@ class UserService(private val userRepository: UserRepository) {
     }
 
 
+    @TestOnly
     fun findAll(): List<User> {
         return userRepository.findAll()
     }
@@ -110,6 +130,56 @@ class UserService(private val userRepository: UserRepository) {
     }
 
 
+    fun checkIfFriends(friend1Id: String, friend2Id: String): Boolean {
+        val friends = getById(friend1Id).friends
+        return friends.contains(friend2Id)
+    }
+    @Transactional
+    fun createFriendRequest(senderId: String, recipientId: String): Boolean {
 
+        // if recipient has already sent request, then just make them friends
+        val requests = friendRequestService.findAllRequestsForUserAsSender(recipientId)
+        val existingRequest: FriendRequest? = requests.find { it.recipientId.toString() == senderId }
+        if (existingRequest != null) {
+            // no request created
+            addFriend(existingRequest.requestId.toString())
+            return false
+        }
+
+        val request = friendRequestService.createWithoutSave(senderId, recipientId)
+        friendRequestService.save(request)
+        return true
+    }
+
+    @Transactional
+    fun addFriend(friendRequestId: String) {
+        val request: FriendRequest = friendRequestService.findById(friendRequestId)
+
+        val friend1Id: String = request.senderId.toString()
+        val friend2Id: String = request.recipientId.toString()
+
+        if (isUserBlockedByGivenUser(friend1Id, friend2Id))
+            throw UserBlockedByGivenUserException()
+
+        val friend1 = getById(friend1Id)
+        val friend2 = getById(friend2Id)
+        // toSet() just in case
+        val friend1withNewFriend = friend1.copy(friends = friend1.friends.plus(friend2Id).toSet())
+        val friend2withNewFriend = friend2.copy(friends = friend2.friends.plus(friend1Id).toSet())
+        saveAll(listOf(friend1withNewFriend, friend2withNewFriend))
+
+        friendRequestService.delete(request)
+    }
+
+    fun isUserBlockedByGivenUser(userId: String, userToCheckIfBlockedId: String): Boolean {
+        val user = userRepository.findById(userId).getOrNull()
+            ?: throw UserNotFoundException()
+        return user.blockedUsers.contains(userToCheckIfBlockedId)
+    }
+
+    fun getAllFriendRequestsForUser(userId: String): List<FriendRequest> {
+        return friendRequestService.findAllRequestsForUserAsRecipient(userId)
+            .toList()
+    }
 
 }

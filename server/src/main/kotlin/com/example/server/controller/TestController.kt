@@ -14,12 +14,7 @@ import com.example.server.service.MessageService
 import lombok.AllArgsConstructor
 import org.bson.types.ObjectId
 import org.jetbrains.annotations.TestOnly
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import kotlin.math.abs
 import kotlin.random.Random
@@ -105,6 +100,8 @@ class TestController(
     @TestOnly
     @PostMapping("/users_chat")
     fun createUsersAndChat(): List<String> {
+
+        println("Inside create 1")
         val random = { abs(Random.nextInt() % 100) }
         val user = User(
             userId = ObjectId(),
@@ -115,7 +112,7 @@ class TestController(
             friends = setOf(),
             blockedUsers = setOf()
         )
-        userRepository.save(user)
+        println("Inside create 2")
         val user2 = User(
             userId = ObjectId(),
             nickname = "User${random()}",
@@ -127,11 +124,13 @@ class TestController(
         )
         userRepository.save(user)
         userRepository.save(user2)
+        println("Inside create 3")
 
         val participants = listOf(user.userId.toHexString(), user2.userId.toHexString())
 
         val chatId: String = chatService.createChat(participants.toSet()).chatId.toHexString()
 
+        println("Inside create 4")
         return listOf(
             "user1: ${user.userId.toHexString()}",
             "user2: ${user2.userId.toHexString()}",

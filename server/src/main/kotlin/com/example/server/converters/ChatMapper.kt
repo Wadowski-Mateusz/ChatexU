@@ -4,7 +4,7 @@ import com.example.server.dto.ChatDto
 import com.example.server.model.Chat
 
 object ChatMapper {
-    fun convertToDto(chat: Chat): ChatDto {
+    fun toDto(chat: Chat): ChatDto {
         return ChatDto(
             chatId = chat.chatId.toHexString(),
             lastMessage = chat.lastMessage.toHexString(),
