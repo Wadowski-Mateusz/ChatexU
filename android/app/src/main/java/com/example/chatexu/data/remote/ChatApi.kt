@@ -2,8 +2,10 @@ package com.example.chatexu.data.remote
 
 import com.example.chatexu.common.Constants
 import com.example.chatexu.data.remote.dto.ChatRowDto
+import com.example.chatexu.data.remote.dto.FriendDto
 import com.example.chatexu.data.remote.dto.LoginDto
 import com.example.chatexu.data.remote.dto.MessageDto
+import com.example.chatexu.data.remote.dto.ParticipantsDto
 import com.example.chatexu.data.remote.dto.RegisterDto
 import com.example.chatexu.data.remote.dto.SendedMessageDto
 import com.example.chatexu.data.remote.dto.UserDto
@@ -34,6 +36,18 @@ interface ChatApi {
     ): Response<List<MessageDto>>
 
 
+    @GET("${Constants.USER_MAPPING}/friends/{userId}")
+    suspend fun getUserFriends(
+        @Path("userId") userId: String
+    ): Response<List<FriendDto>>
+
+//    @GET("${Constants.USER_MAPPING}/friends/{userId}/{partOfNickname}")
+//    suspend fun getUserFriendsByNickname(
+//        @Path("userId") userId: String,
+//        @Path("partOfNickname") partOfNickname: String,
+//    ): Response<List<FriendDto>>
+//
+
     @POST("${Constants.MESSAGE_MAPPING}/send")
     suspend fun sendMessage(@Body sendedMessageDto: SendedMessageDto): Response<MessageDto>
 
@@ -43,6 +57,8 @@ interface ChatApi {
     @POST("${Constants.AUTH_MAPPING}/register")
     suspend fun register(@Body registerDto: RegisterDto): Response<UserDto>
 
+    @POST("${Constants.CHAT_MAPPING}/create")
+    suspend fun getOrElseCreateChat(@Body participantsDto: ParticipantsDto): Response<String>
 
 
     @TestOnly

@@ -54,7 +54,7 @@ fun AuthScreenDebug(
             )
         }
 
-        if(state.users.isEmpty())
+//        if(state.users.isEmpty())
             Button(
                 modifier = Modifier
                     .fillMaxWidth()

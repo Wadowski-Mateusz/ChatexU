@@ -2,10 +2,7 @@ package com.example.server.controller
 
 import com.example.server.converters.ChatMapper
 import com.example.server.converters.MessageMapper
-import com.example.server.dto.ChatDto
-import com.example.server.dto.ChatViewDto
-import com.example.server.dto.ChatViewIconDto
-import com.example.server.dto.MessageDto
+import com.example.server.dto.*
 import com.example.server.exceptions.ChatNotFoundException
 import com.example.server.exceptions.UserIsBlockedException
 import com.example.server.exceptions.UserNotFoundException
@@ -82,8 +79,16 @@ class ChatController(
 
     @PostMapping("/create")
     fun createChat(
-        @RequestBody() participants: List<String>
-    ): ResponseEntity<String> { // TODO what should be a response?
+        @RequestBody participantsDto: ParticipantsDto
+    ): ResponseEntity<String> {
+        println("======Create chat")
+
+        participantsDto.participants.forEach{
+            println(it)
+        }
+
+
+        val participants = participantsDto.participants
         return try {
             val chatId: String =
                 if (participants.isNotEmpty())

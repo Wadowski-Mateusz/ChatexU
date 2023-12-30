@@ -181,5 +181,17 @@ class UserService(
         return friendRequestService.findAllRequestsForUserAsRecipient(userId)
             .toList()
     }
+    fun getUserFriends(userId: String, partOfNickname: String = ""): List<User> {
+        val user = getById(userId)
+
+        var friends = user.friends.asSequence()
+            .map { friendId -> getById(friendId) }
+            .toList()
+        if(partOfNickname.isNotBlank()) {
+            println("Not blank: $partOfNickname")
+            friends = friends.filter { it.nickname.contains(partOfNickname) }
+        }
+        return friends
+    }
 
 }

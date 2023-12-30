@@ -1,9 +1,13 @@
 package com.example.chatexu.domain.repository
 
+import android.provider.ContactsContract.CommonDataKinds.Nickname
+import com.example.chatexu.data.remote.dto.ParticipantsDto
 import com.example.chatexu.domain.model.ChatRow
+import com.example.chatexu.domain.model.Friend
 import com.example.chatexu.domain.model.Message
 import com.example.chatexu.domain.model.User
 import org.jetbrains.annotations.TestOnly
+import retrofit2.Response
 
 interface ChatRepository {
 
@@ -24,5 +28,11 @@ interface ChatRepository {
 
     @TestOnly
     suspend fun createUsersAndChat(): Boolean
+
+    suspend fun getUserFriends(userId: String): List<Friend>
+
+    suspend fun getOrElseCreateChat(participants: List<String>): String
+
+//    suspend fun getUserFriendsByNickname(userId: String, partOfNickname: String): List<Friend>
 
 }

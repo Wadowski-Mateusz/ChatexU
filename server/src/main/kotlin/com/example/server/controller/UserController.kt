@@ -2,6 +2,7 @@ package com.example.server.controller
 
 import com.example.server.converters.FriendRequestMapper
 import com.example.server.converters.UserMapper
+import com.example.server.dto.FriendDto
 import com.example.server.dto.FriendRequestDto
 import com.example.server.dto.UserDto
 import com.example.server.dto.UserViewDto
@@ -10,6 +11,7 @@ import com.example.server.exceptions.FriendRequestAlreadyExistsException
 import com.example.server.exceptions.UserBlockedByGivenUserException
 import com.example.server.exceptions.UserNotFoundException
 import com.example.server.model.User
+import com.example.server.service.ChatService
 import com.example.server.service.FriendRequestService
 import com.example.server.service.UserService
 import lombok.AllArgsConstructor
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.*
 class UserController(
     private val userService: UserService,
     private val friendRequestService: FriendRequestService,
+    private val chatService: ChatService,
 ) {
 
     @GetMapping("/get/{userId}")
@@ -121,6 +124,47 @@ class UserController(
     }
 
 
+    @GetMapping("/friends/{userId}")
+    fun getUserFriends(
+        @PathVariable("userId") userId: String
+    ): ResponseEntity<List<FriendDto>> {
+        println("getUserFriends(): $userId")
+
+        return try {
+            val friends: List<User> = userService.getUserFriends(userId)
+            val friendDtos = friends.map { UserMapper.toFriendDto(userId, it, chatService) }
+            ResponseEntity(friendDtos, HttpStatus.OK)
+        } catch (e: UserNotFoundException) {
+            e.printStackTrace()
+            ResponseEntity(HttpStatus.BAD_REQUEST)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+//    @GetMapping("/friends/{userId}/{phrase}")
+//    fun getUserFriendsByNickname(
+//        @PathVariable("userId") userId: String,
+//        @PathVariable("phrase") phrase: String
+//    ): ResponseEntity<List<FriendDto>> {
+//        println("getUserFriendsByNickname() + $userId")
+//        return try {
+//            val friends: List<User> = userService.getUserFriends(userId, phrase)
+//            val friendDtos = friends.map { UserMapper.toFriendDto(userId, it, chatService) }
+//            println("Returning list of friends of size: ${friendDtos.size}")
+//            ResponseEntity(friendDtos, HttpStatus.OK)
+//        } catch (e: UserNotFoundException) {
+//            e.printStackTrace()
+//            ResponseEntity(HttpStatus.BAD_REQUEST)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+//        }
+//    }
+
+
+
 
     @PostMapping("/friend/send_request/{senderId}/{recipientId}")
     fun sendFriendRequest(
@@ -136,7 +180,7 @@ class UserController(
                 ResponseEntity(HttpStatus.CREATED)
             else
                 // request not created,
-                // because recipient has already send request first,
+                // because recipient has already sent request first,
                 // therefore friend has been added
                 ResponseEntity(HttpStatus.OK)
 

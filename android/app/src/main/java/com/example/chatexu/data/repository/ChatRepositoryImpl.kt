@@ -1,20 +1,25 @@
 package com.example.chatexu.data.repository
 
+import android.provider.ContactsContract.CommonDataKinds.Nickname
 import android.util.Log
 import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.converters.ChatMapper
+import com.example.chatexu.converters.FriendMapper
 import com.example.chatexu.converters.MessageMapper
 import com.example.chatexu.converters.UserMapper
 import com.example.chatexu.data.remote.ChatApi
 import com.example.chatexu.data.remote.dto.LoginDto
 import com.example.chatexu.data.remote.dto.MessageDto
+import com.example.chatexu.data.remote.dto.ParticipantsDto
 import com.example.chatexu.data.remote.dto.RegisterDto
 import com.example.chatexu.data.remote.dto.UserDto
 import com.example.chatexu.domain.model.ChatRow
+import com.example.chatexu.domain.model.Friend
 import com.example.chatexu.domain.model.Message
 import com.example.chatexu.domain.model.User
 import com.example.chatexu.domain.repository.ChatRepository
+import retrofit2.Response
 import javax.inject.Inject
 
 class ChatRepositoryImpl @Inject constructor(
@@ -89,5 +94,40 @@ class ChatRepositoryImpl @Inject constructor(
         val result = api.createUsersAndChat()
         return result.isSuccessful
     }
+
+    override suspend fun getUserFriends(userId: String): List<Friend> {
+        Log.d(DebugConstants.PEEK, "---ChatRepositoryImpl - Fetching friends of $userId.")
+        val result = api.getUserFriends(userId)
+        Log.d(DebugConstants.PEEK, "ChatRepositoryImpl - Fetched friends of $userId.")
+        val friends = result.body()
+            ?: let {
+                Log.w(DebugConstants.PEEK, "repositoryImpl - getUserFriends - null")
+                emptyList()
+            }
+        return friends.map { FriendMapper.toFriend(it) }
+    }
+
+    override suspend fun getOrElseCreateChat(participants: List<String>): String {
+        Log.d(DebugConstants.PEEK, "get or create chat - repo impl")
+        val participantsDto = ParticipantsDto(participants)
+        val result = api.getOrElseCreateChat(participantsDto)
+        return result.body() ?: "" // TODO id cannot be "", make sure of it
+    }
+
+    // maybe after adding refresh feature
+//    override suspend fun getUserFriendsByNickname(
+//        userId: String,
+//        partOfNickname: String
+//    ): List<Friend> {
+//        Log.d(DebugConstants.PEEK, "ChatRepositoryImpl - Fetching friends of $userId, with phrase: $partOfNickname.")
+//        val result = api.getUserFriendsByNickname(userId, partOfNickname)
+//        Log.d(DebugConstants.PEEK, "ChatRepositoryImpl - Fetched friends of $userId, with phrase: $partOfNickname.")
+//        val friends = result.body()
+//            ?: let {
+//                Log.w(DebugConstants.PEEK, "repositoryImpl - getUserFriendsByNickname - null")
+//                emptyList()
+//            }
+//        return friends.map { FriendMapper.toFriend(it) }
+//    }
 
 }

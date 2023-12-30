@@ -45,10 +45,10 @@ object AppModule {
                 Log.i(DebugConstants.INFO, "Using production API.")
                 Constants.BASE_URL
             }
-            UsedApi.TEST_API -> {
-                Log.i(DebugConstants.INFO, "Using test API.")
-                Constants.BASE_URL_TEST
-            }
+//            UsedApi.TEST_API -> {
+//                Log.i(DebugConstants.INFO, "Using test API.")
+//                Constants.BASE_URL_TEST
+//            }
             else -> throw IllegalAccessException("No url for ${UsedApi.API}.")
         }
 
@@ -67,7 +67,7 @@ object AppModule {
     fun provideChatRepository(api: ChatApi): ChatRepository {
         return when (UsedApi.API) {
             UsedApi.PRODUCTION_API -> ChatRepositoryImpl(api)
-            UsedApi.TEST_API -> ChatRepositoryTestImpl(api)
+//            UsedApi.TEST_API -> ChatRepositoryTestImpl(api)
             else -> throw IllegalAccessException("No url for ${UsedApi.API}.")
         }
     }

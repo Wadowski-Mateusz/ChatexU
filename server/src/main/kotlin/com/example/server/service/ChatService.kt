@@ -5,7 +5,9 @@ import com.example.server.dto.ChatViewDto
 import com.example.server.exceptions.ChatNotFoundException
 import com.example.server.exceptions.ErrorMessageCommons
 import com.example.server.exceptions.MessageNotFoundException
-import com.example.server.model.*
+import com.example.server.model.Chat
+import com.example.server.model.ChatType
+import com.example.server.model.Message
 import com.example.server.repository.ChatRepository
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,7 +15,6 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
-import java.lang.IllegalArgumentException
 import java.time.Instant
 
 @Service
@@ -112,6 +113,18 @@ class ChatService(private val chatRepository: ChatRepository) {
         // TODO blocked users
         // duplicates of chats between users
         // ...
+
+        if(participants.size == 2)
+            try {
+                val chat = getChatWithParticipants(participants.toList())
+                return chat
+            } catch (e: ChatNotFoundException) {
+                println("No such a chat. creating new one")
+                // Chat doesn't exit
+                // catch exception and create new one
+            }
+
+
         val chat = Chat(
             chatId = ObjectId(),
             lastMessage = ObjectId().default(),
@@ -124,5 +137,9 @@ class ChatService(private val chatRepository: ChatRepository) {
         return save(chat)
     }
 
+    fun getChatWithParticipants(participants: List<String>): Chat {
+        return chatRepository.findByParticipants(participants.map { ObjectId(it) })
+            ?: throw ChatNotFoundException()
+    }
 
 }

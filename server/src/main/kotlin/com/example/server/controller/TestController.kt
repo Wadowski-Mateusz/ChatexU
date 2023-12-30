@@ -103,23 +103,27 @@ class TestController(
 
         println("Inside create 1")
         val random = { abs(Random.nextInt() % 100) }
+
+        val userId1 = ObjectId()
+        val userId2 = ObjectId()
+
         val user = User(
-            userId = ObjectId(),
+            userId = userId1,
             nickname = "User${random()}",
             email = "email${random()}@mail.com",
             password = "pass",
             profilePictureUri = Constants.DEFAULT_PROFILE_URI,
-            friends = setOf(),
+            friends = setOf(userId2.toString()),
             blockedUsers = setOf()
         )
         println("Inside create 2")
         val user2 = User(
-            userId = ObjectId(),
+            userId = userId2,
             nickname = "User${random()}",
             email = "email${random()}@mail.com",
             password = "pass",
             profilePictureUri = Constants.DEFAULT_PROFILE_URI,
-            friends = setOf(),
+            friends = setOf(userId1.toString()),
             blockedUsers = setOf()
         )
         userRepository.save(user)

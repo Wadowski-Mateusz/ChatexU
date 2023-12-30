@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.example.chatexu.R
 import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.model.MessageType
+import com.example.chatexu.presentation.getUserErrorIcon
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -40,13 +41,15 @@ fun ChatListItem(
 
 
         // Chat icon
-        val context = LocalContext.current
-        val icon: Bitmap = chatRow.icon ?: run {
-            val inputStream = context.resources.openRawResource(R.raw.error)
-            val bitmap: Bitmap = BitmapFactory.decodeStream(inputStream)
-            inputStream.close()
-            bitmap
-        }
+//        val context = LocalContext.current
+//        val icon: Bitmap = chatRow.icon ?: run {
+//            val inputStream = context.resources.openRawResource(R.raw.error)
+//            val bitmap: Bitmap = BitmapFactory.decodeStream(inputStream)
+//            inputStream.close()
+//            bitmap
+//        }
+        val icon: Bitmap = chatRow.icon ?: getUserErrorIcon(LocalContext.current)
+
         Column (
             modifier = Modifier.weight(1.0f)
         ) {

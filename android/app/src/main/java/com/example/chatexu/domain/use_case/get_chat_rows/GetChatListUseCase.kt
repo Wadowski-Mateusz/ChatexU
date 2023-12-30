@@ -17,11 +17,8 @@ class GetChatListUseCase @Inject constructor(
 
         try {
             emit(DataWrapper.Loading<List<ChatRow>>())
-            // TODO id
-//            Log.i(DebugConsts.TODO, "GetChatListUseCase() - hardcoded id")
-//            val chats = repository.getUserChatList(DebugConsts.HARD_USER_ID)
             val chats = repository.getUserChatList(userId)
-            Log.d("peek", "GetChatListUseCase() - no. of chats: ${chats.size.toString()}")
+            Log.d("peek", "GetChatListUseCase() - no. of chats: ${chats.size}")
             emit(DataWrapper.Success<List<ChatRow>>(chats))
         } catch(e: HttpException) {
             Log.e("peek", "e1 ${e.message.toString()}")
