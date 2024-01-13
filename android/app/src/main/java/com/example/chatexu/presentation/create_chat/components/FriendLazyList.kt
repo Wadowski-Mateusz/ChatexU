@@ -1,22 +1,13 @@
 package com.example.chatexu.presentation.create_chat.components
 
 
-import android.util.Log
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatexu.domain.model.Friend
 import com.example.chatexu.presentation.Screen
-import com.example.chatexu.presentation.create_chat.CreateChatState
-import com.example.chatexu.presentation.create_chat.CreateChatViewModel
-import org.mongodb.kbson.BsonObjectId
-import kotlin.random.Random
 
 @Composable
 fun FriendLazyList(
@@ -33,9 +24,9 @@ fun FriendLazyList(
             FriendItem(
                 friend = friend,
                 onItemClick = {
-                    Log.d("PEEK", "Friend ${friend.nickname} clicked for user $userId.")
+//                    Log.d("PEEK", "Friend ${friend.nickname} clicked for user $userId.")
                     val chatId = getChatOrElseCreate(userId, friend.id)
-                    Log.d("PEEK", "item - Returned id: $chatId")
+//                    Log.d("PEEK", "item - Returned id: $chatId")
                     navController.navigate(Screen.ChatScreen.route + "/${userId}" + "/${chatId}")
                 }
             )

@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chatexu.common.Constants
 import com.example.chatexu.presentation.Screen
+import com.example.chatexu.presentation.add_friend.AddFriendScreen
 import com.example.chatexu.presentation.auth.AuthScreen
 import com.example.chatexu.presentation.auth.AuthScreenDebug
 import com.example.chatexu.presentation.chat.ChatScreen
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         startDestination = Screen.AuthScreen.route,
                     ) {
+
                         composable(
                             route = Screen.AuthScreen.route
                         ) {
@@ -63,6 +65,12 @@ class MainActivity : ComponentActivity() {
                             route = Screen.CreateChatScreen.route + "/{${Constants.PARAM_USER_ID}}"
                         ) {
                             CreateChatScreen(navController)
+                        }
+
+                        composable(
+                            route = Screen.AddFriendScreen.route + "/{${Constants.PARAM_USER_ID}}"
+                        ) {
+                            AddFriendScreen(navController)
                         }
 
                     }

@@ -3,16 +3,18 @@ package com.example.chatexu.data.remote
 import com.example.chatexu.common.Constants
 import com.example.chatexu.data.remote.dto.ChatRowDto
 import com.example.chatexu.data.remote.dto.FriendDto
+import com.example.chatexu.data.remote.dto.FriendRequestDto
 import com.example.chatexu.data.remote.dto.LoginDto
 import com.example.chatexu.data.remote.dto.MessageDto
 import com.example.chatexu.data.remote.dto.ParticipantsDto
 import com.example.chatexu.data.remote.dto.RegisterDto
 import com.example.chatexu.data.remote.dto.SendedMessageDto
 import com.example.chatexu.data.remote.dto.UserDto
-import com.example.chatexu.domain.model.User
+import com.example.chatexu.data.remote.dto.UserViewDto
 import org.jetbrains.annotations.TestOnly
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -41,12 +43,26 @@ interface ChatApi {
         @Path("userId") userId: String
     ): Response<List<FriendDto>>
 
+
+
+    @GET("${Constants.USER_MAPPING}/friendRequest/{userId}")
+    suspend fun getAllFriendRequestsForUser(
+        @Path("userId") userId: String
+    ): Response<List<FriendRequestDto>>
+
 //    @GET("${Constants.USER_MAPPING}/friends/{userId}/{partOfNickname}")
 //    suspend fun getUserFriendsByNickname(
 //        @Path("userId") userId: String,
 //        @Path("partOfNickname") partOfNickname: String,
 //    ): Response<List<FriendDto>>
-//
+
+    @GET("${Constants.USER_MAPPING}/nickname_part/{searcherId}/{partOfNickname}")
+    suspend fun getUsersByPartOfNickname(
+        @Path("searcherId") searcherId: String,
+        @Path("partOfNickname") partOfNickname: String,
+    ): Response<List<UserViewDto>>
+
+
 
     @POST("${Constants.MESSAGE_MAPPING}/send")
     suspend fun sendMessage(@Body sendedMessageDto: SendedMessageDto): Response<MessageDto>
@@ -59,6 +75,20 @@ interface ChatApi {
 
     @POST("${Constants.CHAT_MAPPING}/create")
     suspend fun getOrElseCreateChat(@Body participantsDto: ParticipantsDto): Response<String>
+
+    @POST("${Constants.USER_MAPPING}/friend/send_request/{senderId}/{recipientId}")
+    suspend fun sendFriendRequest(
+        @Path("senderId") senderId: String,
+        @Path("recipientId") recipientId: String
+    ): Response<FriendRequestDto>
+
+    @DELETE("${Constants.USER_MAPPING}/friendRequest/delete/{requestId}")
+    suspend fun deleteFriendRequest(
+        @Path("requestId") requestId: String
+    ): Response<Any> // no body
+
+//    @PutMapping("/friendRequest/accept/{friendRequestId}")
+//    @PostMapping("/friendRequest/reject/{friendRequestId}")
 
 
     @TestOnly

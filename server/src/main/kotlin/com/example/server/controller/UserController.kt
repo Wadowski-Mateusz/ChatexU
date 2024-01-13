@@ -1,5 +1,6 @@
 package com.example.server.controller
 
+import com.example.server.commons.default
 import com.example.server.converters.FriendRequestMapper
 import com.example.server.converters.UserMapper
 import com.example.server.dto.FriendDto
@@ -15,6 +16,7 @@ import com.example.server.service.ChatService
 import com.example.server.service.FriendRequestService
 import com.example.server.service.UserService
 import lombok.AllArgsConstructor
+import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -70,6 +72,32 @@ class UserController(
         }
     }
 
+    @GetMapping("/nickname_part/{searcherId}/{partOfNickname}")
+    fun getUserByPartOfNickname(
+        @PathVariable("searcherId") searcherId: String,
+        @PathVariable("partOfNickname") partOfNickname: String
+    ): ResponseEntity<List<UserViewDto>> {
+
+        return try {
+            val users: List<User> = userService.getUsersByPartOfNickname(partOfNickname)
+            val notBlockingUsers =
+                users.filterNot { foundUser ->
+                    userService.isUserBlockedByGivenUser(foundUser.userId.toString(), searcherId)
+                }
+            val notBlockingUsersDtos: List<UserViewDto> = notBlockingUsers.map { UserMapper.toViewDto(it) }
+            println("getUserByPartOfNickname size: ${notBlockingUsersDtos.size}")
+            ResponseEntity(notBlockingUsersDtos, HttpStatus.OK)
+        } catch (e: UserNotFoundException) {
+            ResponseEntity(HttpStatus.NO_CONTENT)
+        } catch (e: UserBlockedByGivenUserException) {
+            ResponseEntity(HttpStatus.CONFLICT)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+
     @GetMapping("/areFriends/{userId1}/{userId2}")
     fun areFriends(
         @PathVariable("userId1") userId1: String,
@@ -111,10 +139,14 @@ class UserController(
         @PathVariable("userId") userId: String
     ): ResponseEntity<List<FriendRequestDto>> {
         return try {
-            val requests = friendRequestService.findAllRequestsForUserAsRecipient(userId)
+//            val requests = friendRequestService.findAllRequestsForUserAsRecipient(userId)
+//                .map { FriendRequestMapper.toDto(it) }
+            val requests = friendRequestService.findAllRequestsForUser(userId)
                 .map { FriendRequestMapper.toDto(it) }
+            println("UserController::getAllFriendRequestsForUser() - size: ${requests.size}")
             ResponseEntity(requests, HttpStatus.OK)
         } catch (e: UserNotFoundException) {
+            e.printStackTrace()
             ResponseEntity(HttpStatus.BAD_REQUEST)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -142,6 +174,7 @@ class UserController(
             ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
+
 
 //    @GetMapping("/friends/{userId}/{phrase}")
 //    fun getUserFriendsByNickname(
@@ -174,18 +207,23 @@ class UserController(
         return try {
             if(userService.checkIfFriends(senderId, recipientId))
                 throw AlreadyFriendsException()
-            val isRequestCreated: Boolean = userService.createFriendRequest(senderId, recipientId)
-            if (isRequestCreated)
+            val request = userService.createFriendRequest(senderId, recipientId)
+            if (request.requestId.toString() != ObjectId().default().toString()) {
                 // request created
-                ResponseEntity(HttpStatus.CREATED)
-            else
+                val requestDto = FriendRequestMapper.toDto(request)
+                println("friend request success - id: ${request.requestId}")
+                ResponseEntity(requestDto, HttpStatus.CREATED)
+            }
+            else {
                 // request not created,
                 // because recipient has already sent request first,
                 // therefore friend has been added
+                println("already recived request from that user, creating friends")
                 ResponseEntity(HttpStatus.OK)
+            }
 
         } catch (e: UserBlockedByGivenUserException) {
-            println("blocked")
+            println("friend request - blocked user")
             ResponseEntity(HttpStatus.CONFLICT)
         } catch (e: FriendRequestAlreadyExistsException) {
             println("request exists")
@@ -198,6 +236,22 @@ class UserController(
             ResponseEntity(HttpStatus.OK)
         } catch (e: Exception) {
             e.printStackTrace()
+            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    // TODO same as rejectFriendRequest()?
+    @DeleteMapping("/friendRequest/delete/{requestId}")
+    fun deleteRequest(
+        @PathVariable("requestId") requestId: String
+    ): ResponseEntity<Any> {
+        return try {
+            friendRequestService.deleteRequest(requestId)
+            ResponseEntity(HttpStatus.OK)
+        } catch(e: UserNotFoundException) {
+            ResponseEntity(HttpStatus.OK)
+        } catch (e: Exception) {
+            println(e.printStackTrace())
             ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
@@ -242,12 +296,13 @@ class UserController(
 
     }
 
+    // TODO same as deleteRequest()?
     @PostMapping("/friendRequest/reject/{friendRequestId}")
     fun rejectFriendRequest(
         @PathVariable("friendRequestId") friendRequestId: String
     ): ResponseEntity<Any> {
         return try {
-            friendRequestService.rejectFriendRequest(friendRequestId)
+            friendRequestService.deleteRequest(friendRequestId)
             ResponseEntity(HttpStatus.OK)
         } catch(e: UserNotFoundException) {
             ResponseEntity(HttpStatus.OK)

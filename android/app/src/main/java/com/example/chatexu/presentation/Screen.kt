@@ -6,6 +6,7 @@ sealed class Screen(val route: String) {
     data object ChatListScreen: Screen("chat_list_screen")
     data object ChatScreen: Screen("chat_screen")
     data object CreateChatScreen: Screen("create_chat_screen")
+    data object AddFriendScreen: Screen("add_friend")
 
 
 }

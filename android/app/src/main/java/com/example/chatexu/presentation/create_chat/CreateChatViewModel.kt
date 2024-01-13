@@ -41,7 +41,7 @@ class CreateChatViewModel @Inject constructor(
                 getUserFriends(userId)
             }
 
-        Log.d("ASD", "id: ${state.value.userId}")
+//        Log.d(DebugConstants.PEEK, "id: ${state.value.userId}")
     }
 
     fun filterFriendsByNickname(partOfNickname: String) {
@@ -66,7 +66,7 @@ class CreateChatViewModel @Inject constructor(
             }
         }
 
-        Log.d("PEEK", chatId.data!!)
+//        Log.d("PEEK", chatId.data!!)
 
         return chatId.data!!
     }
@@ -77,7 +77,6 @@ class CreateChatViewModel @Inject constructor(
             when(result) {
                 is DataWrapper.Success -> {
                     Log.d("peek", "Success getUserFriends")
-                    Log.d(DebugConstants.TODO, "CreateChatViewModel.getUserFriends() - matching friends by phrase")
                     _state.value = _state.value.copy(
                         friends = result.data ?: emptyList<Friend>(),
                         matchingFriends = result.data ?: emptyList<Friend>(),
@@ -87,7 +86,6 @@ class CreateChatViewModel @Inject constructor(
                 }
                 is DataWrapper.Loading -> {
                     Log.d("peek", "Loading getUserFriends")
-                    Log.d(DebugConstants.VM_ERR, "Loading in: ChatListViewModel.")
                     _state.value = state.value.copy(
                         isLoading = true,
                         error = ""

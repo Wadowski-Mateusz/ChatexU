@@ -13,7 +13,7 @@ import javax.inject.Inject
 class GetAllUsersUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke(): Flow<DataWrapper<List<User>>>  = flow {
+    operator fun invoke(): Flow<DataWrapper<List<User>>> = flow {
         try {
             emit(DataWrapper.Loading<List<User>>())
             val users: List<User> = repository.getAllUsers()

@@ -70,9 +70,14 @@ class FriendRequestService(
     }
 
     @Transactional
-    fun rejectFriendRequest(friendRequestId: String) {
+    fun deleteRequest(friendRequestId: String) {
         val request = findById(friendRequestId)
         delete(request)
+    }
+
+    fun findAllRequestsForUser(userId: String): List<FriendRequest> {
+//        return friendRequestRepository.findAllByRecipientId(ObjectId(userId))
+        return findAllRequestsForUserAsRecipient(userId).toList() + findAllRequestsForUserAsSender(userId).toList()
     }
 
 }

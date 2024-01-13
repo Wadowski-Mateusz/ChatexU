@@ -2,11 +2,14 @@ package com.example.server.controller
 
 import com.example.server.commons.Constants
 import com.example.server.commons.default
+import com.example.server.converters.FriendRequestMapper
+import com.example.server.dto.FriendRequestDto
 import com.example.server.dto.MessageDto
 import com.example.server.model.Message
 import com.example.server.model.MessageType
 import com.example.server.model.TestDoc
 import com.example.server.model.User
+import com.example.server.repository.FriendRequestRepository
 import com.example.server.repository.TestRepository
 import com.example.server.repository.UserRepository
 import com.example.server.service.ChatService
@@ -25,6 +28,7 @@ import kotlin.random.Random
 @CrossOrigin
 class TestController(
     private val testRepository: TestRepository,
+    private val friendRequestRepository: FriendRequestRepository,
     private val messageService: MessageService,
     private val userRepository: UserRepository,
     private val chatService: ChatService,
@@ -140,6 +144,17 @@ class TestController(
             "user2: ${user2.userId.toHexString()}",
             "chat: $chatId"
         )
+
+    }
+
+    @TestOnly
+    @GetMapping("/requests")
+    fun allRequests(): List<FriendRequestDto> {
+
+
+        val a = friendRequestRepository.findAll()
+
+        return a.map { FriendRequestMapper.toDto(it) }
 
     }
 

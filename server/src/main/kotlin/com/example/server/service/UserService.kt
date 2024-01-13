@@ -1,6 +1,7 @@
 package com.example.server.service
 
 import com.example.server.commons.Constants
+import com.example.server.commons.default
 import com.example.server.dto.LoginDto
 import com.example.server.dto.RegisterDto
 import com.example.server.dto.UserDto
@@ -18,6 +19,7 @@ import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.pow
 
@@ -135,20 +137,21 @@ class UserService(
         return friends.contains(friend2Id)
     }
     @Transactional
-    fun createFriendRequest(senderId: String, recipientId: String): Boolean {
+    fun createFriendRequest(senderId: String, recipientId: String): FriendRequest {
 
         // if recipient has already sent request, then just make them friends
         val requests = friendRequestService.findAllRequestsForUserAsSender(recipientId)
         val existingRequest: FriendRequest? = requests.find { it.recipientId.toString() == senderId }
+
         if (existingRequest != null) {
             // no request created
             addFriend(existingRequest.requestId.toString())
-            return false
+            return FriendRequest(requestId = ObjectId().default(), senderId = ObjectId().default(), recipientId = ObjectId().default(), created = Instant.MIN)
         }
 
         val request = friendRequestService.createWithoutSave(senderId, recipientId)
-        friendRequestService.save(request)
-        return true
+        val savedRequest = friendRequestService.save(request)
+        return savedRequest
     }
 
     @Transactional
@@ -181,6 +184,7 @@ class UserService(
         return friendRequestService.findAllRequestsForUserAsRecipient(userId)
             .toList()
     }
+
     fun getUserFriends(userId: String, partOfNickname: String = ""): List<User> {
         val user = getById(userId)
 
@@ -192,6 +196,12 @@ class UserService(
             friends = friends.filter { it.nickname.contains(partOfNickname) }
         }
         return friends
+    }
+
+    fun getUsersByPartOfNickname(partOfNickname: String): List<User> {
+        val users = userRepository.findAllByNicknameLike(partOfNickname)
+        println(users.size)
+        return users
     }
 
 }

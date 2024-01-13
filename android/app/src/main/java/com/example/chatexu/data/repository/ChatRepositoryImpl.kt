@@ -6,6 +6,7 @@ import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.converters.ChatMapper
 import com.example.chatexu.converters.FriendMapper
+import com.example.chatexu.converters.FriendRequestMapper
 import com.example.chatexu.converters.MessageMapper
 import com.example.chatexu.converters.UserMapper
 import com.example.chatexu.data.remote.ChatApi
@@ -16,9 +17,11 @@ import com.example.chatexu.data.remote.dto.RegisterDto
 import com.example.chatexu.data.remote.dto.UserDto
 import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.model.Friend
+import com.example.chatexu.domain.model.FriendRequest
 import com.example.chatexu.domain.model.Message
 import com.example.chatexu.domain.model.User
 import com.example.chatexu.domain.repository.ChatRepository
+import okhttp3.internal.http.HTTP_OK
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -79,7 +82,6 @@ class ChatRepositoryImpl @Inject constructor(
         return user
     }
 
-
     override suspend fun getAllUsers(): List<User> {
         val userDtos: List<UserDto> = api.getAllUsers().body()
             ?: let {
@@ -113,6 +115,37 @@ class ChatRepositoryImpl @Inject constructor(
         val result = api.getOrElseCreateChat(participantsDto)
         return result.body() ?: "" // TODO id cannot be "", make sure of it
     }
+
+    override suspend fun sendFriendRequest(senderId: String, recipientId: String): FriendRequest {
+        Log.d(DebugConstants.PEEK, "repoImpl::sendFriendRequest() - start")
+        val result = api.sendFriendRequest(senderId, recipientId)
+        // todo errors (http codes)
+        Log.d(DebugConstants.PEEK, "repoImpl::sendFriendRequest() - ${result.body().toString()}")
+
+        return FriendRequestMapper.fromDto(result.body()!!)
+    }
+
+    override suspend fun deleteFriendRequest(requestId: String): Boolean {
+        val result = api.deleteFriendRequest(requestId)
+        return result.code() == HTTP_OK
+    }
+
+    override suspend fun getAllFriendRequestsForUser(userId: String): List<FriendRequest> {
+        Log.d(DebugConstants.PEEK, "ChatRepositoryImpl.getAllFriendRequestsForUser() - start")
+        val result = api.getAllFriendRequestsForUser(userId)
+        Log.d(DebugConstants.PEEK, "ChatRepositoryImpl.getAllFriendRequestsForUser() - fetched")
+        return result.body()!!.map { FriendRequestMapper.fromDto(it) }
+    }
+
+    override suspend fun getUsersByPartOfNickname(
+        userId: String,
+        partOfNickname: String
+    ): List<User> {
+        // todo exception handling
+        val result = api.getUsersByPartOfNickname(userId, partOfNickname)
+        return result.body()!!.map { UserMapper.toUser(it) }
+    }
+
 
     // maybe after adding refresh feature
 //    override suspend fun getUserFriendsByNickname(
