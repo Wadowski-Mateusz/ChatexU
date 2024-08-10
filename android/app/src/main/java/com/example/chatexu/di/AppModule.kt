@@ -5,7 +5,6 @@ import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.data.remote.ChatApi
 import com.example.chatexu.data.repository.ChatRepositoryImpl
-import com.example.chatexu.data.repository.ChatRepositoryTestImpl
 import com.example.chatexu.domain.repository.ChatRepository
 import dagger.Module
 import dagger.Provides
@@ -43,7 +42,7 @@ object AppModule {
         val url: String = when (UsedApi.API) {
             UsedApi.PRODUCTION_API -> {
                 Log.i(DebugConstants.INFO, "Using production API.")
-                Constants.BASE_URL
+                Constants.URL_BACKEND
             }
 //            UsedApi.TEST_API -> {
 //                Log.i(DebugConstants.INFO, "Using test API.")

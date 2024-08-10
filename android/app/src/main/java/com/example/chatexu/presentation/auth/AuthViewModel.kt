@@ -79,7 +79,7 @@ class AuthViewModel @Inject constructor(
                             users = emptyList(),
                             error = "",
                             isLoading = false,
-                            userId = result.data,
+                            userId = result.data
                         )
                     } else {
                         Log.e("PEEK", userId)
