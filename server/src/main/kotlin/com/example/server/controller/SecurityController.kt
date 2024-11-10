@@ -29,10 +29,8 @@ class SecurityController(
 
             ResponseEntity(userService.convertToDto(user), HttpStatus.OK)
         } catch (exception: DataAlreadyInTheDatabaseException) {
-
-            println("registerUser() - DataAlreadyInTheDatabase ${exception.message}")
+            println("registerUser() - DataAlreadyInTheDatabase ${exception.message} \n1 - Email\n2 - Nickname\n3-Username")
             ResponseEntity.status(HttpStatus.CONFLICT).body(exception.message)
-
         } catch (exception: Exception) {
             println("registerUser() - ${exception.message}")
             ResponseEntity.internalServerError().build()
@@ -41,18 +39,16 @@ class SecurityController(
 
 
     @PostMapping("/login")
-    fun login(@RequestBody loginDto: LoginDto): ResponseEntity<String> {
+    fun login(@RequestBody loginDto: LoginDto?): ResponseEntity<String> {
 
-        println("login")
+        loginDto ?: return ResponseEntity(HttpStatus.BAD_REQUEST)
+
         return try {
             val user: User = userService.login(loginDto)
-            println("success")
             ResponseEntity.status(HttpStatus.OK).body(user.userId.toString())
         } catch (e: BadLoginDataException) {
-            println("failure")
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         } catch (e: Exception) {
-            println("failure")
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
         }
     }

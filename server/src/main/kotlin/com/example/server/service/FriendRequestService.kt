@@ -1,9 +1,6 @@
 package com.example.server.service
 
-import com.example.server.exceptions.ErrorMessageCommons
-import com.example.server.exceptions.FriendRequestAlreadyExistsException
-import com.example.server.exceptions.UserBlockedByGivenUserException
-import com.example.server.exceptions.UserNotFoundException
+import com.example.server.exceptions.*
 import com.example.server.model.FriendRequest
 import com.example.server.repository.FriendRequestRepository
 import lombok.AllArgsConstructor
@@ -61,7 +58,7 @@ class FriendRequestService(
 
     fun findById(friendRequestId: String): FriendRequest {
         return friendRequestRepository.findById(friendRequestId).getOrNull()
-            ?: throw UserNotFoundException(ErrorMessageCommons.idNotFound(type = "friendRequest", id = friendRequestId))
+            ?: throw FriendRequestNotFoundException(ErrorMessageCommons.notFound(ClassName.FRIEND_REQUEST, Field.ID, friendRequestId))
     }
 
     @Transactional

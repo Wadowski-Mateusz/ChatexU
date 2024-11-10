@@ -2,9 +2,7 @@ package com.example.server.service
 
 import com.example.server.commons.default
 import com.example.server.dto.ChatViewDto
-import com.example.server.exceptions.ChatNotFoundException
-import com.example.server.exceptions.ErrorMessageCommons
-import com.example.server.exceptions.MessageNotFoundException
+import com.example.server.exceptions.*
 import com.example.server.model.Chat
 import com.example.server.model.ChatType
 import com.example.server.model.Message
@@ -38,12 +36,12 @@ class ChatService(private val chatRepository: ChatRepository) {
 
     fun findChatById(chatId: String): Chat {
         return chatRepository.findByChatId(chatId) ?:
-            throw ChatNotFoundException(ErrorMessageCommons.idNotFound("Chat", chatId))
+            throw ChatNotFoundException(ErrorMessageCommons.notFound(ClassName.CHAT, Field.ID, chatId))
     }
 
     fun findChatById(chatId: ObjectId): Chat {
         return chatRepository.findByChatId(chatId) ?:
-            throw ChatNotFoundException(ErrorMessageCommons.idNotFound("Chat", chatId.toHexString()))
+            throw ChatNotFoundException(ErrorMessageCommons.notFound(ClassName.CHAT, Field.ID, chatId.toHexString()))
     }
 
     fun save(chat: Chat): Chat {
@@ -66,7 +64,7 @@ class ChatService(private val chatRepository: ChatRepository) {
 
         // TODO what if second participant delete his account?
         val secondParticipantId = chat.participants.first { !it.toHexString().equals(viewerId) }
-        val secondParticipant = userService.getById(secondParticipantId)
+        val secondParticipant = userService.getUserById(secondParticipantId)
 //        val secondParticipant = userService.findUserById(secondParticipantId)
 
         val lastMessage = try {

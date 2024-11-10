@@ -3,7 +3,7 @@ package com.example.server.controller
 import com.example.server.commons.default
 import com.example.server.converters.MessageMapper
 import com.example.server.dto.MessageDto
-import com.example.server.dto.SendedMessageDto
+import com.example.server.dto.SentMessageDto
 import com.example.server.exceptions.MessageNotFoundException
 import com.example.server.model.Message
 import com.example.server.model.MessageType
@@ -43,12 +43,12 @@ class MessageController(private val messageService: MessageService) {
     }
 
     @PostMapping("/send")
-    fun sendMessage(@RequestBody sendedMessageDto: SendedMessageDto): ResponseEntity<MessageDto> {
+    fun sendMessage(@RequestBody sentMessageDto: SentMessageDto): ResponseEntity<MessageDto> {
 
         println("incoming message ${Instant.now()}") // TODO delete
         println(ObjectId().default()) // TODO delete
-        println(sendedMessageDto.replyTo)
-        val message = MessageMapper.fromSendedMessage(sendedMessageDto)
+        println(sentMessageDto.replyTo)
+        val message = MessageMapper.fromSendedMessage(sentMessageDto)
         println(message.replyTo)
         val savedMessage = messageService.save(message)
 

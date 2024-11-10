@@ -34,7 +34,7 @@ class UserController(
     @GetMapping("/get/{userId}")
     fun getUser(@PathVariable("userId") userId: String): ResponseEntity<UserDto> {
         return try {
-            val user = userService.getById(userId)
+            val user = userService.getUserById(userId)
             ResponseEntity(userService.convertToDto(user), HttpStatus.OK)
         } catch(e: UserNotFoundException) {
             ResponseEntity(null, HttpStatus.NOT_FOUND)
@@ -262,8 +262,8 @@ class UserController(
         @PathVariable("blockedUserId") blockedUserId: String
     ): ResponseEntity<Any> {
         return try {
-            val blockingUser = userService.getById(blockedUserId)
-            userService.getById(blockedUserId) // just to check if user exists
+            val blockingUser = userService.getUserById(blockedUserId)
+            userService.getUserById(blockedUserId) // just to check if user exists
             val updatedBlockedUsersSet = blockingUser.blockedUsers + blockedUserId
             userService.save(blockingUser.copy(blockedUsers = updatedBlockedUsersSet))
 

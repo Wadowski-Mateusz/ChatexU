@@ -8,6 +8,8 @@ data class UserViewDto @JsonCreator constructor(
     val id: String,
     @JsonProperty("nickname")
     val nickname: String,
+    @JsonProperty("username")
+    val username: String,
     @JsonProperty("icon")
     val icon: String,
 )

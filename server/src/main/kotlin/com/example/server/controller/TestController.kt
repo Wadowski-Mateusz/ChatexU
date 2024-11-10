@@ -5,6 +5,8 @@ import com.example.server.commons.default
 import com.example.server.converters.FriendRequestMapper
 import com.example.server.dto.FriendRequestDto
 import com.example.server.dto.MessageDto
+import com.example.server.dto.UserDto
+import com.example.server.exceptions.UserNotFoundException
 import com.example.server.model.Message
 import com.example.server.model.MessageType
 import com.example.server.model.TestDoc
@@ -14,9 +16,12 @@ import com.example.server.repository.TestRepository
 import com.example.server.repository.UserRepository
 import com.example.server.service.ChatService
 import com.example.server.service.MessageService
+import com.example.server.service.UserService
 import lombok.AllArgsConstructor
 import org.bson.types.ObjectId
 import org.jetbrains.annotations.TestOnly
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import kotlin.math.abs
@@ -32,6 +37,7 @@ class TestController(
     private val messageService: MessageService,
     private val userRepository: UserRepository,
     private val chatService: ChatService,
+    private val userService: UserService,
 ) {
 
     @GetMapping("/hello")
@@ -90,6 +96,7 @@ class TestController(
         val user = User(
             userId = ObjectId(),
             nickname = "User$random",
+            username = "User$random",
             email = "email${random}@mail.com",
             password = "pass",
             profilePictureUri = Constants.DEFAULT_PROFILE_URI,
@@ -114,6 +121,7 @@ class TestController(
         val user = User(
             userId = userId1,
             nickname = "User${random()}",
+            username = "User${random()}",
             email = "email${random()}@mail.com",
             password = "pass",
             profilePictureUri = Constants.DEFAULT_PROFILE_URI,
@@ -124,6 +132,7 @@ class TestController(
         val user2 = User(
             userId = userId2,
             nickname = "User${random()}",
+            username = "User${random()}",
             email = "email${random()}@mail.com",
             password = "pass",
             profilePictureUri = Constants.DEFAULT_PROFILE_URI,
@@ -155,6 +164,27 @@ class TestController(
         val a = friendRequestRepository.findAll()
 
         return a.map { FriendRequestMapper.toDto(it) }
+
+    }
+
+    @GetMapping("/getUserByEmail/{userEmail}")
+    fun getUserByEmail(
+        @PathVariable("userEmail")userEmail: String?
+    ): ResponseEntity<UserDto> {
+
+        if (userEmail.isNullOrBlank()) {
+            return ResponseEntity(HttpStatus.BAD_REQUEST)
+        }
+
+        try {
+            val user: User = userService.getUserByEmail(userEmail)
+            val userDto: UserDto = userService.convertToDto(user)
+            return ResponseEntity(userDto, HttpStatus.OK)
+        } catch (e: UserNotFoundException) {
+            return ResponseEntity(HttpStatus.I_AM_A_TEAPOT)
+        } catch (e: Exception) {
+            return ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
 
     }
 

@@ -13,8 +13,13 @@ data class User(
     @Field("_id")
     val userId: ObjectId = ObjectId(),
 
+    // visible by other users
     @Indexed(unique = true)
     val nickname: String,
+
+    // Authentication only, not visible by other users
+    @Indexed(unique = true)
+    val username: String,
 
     @Indexed(unique = true)
     val email: String,

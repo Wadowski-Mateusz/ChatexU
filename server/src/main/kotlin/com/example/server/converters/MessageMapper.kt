@@ -1,7 +1,7 @@
 package com.example.server.converters
 
 import com.example.server.dto.MessageDto
-import com.example.server.dto.SendedMessageDto
+import com.example.server.dto.SentMessageDto
 import com.example.server.model.Message
 import com.example.server.model.MessageType
 import org.bson.types.ObjectId
@@ -21,16 +21,16 @@ object MessageMapper {
         )
     }
 
-    fun fromSendedMessage(sendedMessageDto: SendedMessageDto): Message {
+    fun fromSendedMessage(sentMessageDto: SentMessageDto): Message {
         return Message(
             messageId = ObjectId(),
-            senderId = ObjectId(sendedMessageDto.senderId),
-            chatId = ObjectId(sendedMessageDto.chatId),
+            senderId = ObjectId(sentMessageDto.senderId),
+            chatId = ObjectId(sentMessageDto.chatId),
             timestamp = Instant.now(),
-            messageType = sendedMessageDto.messageType,
+            messageType = sentMessageDto.messageType,
             isEdited = false,
             deletedBy = emptyList(),
-            replyTo = ObjectId(sendedMessageDto.replyTo)
+            replyTo = ObjectId(sentMessageDto.replyTo)
         )
     }
 

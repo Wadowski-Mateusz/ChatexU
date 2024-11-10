@@ -18,7 +18,6 @@
 
 * ChatController
   * createChat() - what should be put as response, chat view, chat id, chatDto?
-     
 
 * Message
   * Should MessageContent be in the body of Message? 

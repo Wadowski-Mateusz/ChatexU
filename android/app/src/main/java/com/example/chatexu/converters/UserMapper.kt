@@ -18,6 +18,7 @@ object UserMapper {
         return User(
             id = userDto.userId,
             nickname = userDto.nickname,
+            username = userDto.username,
             friends = userDto.friends.map { it.toString() },
             icon = icon,
         )
@@ -31,6 +32,7 @@ object UserMapper {
         return User(
             id = userViewDto.id,
             nickname = userViewDto.nickname,
+            username = userViewDto.username,
             icon = icon,
             friends = emptyList(),
         )
@@ -40,6 +42,7 @@ object UserMapper {
         return User(
             id = friend.id,
             nickname = friend.nickname,
+            username = "NO USERNAME FOR FRIEND",
             icon = friend.icon,
             friends = emptyList(),
         )

@@ -8,6 +8,8 @@ data class UserDto(
     val userId: String,
     @JsonProperty("nickname")
     val nickname: String,
+    @JsonProperty("username")
+    val username: String,
     @JsonProperty("email")
     val email: String,
     @JsonProperty("password")

@@ -2,7 +2,9 @@ package com.example.server.service
 
 import com.example.server.commons.default
 import com.example.server.dto.MessageDto
+import com.example.server.exceptions.ClassName
 import com.example.server.exceptions.ErrorMessageCommons
+import com.example.server.exceptions.Field
 import com.example.server.exceptions.MessageNotFoundException
 import com.example.server.model.Message
 import com.example.server.model.MessageType
@@ -84,7 +86,7 @@ class MessageService(private val messageRepository: MessageRepository) {
 
     fun updateTextMessage(messageId: String, newContent: String): Message {
         val message = messageRepository.findMessageByMessageId(messageId)
-            ?: throw MessageNotFoundException(ErrorMessageCommons.idNotFound("message", messageId))
+            ?: throw MessageNotFoundException(ErrorMessageCommons.notFound(ClassName.MESSAGE, Field.ID, messageId))
         if (message.messageType !is MessageType.Text)
             throw IllegalArgumentException("Unexpected content type.")
 
