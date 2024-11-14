@@ -245,10 +245,13 @@ class UserController(
     fun deleteRequest(
         @PathVariable("requestId") requestId: String
     ): ResponseEntity<Any> {
+        println("/friendRequest/delete/{requestId}: request to delete $requestId")
         return try {
             friendRequestService.deleteRequest(requestId)
+            println("friendRequest/delete/{requestId}: = success http.OK")
             ResponseEntity(HttpStatus.OK)
         } catch(e: UserNotFoundException) {
+            println("/friendRequest/delete/{requestId}: UserNotFoundException()")
             ResponseEntity(HttpStatus.OK)
         } catch (e: Exception) {
             println(e.printStackTrace())

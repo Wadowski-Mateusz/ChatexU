@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.presentation.add_friend.AddFriendViewModel
 
@@ -19,12 +20,12 @@ fun RequestsLazyList(
         modifier = modifier
     ) {
         Log.d("enter", "RequestsLazyList")
-        items(items = state.users, key = {it.id}) {user ->
+        items(items = state.users, key = { it.id } ) { user ->
             if (state.outgoingRequests.keys.map { it.id } .contains(user.id))
                 RequestedUserItem(
                     user = user,
                     onItemClick = {
-                        Log.d("PEEK", "Undo user ${user.nickname}")
+                        Log.d(DebugConstants.PEEK, "RequestsLazyList - RequestedUserItem - delete friend request to user ${user.nickname} from ${state.userId}")
                         val requestToDelete = state.requests.first { it.recipientId == user.id }
                         viewModel.deleteFriendRequest(requestToDelete)
                     }
@@ -39,7 +40,7 @@ fun RequestsLazyList(
 
                 )
             }
-            else
+            else {
                 StrangerItem(
                     user = user,
                     onItemClick = {
@@ -47,6 +48,7 @@ fun RequestsLazyList(
                         viewModel.sendFriendRequest(user.id)
                     }
                 )
+            }
         }
 
 

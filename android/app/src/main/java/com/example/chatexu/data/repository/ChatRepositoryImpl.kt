@@ -128,8 +128,17 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteFriendRequest(requestId: String): Boolean {
-        val result = api.deleteFriendRequest(requestId)
-        return result.code() == HTTP_OK
+//          this throws an error on success and wont reload list of user requests
+//        val result = api.deleteFriendRequest(requestId)
+//        return result.code() == HTTP_OK
+//
+        // this works, but may stop on another error (such as http 500)
+        return try {
+            val result = api.deleteFriendRequest(requestId)
+            result.code() == HTTP_OK
+        } catch (e: Exception) {
+            false
+        }
     }
 
     override suspend fun getAllFriendRequestsForUser(userId: String): List<FriendRequest> {

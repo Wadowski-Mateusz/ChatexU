@@ -123,6 +123,7 @@ class AddFriendViewModel @Inject constructor(
                     // poniższe sprawia, że lista zostaje odświeżona
 //                    loadSuggestedUsers()//
                     loadFriendRequest()//
+
 //                    loadFriends()//
 //                    groupUsers()//
 
@@ -150,28 +151,41 @@ class AddFriendViewModel @Inject constructor(
     fun deleteFriendRequest(request: FriendRequest) {
 
         val requestId = request.requestId
-        Log.d(DebugConstants.PEEK, "Delete request $requestId")
+        Log.d(DebugConstants.PEEK, "AddFriendViewModel.deleteFriendRequest() - Delete request $requestId")
 
         val success = deleteFriendRequestUseCase(requestId)
 
         success.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
-                    Log.d(DebugConstants.PEEK, "Success sendFriendRequest, ${result.data}")
+                    Log.d(DebugConstants.PEEK, "AddFriendViewModel.deleteFriendRequest() - Enter success deleteFriendRequest, ${result.data}")
                     _state.value = _state.value.copy(
                         requests = _state.value.requests.filter { it.requestId != requestId },
                         addedUsers = _state.value.addedUsers.filter { it != request.recipientId }
                     )
+
+                    // TODO
+                    // bardzo brzydkie odświeżenie listy użytkowników
+                    // na liście użytkowników do dodania klikamy kogoś
+                    // nic się nie odświeża, ale request do bazy danych poszedł i się wykonał
+                    // poniższe sprawia, że lista zostaje odświeżona
+                    loadSuggestedUsers()//
+                    Thread.sleep(75) // dirty fix for async problem - when invoking loadFriendRequest() for the second time, for some reason it is not waiting for loadSuggestedUsers()
+                    loadFriendRequest()//
+                    loadFriends()//
+                    groupUsers()//
+
+
                 }
                 is DataWrapper.Loading -> {
-                    Log.d(DebugConstants.PEEK, "Loading sendFriendRequest")
+                    Log.d(DebugConstants.PEEK, "AddFriendViewModel.deleteFriendRequest() - Loading deleteFriendRequest")
                     _state.value = state.value.copy(
                         isLoading = true,
                         error = ""
                     )
                 }
                 is DataWrapper.Error -> {
-                    Log.d(DebugConstants.PEEK, "Error deleteFriendRequest")
+                    Log.e(DebugConstants.PEEK, "AddFriendViewModel.deleteFriendRequest() - Error deleteFriendRequest")
                     _state.value = _state.value.copy(
                         isLoading = false,
                         error = result.message ?: "Unknown error"
