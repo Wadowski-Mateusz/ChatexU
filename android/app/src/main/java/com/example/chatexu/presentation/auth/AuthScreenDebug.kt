@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -77,7 +78,7 @@ fun AuthScreenDebug(
                         navController.navigate(Screen.ChatListScreen.route  + "/${user.id}")
                     }
                 )
-                Divider(color = Color.Black, thickness = 1.dp)
+                HorizontalDivider(thickness = 1.dp, color = Color.Black)
             }
         }
 

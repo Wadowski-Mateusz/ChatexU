@@ -11,6 +11,7 @@ import com.example.chatexu.common.DataWrapper
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.converters.UserMapper
 import com.example.chatexu.domain.model.FriendRequest
+import com.example.chatexu.domain.model.User
 import com.example.chatexu.domain.use_case.debug.get_all_users.GetAllUsersUseCase
 import com.example.chatexu.domain.use_case.delete_friend_request_use_case.DeleteFriendRequestUseCase
 import com.example.chatexu.domain.use_case.get_user_friend_requests_use_case.GetUserFriendRequestsUseCase
@@ -20,6 +21,7 @@ import com.example.chatexu.domain.use_case.post_friend_request_use_case.PostFrie
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
@@ -45,6 +47,7 @@ class AddFriendViewModel @Inject constructor(
         )
 
         loadSuggestedUsers()
+        Thread.sleep(75) // dirty fix for async problem - when invoking loadFriendRequest() for the second time, for some reason it is not waiting for loadSuggestedUsers()
         loadFriendRequest()
         loadFriends()
 
@@ -112,6 +115,18 @@ class AddFriendViewModel @Inject constructor(
                         requests = _state.value.requests + result.data!!,
                         addedUsers = _state.value.addedUsers + userToAddId
                     )
+
+                    // TODO
+                    // bardzo brzydkie odświeżenie listy użytkowników
+                    // na liście użytkowników do dodania klikamy kogoś
+                    // nic się nie odświeża, ale request do bazy danych poszedł i się wykonał
+                    // poniższe sprawia, że lista zostaje odświeżona
+//                    loadSuggestedUsers()//
+                    loadFriendRequest()//
+//                    loadFriends()//
+//                    groupUsers()//
+
+
                 }
                 is DataWrapper.Loading -> {
                     Log.d(DebugConstants.PEEK, "Loading sendFriendRequest")
@@ -168,22 +183,27 @@ class AddFriendViewModel @Inject constructor(
     }
 
     private fun loadSuggestedUsers() {
+        Log.d("loadSuggestedUsers", "ENTER loadSuggestedUsers")
         val userId: String = _state.value.userId
+//        Log.d("loadSuggestedUsers", "1: $userId")
         val users = getAllUsersUseCase()
+//        Log.d("loadSuggestedUsers", "2")
         users.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
-                    Log.d(DebugConstants.PEEK, "Success loadSuggestedUsers")
+//                    Log.d("loadSuggestedUsers", "3: ENTER when success")
                     // all but current user
                     val u = result.data!!.filter { it.id != userId }
+//                    Log.d("loadSuggestedUsers", "4")
                     val friends = result.data.findLast { it.id == userId }!!.friends
-
+//                    Log.d("loadSuggestedUsers", "5: ${friends.size}")
                     _state.value = _state.value.copy(
                         users = u.filter { !friends.contains(it.id) }, // result.data ?: emptyList<User>(),
                         matchingUsers = u, // result.data ?: emptyList<User>(),
                         isLoading = false,
                         error = ""
                     )
+                    Log.d("loadSuggestedUsers", "FINAL: ${friends.size}")
                 }
                 is DataWrapper.Loading -> {
                     Log.d(DebugConstants.PEEK, "Loading loadSuggestedUsers")
@@ -207,23 +227,43 @@ class AddFriendViewModel @Inject constructor(
     private fun loadFriendRequest() {
         val userId: String = _state.value.userId
         val request = getUserFriendRequestsUseCase(userId)
+
         request.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
-                    Log.d(DebugConstants.PEEK, "Success loadFriendRequest")
-
-                    val userIds = _state.value.users.map { it.id }
-                    val requests = result.data!!
-                    val recipients = requests.map { it.recipientId }
+                    Log.d(DebugConstants.PEEK, "ENTER loadFriendRequest")
 
                     val users = _state.value.users
+//                        Log.d(DebugConstants.PEEK, "Success loadFriendRequest1 + request users size ${users.size}")
+//                        users.onEach { Log.w("I did baddy sender - user", it.id) }
+                    val userIds = users.map { it.id }
+//                        Log.d(DebugConstants.PEEK, "Success loadFriendRequest2")
+                    val requests = result.data!!
+//                        Log.d(DebugConstants.PEEK, "Success loadFriendRequest3 + requests size: ${requests.size} + ")
+                    val recipients = requests.map { it.recipientId }
+//                        Log.d(DebugConstants.PEEK, "Success loadFriendRequest4 + recipients.size = ${recipients.size}")
 
-                    val incomingRequests = requests
+                    // TODO TU SIE WYWALA
+                    val incomingRequests: Map<User, FriendRequest> = requests
                         .filter { it.recipientId == userId }
-                        .associateBy { request -> users.find { user -> user.id == request.senderId }!! }
+                        .associateBy { request ->
+//                            Log.d("I did baddy sender", "senderID ${request.senderId}")
+                            users.find { user -> user.id == request.senderId }!!
+                        }
+//                    Log.d(DebugConstants.PEEK, "Success loadFriendRequest5")
+
+
+                    // TODO TU SIE WYWALA
                     val outgoingRequests = requests
                         .filter { it.senderId == userId }
-                        .associateBy { request -> users.find { user -> user.id == request.recipientId }!! }
+                        .associateBy { request ->
+                            users.find { user ->
+//                                Log.d("I did baddy recipient", "${user.id} == ${request.recipientId}")
+                                user.id == request.recipientId
+                            }!!
+                        }
+
+//                    Log.d(DebugConstants.PEEK, "Success loadFriendRequest7 ${outgoingRequests.size}")
 
                     _state.value = _state.value.copy(
                         requests = requests, // todo check if possible to be null
@@ -233,6 +273,7 @@ class AddFriendViewModel @Inject constructor(
                         isLoading = false,
                         error = "",
                     )
+                    Log.d(DebugConstants.PEEK, "Success loadFriendRequest FINAL")
 
                 }
                 is DataWrapper.Loading -> {

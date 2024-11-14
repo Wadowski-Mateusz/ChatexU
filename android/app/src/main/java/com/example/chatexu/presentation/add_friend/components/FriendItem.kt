@@ -66,7 +66,8 @@ private fun ItemPreview() {
     val friend = User(
         id = Constants.ID_DEFAULT,
         nickname = "USER NICKNAME",
-        icon = null
+        icon = null,
+        username = "TEST USERNAME"
     )
 
     FriendItem(

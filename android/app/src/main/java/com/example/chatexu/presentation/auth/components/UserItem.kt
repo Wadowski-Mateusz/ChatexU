@@ -35,6 +35,6 @@ fun UserItem(
 @Preview
 @Composable
 fun Preview() {
-    val u = User("0123456789", "nickname user")
+    val u = User("0123456789", "nickname user", username = "USER USERNAME")
     UserItem(user = u, onItemClick = {})
 }

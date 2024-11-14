@@ -9,6 +9,7 @@ object DebugConstants {
     const val POTENTIAL_BUG = "POTENTIAL_BUG"
     const val INFO = "INFO"
     const val PEEK = "PEEK"
+    const val USE_CASE = "USE_CASE"
 
     val lorem: (Int) -> String = { words: Int -> LoremIpsum(words).values.reduce { acc, s -> acc + s }}
 

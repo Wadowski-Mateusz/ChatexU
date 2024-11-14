@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -94,7 +95,7 @@ fun ChatScreen(
 
 
             Icon(
-                Icons.Rounded.ArrowForward,
+                Icons.AutoMirrored.Rounded.ArrowForward,
                 contentDescription = "Send message",
                 modifier = Modifier
                     .clickable {

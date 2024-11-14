@@ -20,13 +20,13 @@ class PostFriendRequestUseCase @Inject constructor(
         try {
             emit(DataWrapper.Loading<FriendRequest>())
             val friendRequest = repository.sendFriendRequest(senderId, recipientId)
-            Log.d(DebugConstants.PEEK, "PostFriendRequestUseCase()")
+            Log.d(DebugConstants.USE_CASE, "PostFriendRequestUseCase()")
             emit(DataWrapper.Success<FriendRequest>(friendRequest))
         } catch(e: HttpException) {
-            Log.e(DebugConstants.PEEK, "PostFriendRequestUseCase() / e1 ${e.message.toString()}")
+            Log.e(DebugConstants.USE_CASE, "PostFriendRequestUseCase() / e1 ${e.message.toString()}")
             emit(DataWrapper.Error<FriendRequest>(e.localizedMessage ?: e.message.toString()))
         } catch(e: IOException) {
-            Log.e(DebugConstants.PEEK, "PostFriendRequestUseCase() / e2 ${e.message.toString()}")
+            Log.e(DebugConstants.USE_CASE, "PostFriendRequestUseCase() / e2 ${e.message.toString()}")
             emit(DataWrapper.Error<FriendRequest>("No internet connection."))
         }
 

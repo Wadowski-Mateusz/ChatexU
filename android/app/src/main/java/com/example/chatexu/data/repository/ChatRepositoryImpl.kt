@@ -85,9 +85,11 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun getAllUsers(): List<User> {
         val userDtos: List<UserDto> = api.getAllUsers().body()
             ?: let {
-                Log.d("peek", "getAllUsers - empty user list")
+                Log.d("ChatRepositoryImpl.getAllUsers()", "getAllUsers - empty user list")
                 emptyList()
             }
+        if(userDtos.isNotEmpty())
+            Log.d("ChatRepositoryImpl.getAllUsers()", "getAllUsers size: ${userDtos.size}")
         return userDtos.map { UserMapper.toUser(it) }
     }
 
