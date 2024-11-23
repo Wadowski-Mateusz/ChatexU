@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.chatexu.common.DebugConstants
+import com.example.chatexu.domain.model.User
 import com.example.chatexu.presentation.add_friend.AddFriendViewModel
 
 @Composable
@@ -19,10 +20,19 @@ fun RequestsLazyList(
         modifier = modifier
     ) {
         Log.d("enter", "RequestsLazyList")
-        items(items = state.users, key = { it.id } ) { user ->
+
+        val users = state.users
+
+        val listOfIncoming: List<User> = users.filter { it.id in state.incomingRequests.keys }
+        val listOfOutgoing: List<User> = users.filter { it.id in state.outgoingRequests.keys }
+        val listOfStrangers: List<User> = users.filter { it !in listOfIncoming && it !in listOfOutgoing }
+
+        val sortedListOfUsersToShow: List<User> = listOfIncoming + listOfOutgoing + listOfStrangers
+
+        items(items = sortedListOfUsersToShow, key = { it.id } ) { user ->
 
             if (state.outgoingRequests.keys.contains(user.id)) {
-//                Log.d(DebugConstants.IN_PROGRESS, user.nickname + "as outgoing")
+//                Log.d(DebugConstants.PEEK, user.nickname + "as outgoing")
                 RequestedUserItem(
                     user = user,
                     onItemClick = {
@@ -34,18 +44,18 @@ fun RequestsLazyList(
                 )
             }
             else if (state.incomingRequests.keys.map { it } .contains(user.id)) {
-//                Log.d(DebugConstants.IN_PROGRESS, user.nickname + "as incoming")
+//                Log.d(DebugConstants.PEEK, user.nickname + "as incoming")
                 IncomingRequestItem(
                     user = user,
                     onItemClickAccept = {
-                        Log.d(DebugConstants.IN_PROGRESS, "Accept incoming request from user ${user.nickname}")
+                        Log.d(DebugConstants.PEEK, "Accept incoming request from user ${user.nickname}")
 
                         val actionRequest = state.requests.first { it.senderId == user.id }
                         viewModel.acceptFriendRequest(actionRequest)
                         // TODO
                     },
                     onItemClickReject = {
-                        Log.d(DebugConstants.IN_PROGRESS, "Reject incoming request from user ${user.nickname}")
+                        Log.d(DebugConstants.PEEK, "Reject incoming request from user ${user.nickname}")
                         val actionRequest = state.requests.first { it.senderId == user.id }
                         viewModel.rejectFriendRequest(actionRequest)
                         // TODO
@@ -53,7 +63,7 @@ fun RequestsLazyList(
                 )
             }
             else {
-//                Log.d(DebugConstants.IN_PROGRESS, user.nickname + "as default")
+//                Log.d(DebugConstants.PEEK, user.nickname + "as default")
                 // this if may broke something in the future
                 // implemented so after accepting friend request, request diapers from list of request
                 val requestSenders = state.acceptedRequests.map { it.senderId }.toSet()

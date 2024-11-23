@@ -61,7 +61,7 @@ fun AddFriendScreen(
         SearchBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(1.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             query = phrase.value,
             onQueryChange = { phrase.value = it },
             onSearch = { search() },

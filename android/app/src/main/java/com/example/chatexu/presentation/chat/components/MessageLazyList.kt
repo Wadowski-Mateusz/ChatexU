@@ -28,7 +28,9 @@ fun MessageLazyList(
 
 
         LazyColumn(
-            modifier = modifier
+            modifier = modifier,
+            verticalArrangement = Arrangement.Bottom
+//                    reverseLayout = true,
         ) {
             items(items = messages, key = { it.messageId }) { message ->
 
@@ -44,8 +46,6 @@ fun MessageLazyList(
                     if(message.senderId == userId)
                         Arrangement.End
                     else Arrangement.Start
-
-
 
                 Row(
                     modifier = Modifier

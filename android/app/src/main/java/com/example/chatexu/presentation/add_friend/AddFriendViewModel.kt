@@ -430,25 +430,11 @@ class AddFriendViewModel @Inject constructor(
         val incomingRequests = state.incomingRequests
         val outgoingRequests = state.outgoingRequests
         val friends = state.friends
-//        val strangers = users
-//            .filterNot {
-//                incomingRequests.keys
-//                    .map { user -> user.id }
-//                    .contains(it.id) }
-//            .filterNot {
-//                outgoingRequests.keys
-//                .map { user -> user.id }
-//                .contains(it.id) }
-//            .filterNot {
-//                friends
-//                    .map { friend -> friend.id }
-//                    .contains(it.id)
-//            }
 
-        val strangers = users
-            .filterNot { incomingRequests.keys.contains(it.id) }
-            .filterNot { outgoingRequests.keys.contains(it.id) }
-            .filterNot { friends.contains(it.id) }
+//        val strangers = users
+//            .filterNot { incomingRequests.keys.contains(it.id) }
+//            .filterNot { outgoingRequests.keys.contains(it.id) }
+//            .filterNot { friends.contains(it.id) }
 
 
         _state.value = state.copy(

@@ -25,7 +25,6 @@ fun ChatMessageItem(
     viewerId: String,
 ) {
 
-    val rounder = 25
 
     when(message.messageType) {
             // TODO messages types
@@ -35,7 +34,10 @@ fun ChatMessageItem(
                     color = Color.White,
                     softWrap = true,
                     modifier = Modifier
-                        .background(color = Color.Blue, shape = RoundedCornerShape(rounder))
+                        .background(
+                            color = Color.Blue,
+                            shape = RoundedCornerShape(8.dp)
+                        )
                         .padding(horizontal = 20.dp, vertical = 10.dp)
 //                .padding(10.dp)
 //                .fillMaxSize(),
@@ -48,7 +50,7 @@ fun ChatMessageItem(
                     color = Color.White,
                     softWrap = true,
                     modifier = Modifier
-                        .background(color = Color.Blue, shape = RoundedCornerShape(rounder))
+                        .background(color = Color.Blue, shape = RoundedCornerShape(8.dp))
                         .padding(horizontal = 20.dp, vertical = 10.dp)
 //                .padding(10.dp)
 //                .fillMaxSize(),
@@ -61,7 +63,7 @@ fun ChatMessageItem(
                     color = Color.White,
                     softWrap = true,
                     modifier = Modifier
-                        .background(color = Color.Blue, shape = RoundedCornerShape(rounder))
+                        .background(color = Color.Blue, shape = RoundedCornerShape(8.dp))
                         .padding(horizontal = 20.dp, vertical = 10.dp)
 //                .padding(10.dp)
 //                .fillMaxSize(),
@@ -74,7 +76,7 @@ fun ChatMessageItem(
                     color = Color.White,
                     softWrap = true,
                     modifier = Modifier
-                        .background(color = Color.Blue, shape = RoundedCornerShape(rounder))
+                        .background(color = Color.Blue, shape = RoundedCornerShape(8.dp))
                         .padding(horizontal = 20.dp, vertical = 10.dp)
 //                .padding(10.dp)
 //                .fillMaxSize(),
