@@ -82,13 +82,20 @@ interface ChatApi {
         @Path("recipientId") recipientId: String
     ): Response<FriendRequestDto>
 
+    @POST("${Constants.USER_MAPPING}/friendRequest/accept/{requestId}")
+    suspend fun acceptFriendRequest(
+        @Path("requestId") requestId: String
+    ): Response<Any> // no body
+
     @DELETE("${Constants.USER_MAPPING}/friendRequest/delete/{requestId}")
     suspend fun deleteFriendRequest(
         @Path("requestId") requestId: String
     ): Response<Any> // no body
 
-//    @PutMapping("/friendRequest/accept/{friendRequestId}")
-//    @PostMapping("/friendRequest/reject/{friendRequestId}")
+    @DELETE("${Constants.USER_MAPPING}/friendRequest/reject/{friendRequestId}")
+    suspend fun rejectFriendRequest(
+        @Path("friendRequestId") friendRequestId: String
+    ): Response<Any> // no body
 
 
     @TestOnly

@@ -10,9 +10,8 @@ object DebugConstants {
     const val INFO = "INFO"
     const val PEEK = "PEEK"
     const val USE_CASE = "USE_CASE"
+    const val IN_PROGRESS = "IN_PROGRESS"
 
     val lorem: (Int) -> String = { words: Int -> LoremIpsum(words).values.reduce { acc, s -> acc + s }}
-
-    val chekIp = Log.e("PEEK", "CHECK IP IN CONSTS, IT MAY CHANGES")
 
 }

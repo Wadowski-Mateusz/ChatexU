@@ -99,7 +99,7 @@ class UserController(
 
 
     @GetMapping("/areFriends/{userId1}/{userId2}")
-    fun areFriends(
+    fun checkAreUserFriends(
         @PathVariable("userId1") userId1: String,
         @PathVariable("userId2") userId2: String
     ): ResponseEntity<Boolean> {
@@ -280,13 +280,13 @@ class UserController(
         }
     }
 
-    @PutMapping("/friendRequest/accept/{friendRequestId}")
-    fun addFriend(
+    @PostMapping("/friendRequest/accept/{friendRequestId}")
+    fun acceptFriendRequest(
         @PathVariable("friendRequestId") friendRequestId: String
     ): ResponseEntity<Any> {
 
         return try {
-            userService.addFriend(friendRequestId)
+            userService.acceptFriendRequest(friendRequestId)
             ResponseEntity(HttpStatus.OK)
         } catch(e: UserNotFoundException) {
             ResponseEntity(HttpStatus.BAD_REQUEST)
@@ -296,11 +296,10 @@ class UserController(
             println(e.printStackTrace())
             ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
         }
-
     }
 
     // TODO same as deleteRequest()?
-    @PostMapping("/friendRequest/reject/{friendRequestId}")
+    @DeleteMapping("/friendRequest/reject/{friendRequestId}")
     fun rejectFriendRequest(
         @PathVariable("friendRequestId") friendRequestId: String
     ): ResponseEntity<Any> {

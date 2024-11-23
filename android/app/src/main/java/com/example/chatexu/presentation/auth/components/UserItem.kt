@@ -27,8 +27,8 @@ fun UserItem(
             .clickable { onItemClick(user) }
             .padding(16.dp)
     ) {
-        Text(text = "id: ${user.id.takeLast(4)}", modifier = Modifier.padding(8.dp))
-        Text(text = "nickname: ${user.nickname}", modifier = Modifier.padding(8.dp))
+        //Text(text = "id: ${user.id.takeLast(4)}", modifier = Modifier.padding(8.dp))
+        Text(text = /*"nickname: */"${user.nickname}", modifier = Modifier.padding(8.dp))
     }
 }
 

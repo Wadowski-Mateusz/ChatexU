@@ -40,10 +40,13 @@ interface ChatRepository {
 
     suspend fun sendFriendRequest(senderId: String, recipientId: String): FriendRequest
     suspend fun deleteFriendRequest(requestId: String): Boolean
+    suspend fun postAcceptFriendRequest(requestId: String): Boolean
 
     suspend fun getAllFriendRequestsForUser(userId: String): List<FriendRequest>
 
     suspend fun getUsersByPartOfNickname(userId: String, partOfNickname: String): List<User>
+    suspend fun rejectFriendRequest(requestId: String): Boolean
+
 
 //    suspend fun getUserFriendsByNickname(userId: String, partOfNickname: String): List<Friend>
 

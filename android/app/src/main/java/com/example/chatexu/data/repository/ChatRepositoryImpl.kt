@@ -141,6 +141,15 @@ class ChatRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun postAcceptFriendRequest(requestId: String): Boolean {
+        return try {
+            val result = api.acceptFriendRequest(requestId)
+            result.code() == HTTP_OK
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     override suspend fun getAllFriendRequestsForUser(userId: String): List<FriendRequest> {
         Log.d(DebugConstants.PEEK, "ChatRepositoryImpl.getAllFriendRequestsForUser() - start")
         val result = api.getAllFriendRequestsForUser(userId)
@@ -155,6 +164,15 @@ class ChatRepositoryImpl @Inject constructor(
         // todo exception handling
         val result = api.getUsersByPartOfNickname(userId, partOfNickname)
         return result.body()!!.map { UserMapper.toUser(it) }
+    }
+
+    override suspend fun rejectFriendRequest(requestId: String): Boolean {
+        return try {
+            val result = api.rejectFriendRequest(requestId)
+            result.code() == HTTP_OK
+        } catch (e: Exception) {
+            false
+        }
     }
 
 

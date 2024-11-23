@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -18,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -31,20 +34,22 @@ import com.example.chatexu.domain.model.User
 import com.example.chatexu.presentation.getUserErrorIcon
 import com.example.chatexu.presentation.ui.theme.LightGreen
 
+
 @Composable
 fun IncomingRequestItem(
     user: User,
-    onItemClick: (User) -> Unit
+    onItemClickAccept: (User) -> Unit,
+    onItemClickReject: (User) -> Unit,
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onItemClick(user) }
+            //.clickable { onItemClick(user) }
             .background(LightGreen)
             .padding(8.dp)
     ) {
-        val iconSize = 36.dp
-        val iconPadding = 4.dp
+        val iconSize = 72.dp
+        val iconPadding = 8.dp
         val friendProfileIcon: Bitmap = user.icon ?: getUserErrorIcon(LocalContext.current)
 
         Row(
@@ -52,46 +57,117 @@ fun IncomingRequestItem(
                 .align(Alignment.CenterStart)
                 .padding(end = iconSize * 2)
             , verticalAlignment = Alignment.CenterVertically
-
         ) {
             Image(
                 modifier = Modifier
                     .padding(start = 8.dp)
-                    .size(iconSize),
-                bitmap = friendProfileIcon.asImageBitmap(),
-                contentDescription = "User icon"
+                    .size(iconSize)
+                , bitmap = friendProfileIcon.asImageBitmap()
+                , contentDescription = "User icon"
             )
 
             Text(
-                text = user.nickname,
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-                modifier = Modifier.padding(start = 8.dp)
+                text = user.nickname
+                , fontWeight = FontWeight.Bold
+                , fontSize = 24.sp
+                , overflow = TextOverflow.Ellipsis
+                , maxLines = 1
+                , modifier = Modifier.padding(start = 8.dp)
             )
         }
 
         Row(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .background(Color.Blue),
-            horizontalArrangement = Arrangement.End
+                //.background(Color.Blue)
+            , horizontalArrangement = Arrangement.End
         ) {
-            Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = "Accept request",
-                modifier = Modifier.size(iconSize).padding(iconPadding),
+
+            Icon( // Accept
+                imageVector = Icons.Default.Check
+                , contentDescription = "Accept request"
+                , modifier = Modifier.size(iconSize)
+                    .padding(iconPadding)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color.Green)
+                    .clickable { onItemClickAccept(user) }
             )
 
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Reject request",
-                modifier = Modifier.size(iconSize).padding(iconPadding),
+            Icon( // Reject
+                imageVector = Icons.Default.Close
+                , contentDescription = "Reject request"
+                , modifier = Modifier.size(iconSize)
+                    .padding(iconPadding)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color.Red)
+                    .clickable { onItemClickReject(user) }
             )
         }
     }
 }
+
+
+//@Composable
+//fun IncomingRequestItem(
+//    user: User,
+//    onItemClick: (User) -> Unit
+//) {
+//    Box(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .clickable { onItemClick(user) }
+//            .background(LightGreen)
+//            .padding(8.dp)
+//    ) {
+//        val iconSize = 36.dp
+//        val iconPadding = 4.dp
+//        val friendProfileIcon: Bitmap = user.icon ?: getUserErrorIcon(LocalContext.current)
+//
+//        Row(
+//            modifier = Modifier
+//                .align(Alignment.CenterStart)
+//                .padding(end = iconSize * 2)
+//            , verticalAlignment = Alignment.CenterVertically
+//
+//        ) {
+//            Image(
+//                modifier = Modifier
+//                    .padding(start = 8.dp)
+//                    .size(iconSize),
+//                bitmap = friendProfileIcon.asImageBitmap(),
+//                contentDescription = "User icon"
+//            )
+//
+//            Text(
+//                text = user.nickname,
+//                fontWeight = FontWeight.Bold,
+//                fontSize = 24.sp,
+//                overflow = TextOverflow.Ellipsis,
+//                maxLines = 1,
+//                modifier = Modifier.padding(start = 8.dp)
+//            )
+//        }
+//
+//        Row(
+//            modifier = Modifier
+//                .align(Alignment.CenterEnd)
+//                .background(Color.Blue),
+//            horizontalArrangement = Arrangement.End
+//        ) {
+//            Icon(
+//                imageVector = Icons.Default.Check,
+//                contentDescription = "Accept request",
+//                modifier = Modifier.size(iconSize).padding(iconPadding),
+//            )
+//
+//            Icon(
+//                imageVector = Icons.Default.Close,
+//                contentDescription = "Reject request",
+//                modifier = Modifier.size(iconSize).padding(iconPadding),
+//            )
+//        }
+//    }
+//}
 
 
 @Preview(showBackground = true)
@@ -106,6 +182,6 @@ private fun ItemPreview() {
 
     IncomingRequestItem(
         user = friend,
-        {}
+        {}, {}
     )
 }

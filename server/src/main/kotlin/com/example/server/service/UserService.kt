@@ -392,7 +392,7 @@ class UserService(
 
         if (existingRequest != null) {
             // no request created
-            addFriend(existingRequest.requestId.toString())
+            acceptFriendRequest(existingRequest.requestId.toString())
             return FriendRequest(
                 requestId = ObjectId().default(),
                 senderId = ObjectId().default(),
@@ -418,15 +418,15 @@ class UserService(
         IllegalArgumentException::class,
         UserBlockedByGivenUserException::class
     )
-    fun addFriend(friendRequestId: String) {
+    fun acceptFriendRequest(friendRequestId: String) {
 
-        logger.info("UserService.addFriend()")
+        logger.info("UserService.acceptFriendRequest()")
 
         require( ObjectId.isValid(friendRequestId) ) {
             ErrorMessageCommons.objectIdIsNotValid(
                 objectIdValue = friendRequestId,
                 className = ClassName.FRIEND_REQUEST,
-                functionName = "UserService.addFriend()"
+                functionName = "UserService.acceptFriendRequest()"
             )
         }
 
