@@ -17,6 +17,7 @@ import com.example.server.service.FriendRequestService
 import com.example.server.service.UserService
 import lombok.AllArgsConstructor
 import org.bson.types.ObjectId
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -30,6 +31,8 @@ class UserController(
     private val friendRequestService: FriendRequestService,
     private val chatService: ChatService,
 ) {
+
+    private val logger = LoggerFactory.getLogger(UserController::class.java)
 
     @GetMapping("/get/{userId}")
     fun getUser(@PathVariable("userId") userId: String): ResponseEntity<UserDto> {
@@ -80,12 +83,14 @@ class UserController(
 
         return try {
             val users: List<User> = userService.getUsersByPartOfNickname(partOfNickname)
+            // TODO move notBlockingUsers to Service
             val notBlockingUsers =
                 users.filterNot { foundUser ->
                     userService.isUserBlockedByGivenUser(foundUser.userId.toString(), searcherId)
                 }
             val notBlockingUsersDtos: List<UserViewDto> = notBlockingUsers.map { UserMapper.toViewDto(it) }
-            println("getUserByPartOfNickname size: ${notBlockingUsersDtos.size}")
+            logger.info("UserController.getUserByPartOfNickname() size: ${notBlockingUsersDtos.size}")
+            notBlockingUsersDtos.forEach{logger.info("fetched users: ${ it.nickname }")}
             ResponseEntity(notBlockingUsersDtos, HttpStatus.OK)
         } catch (e: UserNotFoundException) {
             ResponseEntity(HttpStatus.NO_CONTENT)

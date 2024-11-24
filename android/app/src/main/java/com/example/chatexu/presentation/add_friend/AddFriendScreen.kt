@@ -36,11 +36,11 @@ fun AddFriendScreen(
 ) {
     val state = viewModel.state.value
     val phrase = remember { mutableStateOf("") }
-    val active = remember { mutableStateOf(false) }
+    val isSearchActive = remember { mutableStateOf(false) }
 
     val search = {
         viewModel.filterUsersByNickname(phrase.value)
-        active.value = false
+        isSearchActive.value = false
     }
 
 
@@ -65,8 +65,8 @@ fun AddFriendScreen(
             query = phrase.value,
             onQueryChange = { phrase.value = it },
             onSearch = { search() },
-            active = active.value,
-            onActiveChange = { active.value = it },
+            active = isSearchActive.value,
+            onActiveChange = { isSearchActive.value = it },
             placeholder = { Text(text = "User nickname") },
             leadingIcon = {
                 Icon(
@@ -76,11 +76,12 @@ fun AddFriendScreen(
                 )
                           },
             trailingIcon = {
-                if (active.value) {
+                if (isSearchActive.value) {
                     Icon(
                         modifier = Modifier.clickable {
                             if (phrase.value.isEmpty()) {
-                                active.value = false
+                                isSearchActive.value = false
+                                viewModel.reload()
                             }
                             phrase.value = ""
                         },

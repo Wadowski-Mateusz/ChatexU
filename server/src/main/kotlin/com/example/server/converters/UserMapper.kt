@@ -13,7 +13,7 @@ object UserMapper {
     fun toViewDto(user: User): UserViewDto {
         val userId = user.userId.toString()
         val icon = getProfileIcon(userId)
-        return UserViewDto(userId = userId, nickname = user.nickname, icon = icon)
+        return UserViewDto(userId = userId, nickname = user.nickname, username = user.username, icon = icon)
     }
     
     fun toFriendDto(userId: String, friend: User, chatService: ChatService): FriendDto {

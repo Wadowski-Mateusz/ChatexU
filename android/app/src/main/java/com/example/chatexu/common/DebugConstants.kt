@@ -11,6 +11,7 @@ object DebugConstants {
     const val PEEK = "PEEK"
     const val USE_CASE = "USE_CASE"
     const val IN_PROGRESS = "IN_PROGRESS"
+    const val RESOURCE_LOADING = "RESOURCE_LOADING"
 
     val lorem: (Int) -> String = { words: Int -> LoremIpsum(words).values.reduce { acc, s -> acc + s }}
 

@@ -19,46 +19,43 @@ fun RequestsLazyList(
     LazyColumn(
         modifier = modifier
     ) {
-        Log.d("enter", "RequestsLazyList")
 
         val users = state.users
 
-        val listOfIncoming: List<User> = users.filter { it.id in state.incomingRequests.keys }
-        val listOfOutgoing: List<User> = users.filter { it.id in state.outgoingRequests.keys }
+        val incomingRequestSenders: List<String> = state.incomingRequests.map { it.senderId }
+        val outgoingRequestRecipients: List<String> = state.outgoingRequests.map { it.recipientId }
+
+        val listOfIncoming: List<User> = users.filter { it.id in incomingRequestSenders }
+        val listOfOutgoing: List<User> = users.filter { it.id in outgoingRequestRecipients }
         val listOfStrangers: List<User> = users.filter { it !in listOfIncoming && it !in listOfOutgoing }
 
         val sortedListOfUsersToShow: List<User> = listOfIncoming + listOfOutgoing + listOfStrangers
 
         items(items = sortedListOfUsersToShow, key = { it.id } ) { user ->
-
-            if (state.outgoingRequests.keys.contains(user.id)) {
-//                Log.d(DebugConstants.PEEK, user.nickname + "as outgoing")
+            if (user.id in outgoingRequestRecipients) {
                 RequestedUserItem(
                     user = user,
                     onItemClick = {
-                        Log.d(DebugConstants.PEEK, "RequestsLazyList.RequestedUserItem() - " +
-                                "delete friend request to user ${user.nickname} from ${state.currentUserId}")
+//                        Log.d(DebugConstants.PEEK, "RequestsLazyList.RequestedUserItem() - " +
+//                                "delete friend request to user ${user.nickname} from ${state.currentUserId}")
                         val requestToDelete = state.requests.first { it.recipientId == user.id }
                         viewModel.deleteFriendRequest(requestToDelete)
                     }
                 )
             }
-            else if (state.incomingRequests.keys.map { it } .contains(user.id)) {
-//                Log.d(DebugConstants.PEEK, user.nickname + "as incoming")
+            else if (user.id in incomingRequestSenders) {
                 IncomingRequestItem(
                     user = user,
                     onItemClickAccept = {
-                        Log.d(DebugConstants.PEEK, "Accept incoming request from user ${user.nickname}")
+//                        Log.d(DebugConstants.PEEK, "Accept incoming request from user ${user.nickname}")
 
                         val actionRequest = state.requests.first { it.senderId == user.id }
                         viewModel.acceptFriendRequest(actionRequest)
-                        // TODO
                     },
                     onItemClickReject = {
-                        Log.d(DebugConstants.PEEK, "Reject incoming request from user ${user.nickname}")
+//                        Log.d(DebugConstants.PEEK, "Reject incoming request from user ${user.nickname}")
                         val actionRequest = state.requests.first { it.senderId == user.id }
                         viewModel.rejectFriendRequest(actionRequest)
-                        // TODO
                     }
                 )
             }
