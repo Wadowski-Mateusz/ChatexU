@@ -18,7 +18,7 @@ sudo systemctl start docker.service
 
 ### Start containers:
 ```
-docker build -t chatexu-server:0.1.0 .
+docker build -t chatexu-server:0.1.1 .
 ```
 ```
 docker compose up
@@ -36,18 +36,17 @@ You should see: `Hello world!`
 
 ## Android Studio
 
-### (If application is not working) Set IPv4 address of server
+###  Set IPv4 address of server
 
 Go to *android/app/src/main/java/com/example/chatexu/common/Constants.kt* 
 
 
-1) Uncomment line with Your operating System
+1) Find line with BASE_URL constant
 
 ![Alt text](readme_screens/urls.png)
 
-2) If application is still not working
+2)  Find and copy paste Docker's IP
 
-### Find and copy paste Docker's IP
 \
 Windows 
 ``` 
@@ -97,7 +96,7 @@ docker rm chatexu-server
 
 ### Remove `chatexu server` image:
 ```
-docker rmi chatexu-server:0.1.0
+docker rmi chatexu-server:0.1.1
 ```
 
 ### (Optional) Remove other images, if no longer needed:

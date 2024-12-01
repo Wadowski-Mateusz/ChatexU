@@ -15,23 +15,23 @@ services:
     networks:
       - app-network
   
-  chatexu-test-db:
-    container_name: chatexu-test-db
-    image: mongo
-    restart: always
-    ports:
-      - '27018:27017' # Use a different port for the test database
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: test
-      MONGO_INITDB_ROOT_PASSWORD: test
-    volumes:
-      - mongo-test:/var/lib
-    networks:
-      - app-network
+  # chatexu-test-db:
+  #   container_name: chatexu-test-db
+  #   image: mongo
+  #   restart: always
+  #   ports:
+  #     - '27018:27017' # Use a different port for the test database
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: test
+  #     MONGO_INITDB_ROOT_PASSWORD: test
+  #   volumes:
+  #     - mongo-test:/var/lib
+  #   networks:
+  #     - app-network
 
   chatexu-server:
     container_name: chatexu-server
-    image: chatexu-server:0.1.0
+    image: chatexu-server:0.1.1
     ports:
       - '8091:8091'
     networks:
@@ -41,7 +41,7 @@ services:
 
 volumes:
   mongo:
-  mongo-test:
+  # mongo-test:
 
 networks:
  app-network:
