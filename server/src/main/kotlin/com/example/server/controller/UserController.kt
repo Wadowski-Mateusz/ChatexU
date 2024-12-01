@@ -327,4 +327,22 @@ class UserController(
         TODO("Not yet implemented")
     }
 
+    @DeleteMapping("/friend/delete/{userId}/{friendId}")
+    fun deleteFriend(
+        @PathVariable("userId") userId: String,
+        @PathVariable("friendId") friendId: String,
+    ): ResponseEntity<Boolean> {
+        return try {
+            ResponseEntity(
+                userService.deleteFriend(userId, friendId),
+                HttpStatus.OK
+            )
+        } catch(e: UserNotFoundException) {
+            ResponseEntity(HttpStatus.OK)
+        } catch (e: Exception) {
+            println(e.printStackTrace())
+            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
 }

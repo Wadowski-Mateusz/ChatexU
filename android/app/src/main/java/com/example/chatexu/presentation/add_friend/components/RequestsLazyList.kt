@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.chatexu.common.DebugConstants
+import com.example.chatexu.domain.model.Friend
 import com.example.chatexu.domain.model.User
 import com.example.chatexu.presentation.add_friend.AddFriendViewModel
 
@@ -24,6 +25,8 @@ fun RequestsLazyList(
 
         val incomingRequestSenders: List<String> = state.incomingRequests.map { it.senderId }
         val outgoingRequestRecipients: List<String> = state.outgoingRequests.map { it.recipientId }
+
+        val friendsIDs: List<String> = state.friends + state.acceptedRequests.map { it.senderId }
 
         val listOfIncoming: List<User> = users.filter { it.id in incomingRequestSenders }
         val listOfOutgoing: List<User> = users.filter { it.id in outgoingRequestRecipients }
@@ -47,19 +50,19 @@ fun RequestsLazyList(
                 IncomingRequestItem(
                     user = user,
                     onItemClickAccept = {
-//                        Log.d(DebugConstants.PEEK, "Accept incoming request from user ${user.nickname}")
-
+                        Log.d(DebugConstants.PEEK, "Accept incoming request from user ${user.nickname}")
                         val actionRequest = state.requests.first { it.senderId == user.id }
                         viewModel.acceptFriendRequest(actionRequest)
                     },
                     onItemClickReject = {
-//                        Log.d(DebugConstants.PEEK, "Reject incoming request from user ${user.nickname}")
+                        Log.d(DebugConstants.PEEK, "Reject incoming request from user ${user.nickname}")
                         val actionRequest = state.requests.first { it.senderId == user.id }
                         viewModel.rejectFriendRequest(actionRequest)
                     }
                 )
             }
-            else {
+            else if (user.id == state.currentUserId) {} // Do not show current user
+            else if (user.id !in friendsIDs){
 //                Log.d(DebugConstants.PEEK, user.nickname + "as default")
                 // this if may broke something in the future
                 // implemented so after accepting friend request, request diapers from list of request
@@ -68,32 +71,19 @@ fun RequestsLazyList(
                     StrangerItem(
                         user = user,
                         onItemClick = {
-                            Log.d("PEEK", "Add user ${user.nickname}")
+                            Log.d(DebugConstants.PEEK, "Add user ${user.nickname}")
                             viewModel.sendFriendRequest(user.id)
                         }
                     )
+            } else if (user.id in friendsIDs) {
+                FriendItem(
+                    user = user,
+                    onItemClick = { Log.d(DebugConstants.TODO, "Friend has been clicked - delete friend") }
+                )
+            } else {
+                Log.w(DebugConstants.POTENTIAL_BUG, "RequestsLazyList - user ${user.id} : ${user.nickname} not assigned to any item to display")
             }
         }
-
-
-//        items(items = state.strangers, key = {it.id}) {stranger ->
-//            FriendItem(
-//                user = stranger,
-//                onItemClick = {
-//                    Log.d("PEEK", "Clicked stranger ${stranger.nickname}")
-//                    viewModel.sendFriendRequest(stranger.id)
-//                }
-//            )
-//        }
-//
-//        items(items = state.friends, key = {it.id}) {friend ->
-//            FriendItem(
-//                user = friend,
-//                onItemClick = {
-//                    Log.d("PEEK", "Clicked friend ${friend.nickname}")
-//                }
-//            )
-//        }
 
     }
 }

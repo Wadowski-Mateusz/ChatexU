@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.IOException
 import java.time.Instant
+import java.util.UUID
 import kotlin.Throws
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.pow
@@ -555,5 +556,40 @@ class UserService(
 
         return users
     }
+
+    /**
+     * Delete friendship
+     *
+     * @param userId
+     * @param friendId
+     * @return
+     */
+    fun deleteFriend(userId: String, friendId: String): Boolean {
+        logger.info("UserService.deleteFriend()")
+
+        require( ObjectId.isValid(userId) ) {
+            ErrorMessageCommons.objectIdIsNotValid(
+                objectIdValue = userId,
+                className = ClassName.USER,
+                functionName = "UserService.deleteFriend()"
+            )
+        }
+
+        require( ObjectId.isValid(friendId) ) {
+            ErrorMessageCommons.objectIdIsNotValid(
+                objectIdValue = userId,
+                className = ClassName.USER,
+                functionName = "UserService.deleteFriend()"
+            )
+        }
+
+//        userRepository.removeFriend(ObjectId(userId), ObjectId(friendId))
+        println( userRepository.removeFriend(userId, friendId))
+        println( userRepository.removeFriend(friendId, userId))
+
+        return true
+
+    }
+
 
 }

@@ -15,11 +15,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chatexu.common.Constants
+import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.domain.model.User
 import com.example.chatexu.presentation.getUserErrorIcon
 import com.example.chatexu.presentation.ui.theme.LightBlue
@@ -48,12 +50,14 @@ fun FriendItem(
 
 //        Column {
             Text(
-                text = user.nickname,
+                text = "You and ${user.nickname} are friends!",
                 fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
+                fontSize = 16.sp,
                 overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-                modifier = Modifier.padding(start = 8.dp, end = 24.dp)
+                maxLines = 3,
+                modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth(),
+                textAlign = TextAlign.Center
+
             )
 //        }
     }
