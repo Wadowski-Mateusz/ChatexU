@@ -15,7 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatexU"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31">
+        android:enableOnBackInvokedCallback="true"
+        tools:targetApi="34">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -23,7 +24,6 @@
             android:theme="@style/Theme.ChatexU">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

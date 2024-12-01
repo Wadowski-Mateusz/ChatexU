@@ -1,10 +1,10 @@
 package com.example.chatexu.common
 
-import android.util.Log
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 
 object DebugConstants {
-    const val VM_ERR = "VM_ERR"
+    const val VM_ERR = "VIEWMODEL_ERROR"
+    const val UC_ERR = "USE_CASE_ERROR"
     const val TODO = "TODO"
     const val POTENTIAL_BUG = "POTENTIAL_BUG"
     const val INFO = "INFO"

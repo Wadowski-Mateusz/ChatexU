@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -90,20 +91,21 @@ fun ChatScreen(
                 value = inputMessage.value,
                 onValueChange = { inputMessage.value = it },
                 placeholder = { Text(text = "Enter your message") },
-                maxLines = 3
+                maxLines = 3,
+                trailingIcon = {
+                    Icon(
+                        Icons.AutoMirrored.Rounded.Send,
+                        contentDescription = "Send message",
+                        modifier = Modifier
+                            .clickable {
+                                Log.d(DebugConstants.PEEK, "button has been pressed")
+                                sendMessage(Constants.ID_DEFAULT)
+                            }
+                            .padding(top = 16.dp, bottom = 16.dp, start = 8.dp, end = 16.dp)
+                    )
+                }
             )
 
-
-            Icon(
-                Icons.AutoMirrored.Rounded.ArrowForward,
-                contentDescription = "Send message",
-                modifier = Modifier
-                    .clickable {
-                        Log.d(DebugConstants.PEEK, "button has been pressed")
-                        sendMessage(Constants.ID_DEFAULT)
-                    }
-                    .padding(top = 16.dp, bottom = 16.dp, start = 8.dp, end = 16.dp)
-            )
         }
 
     }

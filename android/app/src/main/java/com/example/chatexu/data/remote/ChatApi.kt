@@ -11,19 +11,25 @@ import com.example.chatexu.data.remote.dto.RegisterDto
 import com.example.chatexu.data.remote.dto.SendedMessageDto
 import com.example.chatexu.data.remote.dto.UserDto
 import com.example.chatexu.data.remote.dto.UserViewDto
+import okhttp3.MultipartBody
 import org.jetbrains.annotations.TestOnly
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ChatApi {
 
 
     @GET("${Constants.CHAT_MAPPING}/chat_view/chat_list/{userId}")
-    suspend fun getUserChatList(@Path("userId") userId: String): Response<List<ChatRowDto>>
+    suspend fun getUserChatList(
+        @Path("userId") userId: String
+    ): Response<List<ChatRowDto>>
 
     @GET("${Constants.CHAT_MAPPING}/chat_view/{chatId}/{viewerId}")
     suspend fun getChatRow(
@@ -37,6 +43,10 @@ interface ChatApi {
         @Path("viewerId") viewerId: String
     ): Response<List<MessageDto>>
 
+    @GET("${Constants.USER_MAPPING}/get/{userId}")
+    suspend fun getUserById(
+        @Path("userId") userId: String
+    ): Response<UserDto>
 
     @GET("${Constants.USER_MAPPING}/friends/{userId}")
     suspend fun getUserFriends(
@@ -61,6 +71,7 @@ interface ChatApi {
         @Path("searcherId") searcherId: String,
         @Path("partOfNickname") partOfNickname: String,
     ): Response<List<UserViewDto>>
+
 
 
 
@@ -105,6 +116,19 @@ interface ChatApi {
     @TestOnly
     @POST("test/users_chat")
     suspend fun createUsersAndChat(): Response<List<String>>
+
+    @Multipart
+    @PUT("${Constants.USER_MAPPING}/update_icon/{userId}")
+    suspend fun putUpdateIcon(
+        @Path("userId") userId: String,
+        @Part icon: MultipartBody.Part
+    ): Response<UserDto>
+
+    @PUT("${Constants.USER_MAPPING}/update_nickname/{userId}/{nickname}")
+    suspend fun putUpdateNickname(
+        @Path("userId") userId: String,
+        @Path("nickname") nickname: String
+    ): Response<UserDto>
 
 
 }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Face
@@ -113,6 +114,23 @@ fun ChatListScreen(
             ) {
                 Icon(Icons.Filled.MailOutline, "Create chat", modifier = Modifier.size(32.dp))
             }
+
+
+            // User Options
+            FloatingActionButton(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .wrapContentSize(),
+                onClick = {
+                    Log.d(DebugConstants.PEEK, "User options")
+                    navController.navigate(Screen.UserOptionsScreen.route + "/${state.userId}")
+                }
+            ) {
+                Icon(Icons.Filled.AccountCircle, "User options", modifier = Modifier.size(32.dp))
+            }
+
+
+
 
         }
     }

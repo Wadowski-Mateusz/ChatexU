@@ -1,7 +1,9 @@
 package com.example.chatexu.data.repository
 
+import android.net.Uri
 import android.provider.ContactsContract.CommonDataKinds.Nickname
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.converters.ChatMapper
@@ -21,9 +23,13 @@ import com.example.chatexu.domain.model.FriendRequest
 import com.example.chatexu.domain.model.Message
 import com.example.chatexu.domain.model.User
 import com.example.chatexu.domain.repository.ChatRepository
+import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.internal.http.HTTP_OK
+import retrofit2.HttpException
 import retrofit2.Response
 import javax.inject.Inject
+import com.example.chatexu.common.toMultipartBodyPart
+import okhttp3.MultipartBody
 
 class ChatRepositoryImpl @Inject constructor(
     private val api: ChatApi
@@ -35,7 +41,7 @@ class ChatRepositoryImpl @Inject constructor(
 
     override suspend fun getUserChatList(userId: String): List<ChatRow> {
         val chats = api.getUserChatList(userId).body() ?: emptyList()
-        Log.d("peek", "repo imp: size = ${chats.size}")
+//        Log.d("peek", "repo imp: size = ${chats.size}")
         return chats.map{ ChatMapper.toChatRow(it) }
     }
 
@@ -47,7 +53,7 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun getAllChatMessages(chatId: String, userId: String): List<Message> {
         val messagesDtos: List<MessageDto> = api.getAllChatMessages(chatId, userId).body()
             ?: let{
-                Log.d("peek", "empty message list")
+//                Log.d("peek", "empty message list")
                 emptyList<MessageDto>()
             }
         return messagesDtos.map { MessageMapper.toMessage(it) }
@@ -68,7 +74,7 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun login(email: String, password: String): String {
         val loginDto = LoginDto(email, password)
         val response = api.login(loginDto)
-        Log.d("PEEK", "login() - repository: $response")
+//        Log.d("PEEK", "login() - repository: $response")
         return response.body()
             ?: Constants.ID_DEFAULT
     }
@@ -77,7 +83,7 @@ class ChatRepositoryImpl @Inject constructor(
         // TODO already in use
         val registerDto = RegisterDto(nickname, email, password)
         val response = api.register(registerDto)
-        Log.d("PEEK", "register() - repository: $response")
+//        Log.d("PEEK", "register() - repository: $response")
         val user = UserMapper.toUser(response.body()!!)
         return user
     }
@@ -85,44 +91,57 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun getAllUsers(): List<User> {
         val userDtos: List<UserDto> = api.getAllUsers().body()
             ?: let {
-                Log.d("ChatRepositoryImpl.getAllUsers()", "getAllUsers - empty user list")
+//                Log.d("ChatRepositoryImpl.getAllUsers()", "getAllUsers - empty user list")
                 emptyList()
             }
-        if(userDtos.isNotEmpty())
-            Log.d("ChatRepositoryImpl.getAllUsers()", "getAllUsers size: ${userDtos.size}")
+//        if(userDtos.isNotEmpty())
+//            Log.d("ChatRepositoryImpl.getAllUsers()", "getAllUsers size: ${userDtos.size}")
         return userDtos.map { UserMapper.toUser(it) }
     }
 
     override suspend fun createUsersAndChat(): Boolean {
-        Log.d(DebugConstants.PEEK, "Creating two users and chat.")
+//        Log.d(DebugConstants.PEEK, "Creating two users and chat.")
         val result = api.createUsersAndChat()
         return result.isSuccessful
     }
 
+    override suspend fun getUserById(userId: String): User {
+        val response = api.getUserById(userId)
+        if(response.code() == HTTP_OK) {
+            val userDto: UserDto = response.body()
+                ?: throw Exception("Unexpected error in ChatRepositoryImpl.getUserById() - returned user is null")
+            val user = UserMapper.toUser(userDto)
+            return user
+        } else {
+            val errorResponse = Response.error<String>(response.code(), "Unexpected error in ChatRepositoryImpl.getUserById()".toResponseBody())
+            throw HttpException(errorResponse)
+        }
+    }
+
     override suspend fun getUserFriends(userId: String): List<Friend> {
-        Log.d(DebugConstants.PEEK, "---ChatRepositoryImpl - Fetching friends of $userId.")
+//        Log.d(DebugConstants.PEEK, "---ChatRepositoryImpl - Fetching friends of $userId.")
         val result = api.getUserFriends(userId)
-        Log.d(DebugConstants.PEEK, "ChatRepositoryImpl - Fetched friends of $userId.")
+//        Log.d(DebugConstants.PEEK, "ChatRepositoryImpl - Fetched friends of $userId.")
         val friends = result.body()
             ?: let {
-                Log.w(DebugConstants.PEEK, "repositoryImpl - getUserFriends - null")
+//                Log.w(DebugConstants.PEEK, "repositoryImpl - getUserFriends - null")
                 emptyList()
             }
         return friends.map { FriendMapper.toFriend(it) }
     }
 
     override suspend fun getOrElseCreateChat(participants: List<String>): String {
-        Log.d(DebugConstants.PEEK, "get or create chat - repo impl")
+//        Log.d(DebugConstants.PEEK, "get or create chat - repo impl")
         val participantsDto = ParticipantsDto(participants)
         val result = api.getOrElseCreateChat(participantsDto)
         return result.body() ?: "" // TODO id cannot be "", make sure of it
     }
 
     override suspend fun sendFriendRequest(senderId: String, recipientId: String): FriendRequest {
-        Log.d(DebugConstants.PEEK, "repoImpl::sendFriendRequest() - start")
+//        Log.d(DebugConstants.PEEK, "repoImpl::sendFriendRequest() - start")
         val result = api.sendFriendRequest(senderId, recipientId)
         // todo errors (http codes)
-        Log.d(DebugConstants.PEEK, "repoImpl::sendFriendRequest() - ${result.body().toString()}")
+//        Log.d(DebugConstants.PEEK, "repoImpl::sendFriendRequest() - ${result.body().toString()}")
 
         return FriendRequestMapper.fromDto(result.body()!!)
     }
@@ -151,9 +170,9 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAllFriendRequestsForUser(userId: String): List<FriendRequest> {
-        Log.d(DebugConstants.PEEK, "ChatRepositoryImpl.getAllFriendRequestsForUser() - start")
+//        Log.d(DebugConstants.PEEK, "ChatRepositoryImpl.getAllFriendRequestsForUser() - start")
         val result = api.getAllFriendRequestsForUser(userId)
-        Log.d(DebugConstants.PEEK, "ChatRepositoryImpl.getAllFriendRequestsForUser() - fetched")
+//        Log.d(DebugConstants.PEEK, "ChatRepositoryImpl.getAllFriendRequestsForUser() - fetched")
         return result.body()!!.map { FriendRequestMapper.fromDto(it) }
     }
 
@@ -173,6 +192,35 @@ class ChatRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             false
         }
+    }
+
+    override suspend fun putUpdateIcon(userId: String, icon: MultipartBody.Part): User {
+        val response = api.putUpdateIcon(userId, icon)
+        if(response.code() == HTTP_OK) {
+            val userDto: UserDto = response.body()
+                ?: throw Exception("Unexpected error in ChatRepositoryImpl.putUpdateIcon() - returned user is null")
+            val user = UserMapper.toUser(userDto)
+            return user
+        } else {
+            val errorResponse = Response.error<String>(response.code(), "Unexpected error in ChatRepositoryImpl.putUpdateIcon()".toResponseBody())
+            throw HttpException(errorResponse)
+        }
+
+    }
+
+    override suspend fun putUpdateNickname(userId: String, nickname: String): User {
+        val response = api.putUpdateNickname(userId, nickname)
+
+        if(response.code() == HTTP_OK) {
+            val userDto: UserDto = response.body()
+                ?: throw Exception("Unexpected error in ChatRepositoryImpl.putUpdateNickname() - returned user is null")
+            val user = UserMapper.toUser(userDto)
+            return user
+        } else {
+            val errorResponse = Response.error<String>(response.code(), "Unexpected error in ChatRepositoryImpl.putUpdateNickname()".toResponseBody())
+            throw HttpException(errorResponse)
+        }
+
     }
 
 

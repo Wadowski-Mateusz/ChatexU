@@ -1,5 +1,6 @@
 package com.example.chatexu.domain.repository
 
+import android.net.Uri
 import android.provider.ContactsContract.CommonDataKinds.Nickname
 import com.example.chatexu.common.Constants
 import com.example.chatexu.data.remote.dto.FriendRequestDto
@@ -9,6 +10,7 @@ import com.example.chatexu.domain.model.Friend
 import com.example.chatexu.domain.model.FriendRequest
 import com.example.chatexu.domain.model.Message
 import com.example.chatexu.domain.model.User
+import okhttp3.MultipartBody
 import org.jetbrains.annotations.TestOnly
 import retrofit2.Response
 import retrofit2.http.GET
@@ -34,6 +36,7 @@ interface ChatRepository {
     @TestOnly
     suspend fun createUsersAndChat(): Boolean
 
+    suspend fun getUserById(userId: String): User
     suspend fun getUserFriends(userId: String): List<Friend>
 
     suspend fun getOrElseCreateChat(participants: List<String>): String
@@ -47,6 +50,8 @@ interface ChatRepository {
     suspend fun getUsersByPartOfNickname(userId: String, partOfNickname: String): List<User>
     suspend fun rejectFriendRequest(requestId: String): Boolean
 
+    suspend fun putUpdateIcon(userId: String, iconUri: MultipartBody.Part): User
+    suspend fun putUpdateNickname(userId: String, nickname: String): User
 
 //    suspend fun getUserFriendsByNickname(userId: String, partOfNickname: String): List<Friend>
 

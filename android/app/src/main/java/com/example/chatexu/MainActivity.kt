@@ -17,6 +17,7 @@ import com.example.chatexu.presentation.auth.AuthScreen
 import com.example.chatexu.presentation.auth.AuthScreenDebug
 import com.example.chatexu.presentation.chat.ChatScreen
 import com.example.chatexu.presentation.chat_list.ChatListScreen
+import com.example.chatexu.presentation.user_options.UserOptionsScreen
 import com.example.chatexu.presentation.create_chat.CreateChatScreen
 import com.example.chatexu.ui.theme.ChatexUTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,6 +72,12 @@ class MainActivity : ComponentActivity() {
                             route = Screen.AddFriendScreen.route + "/{${Constants.PARAM_USER_ID}}"
                         ) {
                             AddFriendScreen(navController)
+                        }
+
+                        composable(
+                            route = Screen.UserOptionsScreen.route + "/{${Constants.PARAM_USER_ID}}"
+                        ) {
+                            UserOptionsScreen(navController)
                         }
 
                     }

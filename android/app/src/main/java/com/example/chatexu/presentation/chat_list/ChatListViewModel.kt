@@ -48,8 +48,7 @@ class ChatListViewModel @Inject constructor(
                     )
                 }
                 is DataWrapper.Loading -> {
-                    Log.d("peek", "Loading ChatListViewModel")
-                    Log.d(DebugConstants.VM_ERR, "Loading in: ChatListViewModel.")
+                    Log.i(DebugConstants.RESOURCE_LOADING, "Loading in: ChatListViewModel.")
                     _state.value = ChatListState(
                         error = result.message ?: "Unknown error"
                     )
@@ -77,7 +76,7 @@ class ChatListViewModel @Inject constructor(
                     )
                 }
                 is DataWrapper.Loading -> {
-                    Log.d(DebugConstants.VM_ERR, "Error in: ChatListViewModel.")
+                    Log.i(DebugConstants.RESOURCE_LOADING, "Error in: ChatListViewModel.")
                     _state.value = ChatListState(
                         error = result.message ?: "Unknown error"
                     )
