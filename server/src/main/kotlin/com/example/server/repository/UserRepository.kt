@@ -23,8 +23,7 @@ interface UserRepository: MongoRepository<User, String> {
     fun findAllByNicknameLike(nickname: String): List<User>
 
 
-    {'$and':[ {'cif':?0}, {'identification': ?1} , {'mobileNumber' : ?2}, {'applicationStatus' : 'Active' } ] })
-
+// broken
     @DeleteQuery(
         "{ _id: ?0 } { \$pull: { friends:  ?1  } }"
     )
