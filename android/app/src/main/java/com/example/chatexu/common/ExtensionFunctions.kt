@@ -25,8 +25,8 @@ fun ObjectId.isStringValid(value: String): Boolean {
     }
 }
 
-fun Uri.toMultipartBodyPart(uri: Uri, context: Context): MultipartBody.Part {
-    val paramName: String = "file"
+fun Uri.toMultipartBodyPart(uri: Uri, context: Context, partName: String): MultipartBody.Part {
+    val paramName: String = partName // backend waits for multipart file with this name
     val contentResolver = context.contentResolver
     val inputStream = contentResolver.openInputStream(uri) ?: throw NotFoundException("Given icon not found")
     val tempFile = File.createTempFile("upload", ".jpg", context.cacheDir) // Create a temporary file
@@ -39,7 +39,6 @@ fun Uri.toMultipartBodyPart(uri: Uri, context: Context): MultipartBody.Part {
         }
     }
 
-    // Create a RequestBody from the file
     val requestBody = tempFile.asRequestBody("image/jpeg".toMediaTypeOrNull())
     return MultipartBody.Part.createFormData(paramName, tempFile.name, requestBody)
 }

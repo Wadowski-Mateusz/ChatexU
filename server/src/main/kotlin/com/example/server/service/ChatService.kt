@@ -10,8 +10,6 @@ import com.example.server.repository.ChatRepository
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
-import org.springframework.core.io.ClassPathResource
-import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
 import java.time.Instant
 
@@ -48,10 +46,6 @@ class ChatService(private val chatRepository: ChatRepository) {
         return chatRepository.save(chat)
     }
 
-    fun updateLastMessage(chatId: ObjectId, message: Message): Chat {
-        TODO("Not yet implemented")
-    }
-
     fun getAllChatMessages(chatId: String): List<Message> {
         return messageService.getAllMessagesFromChat(chatId)
     }
@@ -65,7 +59,6 @@ class ChatService(private val chatRepository: ChatRepository) {
         // TODO what if second participant delete his account?
         val secondParticipantId = chat.participants.first { !it.toHexString().equals(viewerId) }
         val secondParticipant = userService.getUserById(secondParticipantId)
-//        val secondParticipant = userService.findUserById(secondParticipantId)
 
         val lastMessage = try {
             messageService.findMessageById(chat.lastMessage)
@@ -76,9 +69,7 @@ class ChatService(private val chatRepository: ChatRepository) {
                 throw err
         }
 
-        val iconUri = userService.getUserIconURI(viewerId)
-        val iconResource: Resource = ClassPathResource("$iconUri")
-        val iconAsByteArray = iconResource.inputStream.readAllBytes()
+        val iconAsByteArray = secondParticipant.getIconAsByteArray()
 
 
         return ChatViewDto(
@@ -86,7 +77,7 @@ class ChatService(private val chatRepository: ChatRepository) {
             chatName = secondParticipant.nickname,
             lastMessageType = lastMessage.messageType,
             lastMessageSender = lastMessage.senderId.toHexString(),
-            timestamp =lastMessage.timestamp,
+            timestamp = lastMessage.timestamp,
             icon = iconAsByteArray
         )
 

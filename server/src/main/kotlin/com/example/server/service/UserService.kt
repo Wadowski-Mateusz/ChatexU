@@ -16,16 +16,17 @@ import org.jetbrains.annotations.TestOnly
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
-import org.springframework.core.io.ClassPathResource
-import org.springframework.core.io.Resource
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.time.Instant
-import java.util.UUID
-import kotlin.Throws
+import java.util.*
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.pow
+
 
 /**
  * User service
@@ -43,22 +44,6 @@ class UserService(
     private val _friendRequestService: FriendRequestService? = null
     private val friendRequestService: FriendRequestService by lazy { _friendRequestService!! }
     private val logger = LoggerFactory.getLogger(UserService::class.java)
-
-    /**
-     * Get user icon URI
-     *
-     * @param userId of the user which icon URI should be fetched
-     * @return the user icon URI; if user has no icon, then default URI is returned
-     */
-    @Throws(IllegalArgumentException::class)
-    fun getUserIconURI(userId: String): String {
-        // TODO
-        logger.info("UserService.getUserIconURI()")
-        logger.warn("UserService.getUserIconURI() returns only default URI.")
-
-        require(userId.isNotBlank()) { ErrorMessageCommons.isBlank(Field.USER_ID, "UserService.getUserIconURI()") }
-        return Constants.DEFAULT_PROFILE_URI
-    }
 
     /**
      * Get user by nickname
@@ -307,11 +292,9 @@ class UserService(
     @Throws(IOException::class)
     fun convertToDto(user: User): UserDto {
         logger.info("UserService.convertToDto()")
-        logger.warn("UserService.convertToDto() uses random icons, not user specific icon")
 
-        val resource: Resource = ClassPathResource("icons/${listOf("red", "green", "blue").random()}.png")
 
-        val inp = resource.inputStream.readAllBytes()
+        val icon = user.getIconAsByteArray()
 
         return UserDto(
             userId = user.userId.toHexString(),
@@ -322,7 +305,7 @@ class UserService(
             profilePictureUri = user.profilePictureUri,
             friends = user.friends,
             blockedUsers = user.blockedUsers,
-            profilePicture = inp
+            profilePicture = icon
         )
     }
 
@@ -583,13 +566,84 @@ class UserService(
             )
         }
 
-//        userRepository.removeFriend(ObjectId(userId), ObjectId(friendId))
-        println( userRepository.removeFriend(userId, friendId))
-        println( userRepository.removeFriend(friendId, userId))
+        val del1 = userRepository.deleteFriendsByUserId(userId, friendId)
+        val del2 = userRepository.deleteFriendsByUserId(friendId, userId)
 
-        return true
+        return del1 + del2 > 1
 
     }
 
+    fun updateUserNickname(userId: String, nickname: String): User {
+        logger.info("UserService.updateUserNickname()")
+
+        require( ObjectId.isValid(userId) ) {
+            ErrorMessageCommons.objectIdIsNotValid(
+                objectIdValue = userId,
+                className = ClassName.USER,
+                functionName = "UserService.deleteFriend()"
+            )
+        }
+
+        if(nickname.isBlank())
+            throw Exception("New nickname is blank")
+
+        val countUpdatedDocuments: Long = userRepository.updateNicknameByUserId(userId, nickname)
+        if (countUpdatedDocuments < 1) {
+            val u = getUserById(userId)
+            // if getUserById is not throwing an error,
+            // that means, user is in the database, but has the same nickname as new one
+            return u
+        }
+
+        return getUserById(userId)
+    }
+
+    // TODO hardcoded icons path
+    // TODO No validation on delete
+    @Throws(Exception::class)
+    fun updateUserIcon(userId: String, icon: MultipartFile): User {
+
+        val resourceFolder: File = File("src/main/resources/icons")
+
+        if (!resourceFolder.exists())
+            throw Exception("Icon catalog not found! Icon directory path: $resourceFolder")
+
+
+        val user: User = getUserById(userId)
+
+        val iconAsBytes: ByteArray = icon.bytes
+        val iconUriName: String = ObjectId().toHexString() + ".png"
+        val outputFile: File = File(resourceFolder, iconUriName)
+
+        FileOutputStream(outputFile).use { outputStream -> outputStream.write(iconAsBytes) }
+
+        val result = userRepository.updateProfilePictureUriByUserId(userId, iconUriName)
+
+        val oldIconName = user.profilePictureUri
+
+        if (result > 0) {
+
+            val defaultsIcons = arrayOf<String>(
+                "icons/blue.png",
+                "icons/default.bmp",
+                "icons/error.png",
+                "icons/green.png",
+                "icons/red.png"
+            )
+                // TODO files are not deletingo
+            if(oldIconName !in defaultsIcons) {
+                val fileToDelete = File(resourceFolder, oldIconName)
+//                println("delete ${fileToDelete.absoluteFile}")
+                if(fileToDelete.delete()){}
+//                    println("t")
+                else {}
+//                    println("f")
+            }
+        } else {
+            throw Exception("Icon update has failed")
+        }
+
+        return getUserById(userId)
+    }
 
 }

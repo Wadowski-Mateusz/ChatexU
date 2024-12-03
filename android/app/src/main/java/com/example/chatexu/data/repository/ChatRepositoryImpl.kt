@@ -1,9 +1,6 @@
 package com.example.chatexu.data.repository
 
-import android.net.Uri
-import android.provider.ContactsContract.CommonDataKinds.Nickname
 import android.util.Log
-import androidx.compose.ui.platform.LocalContext
 import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.converters.ChatMapper
@@ -23,13 +20,16 @@ import com.example.chatexu.domain.model.FriendRequest
 import com.example.chatexu.domain.model.Message
 import com.example.chatexu.domain.model.User
 import com.example.chatexu.domain.repository.ChatRepository
+import com.google.gson.JsonObject
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.internal.http.HTTP_OK
 import retrofit2.HttpException
 import retrofit2.Response
 import javax.inject.Inject
-import com.example.chatexu.common.toMultipartBodyPart
-import okhttp3.MultipartBody
+
 
 class ChatRepositoryImpl @Inject constructor(
     private val api: ChatApi

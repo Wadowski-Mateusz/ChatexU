@@ -12,6 +12,7 @@ import com.example.chatexu.data.remote.dto.SendedMessageDto
 import com.example.chatexu.data.remote.dto.UserDto
 import com.example.chatexu.data.remote.dto.UserViewDto
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import org.jetbrains.annotations.TestOnly
 import retrofit2.Response
 import retrofit2.http.Body
@@ -22,6 +23,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+
 
 interface ChatApi {
 
@@ -117,18 +119,18 @@ interface ChatApi {
     @POST("test/users_chat")
     suspend fun createUsersAndChat(): Response<List<String>>
 
-    @Multipart
-    @PUT("${Constants.USER_MAPPING}/update_icon/{userId}")
-    suspend fun putUpdateIcon(
-        @Path("userId") userId: String,
-        @Part icon: MultipartBody.Part
-    ): Response<UserDto>
-
     @PUT("${Constants.USER_MAPPING}/update_nickname/{userId}/{nickname}")
     suspend fun putUpdateNickname(
         @Path("userId") userId: String,
         @Path("nickname") nickname: String
     ): Response<UserDto>
 
+
+    @Multipart
+    @PUT("${Constants.USER_MAPPING}/update_icon/{userId}")
+    suspend fun putUpdateIcon(
+        @Path("userId") userId: String,
+        @Part icon: MultipartBody.Part
+    ): Response<UserDto>
 
 }

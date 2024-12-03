@@ -1,12 +1,10 @@
 package com.example.server.repository
 
 import com.example.server.model.User
-import org.bson.types.ObjectId
-import org.springframework.data.mongodb.repository.DeleteQuery
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.data.mongodb.repository.Query
 import org.springframework.data.mongodb.repository.Update
-import org.springframework.transaction.annotation.Transactional
+
 
 interface UserRepository: MongoRepository<User, String> {
 
@@ -23,13 +21,22 @@ interface UserRepository: MongoRepository<User, String> {
     fun findAllByNicknameLike(nickname: String): List<User>
 
 
-// broken
-    @DeleteQuery(
-        "{ _id: ?0 } { \$pull: { friends:  ?1  } }"
-    )
-    fun removeFriend(userId: String, friendId: String): Any?
+//    @Query("{ 'email' : ?0 }")
+//    @Update("{ '\$set' : { 'nickname' : ?1 } }")
+//    fun updateNicknameByEmail(email: String?, nickname: String?): Long
+
+    @Query("{ '_id' : ?0 }")
+    @Update("{ '\$set' : { 'nickname' : ?1 } }")
+    fun updateNicknameByUserId(userId: String?, nickname: String?): Long
 
 
+    @Query("{ '_id' : ?0 }")
+    @Update("{ '\$set' : { 'profilePictureUri' : ?1 } }")
+    fun updateProfilePictureUriByUserId(userId: String?, profilePictureUri: String?): Long
 
+
+    @Query("{ '_id' : ?0 }")
+    @Update("{ '\$pull': { 'friends': ?1  } }")
+    fun deleteFriendsByUserId(userId: String, friendId: String): Long
 
 }

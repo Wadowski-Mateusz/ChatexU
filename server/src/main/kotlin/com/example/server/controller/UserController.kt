@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/user")
@@ -223,7 +224,7 @@ class UserController(
                 // request not created,
                 // because recipient has already sent request first,
                 // therefore friend has been added
-                println("already recived request from that user, creating friends")
+                println("already received request from that user, creating friends")
                 ResponseEntity(HttpStatus.OK)
             }
 
@@ -319,13 +320,57 @@ class UserController(
         }
     }
 
-    @PutMapping("/change/nickname/{userId}/{nickname}")
+    @PutMapping("/update_nickname/{userId}/{nickname}")
     fun changeNickname(
         @PathVariable("userId") userId: String,
         @PathVariable("nickname") nickname: String,
-    ): ResponseEntity<Boolean> {
-        TODO("Not yet implemented")
+    ): ResponseEntity<UserDto> {
+        return try {
+            val user: User = userService.updateUserNickname(userId, nickname)
+            ResponseEntity(
+                userService.convertToDto(user),
+                HttpStatus.OK
+            )
+        } catch(e: UserNotFoundException) {
+            println(e.printStackTrace())
+            ResponseEntity(HttpStatus.NOT_FOUND)
+        } catch (e: Exception) {
+            println(e.printStackTrace())
+            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
+
+
+    @PutMapping("/update_icon/{userId}")
+    fun updateIcon(
+        @RequestPart("icon") icon: MultipartFile,
+        @PathVariable("userId") userId: String,
+    ): ResponseEntity<UserDto> {
+        return try {
+            val user: User = userService.updateUserIcon(userId, icon)
+            ResponseEntity(
+                userService.convertToDto(user),
+                HttpStatus.OK
+            )
+        } catch(e: UserNotFoundException) {
+            println(e.printStackTrace())
+            ResponseEntity(HttpStatus.NOT_FOUND)
+        } catch (e: Exception) {
+            println(e.printStackTrace())
+            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+
+
+//    @Multipart
+//    @PUT("${Constants.USER_MAPPING}/update_icon/{userId}")
+//    suspend fun putUpdateIcon(
+//        @Path("userId") userId: String,
+//        @Part icon: MultipartBody.Part
+//    ): Response<UserDto>
+
+
 
     @DeleteMapping("/friend/delete/{userId}/{friendId}")
     fun deleteFriend(

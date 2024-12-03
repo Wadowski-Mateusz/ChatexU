@@ -5,14 +5,12 @@ import com.example.server.dto.UserViewDto
 import com.example.server.exceptions.ChatNotFoundException
 import com.example.server.model.User
 import com.example.server.service.ChatService
-import org.springframework.core.io.ClassPathResource
-import org.springframework.core.io.Resource
 
 object UserMapper {
 
     fun toViewDto(user: User): UserViewDto {
         val userId = user.userId.toString()
-        val icon = getProfileIcon(userId)
+        val icon = user.getIconAsByteArray()
         return UserViewDto(userId = userId, nickname = user.nickname, username = user.username, icon = icon)
     }
     
@@ -29,13 +27,8 @@ object UserMapper {
             id = friend.userId.toString(),
             nickname = friend.nickname,
             nicknameFromChat = chatNickname,
-            icon = getProfileIcon(friend.userId.toString())
+            icon = friend.getIconAsByteArray()
         )
-    }
-
-    private fun getProfileIcon(userId: String): ByteArray {
-        val resource: Resource = ClassPathResource("icons/${listOf("red","green","blue").random()}.png")
-        return resource.inputStream.readAllBytes()
     }
     
 

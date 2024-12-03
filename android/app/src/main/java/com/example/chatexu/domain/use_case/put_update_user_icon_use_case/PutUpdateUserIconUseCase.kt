@@ -15,6 +15,7 @@ import javax.inject.Inject
 class PutUpdateUserIconUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
+
     operator fun invoke(userId: String, icon: MultipartBody.Part): Flow<DataWrapper<User>> = flow {
 
         try {

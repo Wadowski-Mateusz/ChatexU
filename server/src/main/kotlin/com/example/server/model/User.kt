@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
+import java.io.File
 
 @Document("users")
 data class User(
@@ -37,4 +38,12 @@ data class User(
 //    val role(s) //
 //    val settings // languages
 
-)
+) {
+    // TODO hardcoded icons path
+    fun getIconAsByteArray(): ByteArray {
+        val iconPath = this.profilePictureUri.removePrefix("icons/")
+        val resourceFolder: File = File("src/main/resources/icons")
+        val resource: File = File(resourceFolder, iconPath)
+        return resource.inputStream().readAllBytes()
+    }
+}

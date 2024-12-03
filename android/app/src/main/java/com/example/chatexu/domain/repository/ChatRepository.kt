@@ -50,7 +50,7 @@ interface ChatRepository {
     suspend fun getUsersByPartOfNickname(userId: String, partOfNickname: String): List<User>
     suspend fun rejectFriendRequest(requestId: String): Boolean
 
-    suspend fun putUpdateIcon(userId: String, iconUri: MultipartBody.Part): User
+    suspend fun putUpdateIcon(userId: String, icon: MultipartBody.Part): User
     suspend fun putUpdateNickname(userId: String, nickname: String): User
 
 //    suspend fun getUserFriendsByNickname(userId: String, partOfNickname: String): List<Friend>

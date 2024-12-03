@@ -78,15 +78,12 @@ fun UserOptionsScreen(
 
 
     fun uploadIcon(iconUri: Uri) {
-        Log.w(DebugConstants.TODO, "Button apply changes to profile pictures")
-        val newIcon = iconUri.toMultipartBodyPart(iconUri, context)
+        val newIcon = iconUri.toMultipartBodyPart(iconUri, context, "icon")
         viewModel.updateIcon(newIcon)
     }
 
-
     Box {
 
-        
         Column(
             modifier = Modifier
                 .fillMaxSize()
