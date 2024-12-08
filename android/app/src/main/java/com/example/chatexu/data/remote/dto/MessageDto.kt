@@ -20,7 +20,7 @@ data class MessageDto @JsonCreator constructor(
     @JsonProperty("isDeletedForViewer")
     val isDeletedForViewer: Boolean, // TODO unused?
     @JsonProperty("replyTo")
-    val replyTo: String,
+    val replyTo: String
 ) {
 
 //     Jackson needs either a no-argument constructor (default constructor) or properly annotated properties.

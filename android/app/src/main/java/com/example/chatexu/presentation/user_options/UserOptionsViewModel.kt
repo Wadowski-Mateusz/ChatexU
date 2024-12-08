@@ -77,7 +77,7 @@ class UserOptionsViewModel @Inject constructor(
 
     fun updateIcon(icon: MultipartBody.Part) {
 
-        Log.w(DebugConstants.PEEK, "-----------------------------------------------")
+//        Log.w(DebugConstants.PEEK, "-----------------------------------------------")
 
 
         val response =  putUpdateUserIconUseCase(_state.value.currentUserId, icon)

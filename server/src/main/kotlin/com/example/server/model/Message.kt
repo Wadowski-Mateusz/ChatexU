@@ -1,12 +1,15 @@
 package com.example.server.model
 
 import com.example.server.commons.default
+import com.example.server.converters.MessageMapper
+import com.example.server.service.MessageService
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
+import java.io.File
 import java.time.Instant
 import java.util.*
 
@@ -39,6 +42,23 @@ data class Message(
             )
         }
     }
+
+
+    fun getImageAsByteArray(): ByteArray {
+        require(this.messageType is MessageType.Resource)  {"This message is not a Resource Message, cannot fetch image!"}
+        val resourceFolder: File = File("src/main/resources/chats/${this.chatId}/")
+        val resource: File = File(resourceFolder, this.messageType.uri)
+        return resource.inputStream().readAllBytes()
+    }
+
+    fun getImageAsBase64(): String {
+        val image: ByteArray = this.getImageAsByteArray()
+        val cypherBase64 = Base64.getEncoder().encodeToString(image)
+        return cypherBase64
+    }
+
+
+
 }
 
 
@@ -48,6 +68,7 @@ sealed class MessageType(var type: String) {
 
     data class Text(val text: String): MessageType(type = TYPE_TEXT)
     data class Resource(val uri: String): MessageType(type = TYPE_RESOURCE)
+
     class Deleted: MessageType(type = TYPE_DELETED)
     class Initialization: MessageType(type = TYPE_INIT) // first message in the chat, that or null as "last message"
 

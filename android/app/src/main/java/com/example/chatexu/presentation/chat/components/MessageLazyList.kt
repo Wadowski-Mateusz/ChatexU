@@ -1,17 +1,13 @@
 package com.example.chatexu.presentation.chat.components
 
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.chatexu.common.Constants
 import com.example.chatexu.domain.model.Message
@@ -41,11 +37,11 @@ fun MessageLazyList(
                         5.dp
                 lastMessageSender = message.senderId
 
-//                Log.d("msgarr", "ChatMessageItem - uId: $userId; sId = ${message.senderId}")
                 val arrangement =
                     if(message.senderId == userId)
                         Arrangement.End
-                    else Arrangement.Start
+                    else
+                        Arrangement.Start
 
                 Row(
                     modifier = Modifier

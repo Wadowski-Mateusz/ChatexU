@@ -1,20 +1,31 @@
 package com.example.chatexu.presentation.chat.components
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.domain.model.Message
 import com.example.chatexu.domain.model.MessageType
+import android.util.Base64
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.graphics.ImageBitmap
 
 // TODO long messages
 
@@ -39,25 +50,26 @@ fun ChatMessageItem(
                             shape = RoundedCornerShape(8.dp)
                         )
                         .padding(horizontal = 20.dp, vertical = 10.dp)
-//                .padding(10.dp)
-//                .fillMaxSize(),
                 )
             }
             is MessageType.Resource -> {
-                Log.d(DebugConstants.TODO, "ChatMessageItem() - resource")
-                Text(
-                    text = "ChatMessageItem() - resource",
-                    color = Color.White,
-                    softWrap = true,
+                Log.w(DebugConstants.TODO, "ChatMessageItem() - resource")
+
+                Image(
+//                    modifier = Modifier.size(200.dp, 150.dp),
+//                    contentScale =
                     modifier = Modifier
-                        .background(color = Color.Blue, shape = RoundedCornerShape(8.dp))
-                        .padding(horizontal = 20.dp, vertical = 10.dp)
-//                .padding(10.dp)
-//                .fillMaxSize(),
+                        .width(320.dp)
+                        .height(180.dp)
+                        .clickable { Log.w(DebugConstants.TODO, "MAKE IMAGE FULLSCREEN") },
+                    contentScale = ContentScale.Fit,
+                    bitmap = base64ToBitmap(message.messageType.uri),
+                    contentDescription = "Message image",
                 )
+
             }
             is MessageType.Deleted -> {
-                Log.d(DebugConstants.TODO, "ChatMessageItem() - deleted")
+                Log.w(DebugConstants.TODO, "ChatMessageItem() - deleted")
                 Text(
                     text = "ChatMessageItem() - deleted",
                     color = Color.White,
@@ -65,12 +77,10 @@ fun ChatMessageItem(
                     modifier = Modifier
                         .background(color = Color.Blue, shape = RoundedCornerShape(8.dp))
                         .padding(horizontal = 20.dp, vertical = 10.dp)
-//                .padding(10.dp)
-//                .fillMaxSize(),
                 )
             }
             is MessageType.Initialization -> {
-                Log.d(DebugConstants.TODO, "ChatMessageItem() - init")
+                Log.w(DebugConstants.TODO, "ChatMessageItem() - init")
                 Text(
                     text = "ChatMessageItem() - init",
                     color = Color.White,
@@ -78,14 +88,16 @@ fun ChatMessageItem(
                     modifier = Modifier
                         .background(color = Color.Blue, shape = RoundedCornerShape(8.dp))
                         .padding(horizontal = 20.dp, vertical = 10.dp)
-//                .padding(10.dp)
-//                .fillMaxSize(),
                 )
             }
         }
 }
 
-
+fun base64ToBitmap(base64: String): ImageBitmap {
+    val bytes: ByteArray = Base64.decode(base64, Base64.DEFAULT)
+    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    return bitmap.asImageBitmap()
+}
 
 
 

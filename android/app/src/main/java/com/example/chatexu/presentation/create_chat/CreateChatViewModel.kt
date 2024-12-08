@@ -1,22 +1,18 @@
 package com.example.chatexu.presentation.create_chat
 
-import android.provider.ContactsContract.Data
 import android.util.Log
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DataWrapper
-import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.domain.model.Friend
 import com.example.chatexu.domain.use_case.get_chat_or_else_create_use_case.GetChatOrElseCreateUseCase
 import com.example.chatexu.domain.use_case.get_user_friends.GetUserFriendsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject

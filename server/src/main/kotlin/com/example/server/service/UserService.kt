@@ -293,7 +293,6 @@ class UserService(
     fun convertToDto(user: User): UserDto {
         logger.info("UserService.convertToDto()")
 
-
         val icon = user.getIconAsByteArray()
 
         return UserDto(
@@ -307,6 +306,27 @@ class UserService(
             blockedUsers = user.blockedUsers,
             profilePicture = icon
         )
+    }
+
+    /**
+     * Convert user to dto
+     *
+     * @param user
+     * @return
+     */
+    @Throws(IOException::class)
+    fun convertToDto(userId: String): UserDto {
+
+        require( ObjectId.isValid(userId) ) {
+            ErrorMessageCommons.objectIdIsNotValid(
+                objectIdValue = userId,
+                className = ClassName.USER,
+                functionName = "UserService.convertToDto()"
+            )
+        }
+
+        val user: User = getUserById(userId)
+        return convertToDto(user)
     }
 
 
@@ -645,5 +665,6 @@ class UserService(
 
         return getUserById(userId)
     }
+
 
 }

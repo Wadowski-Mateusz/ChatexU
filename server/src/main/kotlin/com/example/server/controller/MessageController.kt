@@ -4,15 +4,20 @@ import com.example.server.commons.default
 import com.example.server.converters.MessageMapper
 import com.example.server.dto.MessageDto
 import com.example.server.dto.SentMessageDto
+import com.example.server.dto.UserDto
 import com.example.server.exceptions.MessageNotFoundException
+import com.example.server.exceptions.UserNotFoundException
+import com.example.server.model.ChatType
 import com.example.server.model.Message
 import com.example.server.model.MessageType
+import com.example.server.model.User
 import com.example.server.service.MessageService
 import lombok.AllArgsConstructor
 import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import java.time.Instant
 
 @RestController
@@ -45,8 +50,6 @@ class MessageController(private val messageService: MessageService) {
     @PostMapping("/send")
     fun sendMessage(@RequestBody sentMessageDto: SentMessageDto): ResponseEntity<MessageDto> {
 
-        println("incoming message ${Instant.now()}") // TODO delete
-        println(ObjectId().default()) // TODO delete
         println(sentMessageDto.replyTo)
         val message = MessageMapper.fromSendedMessage(sentMessageDto)
         println(message.replyTo)
@@ -88,6 +91,30 @@ class MessageController(private val messageService: MessageService) {
     fun getAll(): ResponseEntity<List<Message>> {
         val messages: List<Message> = messageService.getAllMessages()
         return ResponseEntity.ok(messages)
+    }
+
+
+    @PutMapping("/sendImage")
+    fun updateIcon(
+        @RequestPart("image") image: MultipartFile,
+        @RequestPart("message") sentMessageDto: SentMessageDto,
+    ): ResponseEntity<String> {
+
+        println("incoming message ${Instant.now()}")
+
+        // Map dto to object
+        val message: Message = MessageMapper.fromSendedMessage(sentMessageDto)
+
+        // Save resource & save uri
+        val imageUri: String = messageService.saveImage(image, message.chatId.toString())
+
+        val resourceImage = message.copy(messageType = MessageType.Resource(imageUri))
+
+        // save message
+        val savedMessage: Message = messageService.save(resourceImage)
+
+        // response
+        return ResponseEntity(savedMessage.messageId.toString(), HttpStatus.OK)
     }
 
 }

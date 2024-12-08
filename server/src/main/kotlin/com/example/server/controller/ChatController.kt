@@ -6,10 +6,15 @@ import com.example.server.dto.*
 import com.example.server.exceptions.ChatNotFoundException
 import com.example.server.exceptions.UserIsBlockedException
 import com.example.server.exceptions.UserNotFoundException
+import com.example.server.model.Chat
 import com.example.server.model.ChatType
 import com.example.server.model.Message
+import com.example.server.model.MessageType
 import com.example.server.repository.MessageRepository
 import com.example.server.service.ChatService
+import com.example.server.service.MessageService
+import com.example.server.service.UserService
+import com.fasterxml.jackson.databind.ser.Serializers.Base
 import lombok.AllArgsConstructor
 import org.jetbrains.annotations.TestOnly
 import org.springframework.core.io.ClassPathResource
@@ -29,6 +34,8 @@ import java.util.*
 @CrossOrigin
 class ChatController(
     private val chatService: ChatService,
+    private val userService: UserService,
+    private val messageService: MessageService,
     private val messageRepository: MessageRepository
 ) {
 
@@ -36,18 +43,16 @@ class ChatController(
     fun getFullChatHistory(
         @PathVariable("chatId") chatId: String,
         @PathVariable("viewerId") viewerId: String
-//    ): ResponseEntity<List<Message>> {
     ): ResponseEntity<List<MessageDto>> {
-
-        println("get all messages")
 
         val messages: List<Message> = chatService.getAllChatMessages(chatId)
 
-        return if (messages.isNotEmpty())
+        return if (messages.isNotEmpty()) {
             ResponseEntity(
-                messages.map {MessageMapper.toDto(it, viewerId)},
+                messages.map { messageService.toDto(it, viewerId) },
                 HttpStatus.OK
             )
+        }
         else
             ResponseEntity(HttpStatus.NO_CONTENT)
 
@@ -63,7 +68,7 @@ class ChatController(
             val messages: List<Message> = chatService.getChatMessagesAfter(chatId, Instant.parse(after))
             if (messages.isNotEmpty())
                 ResponseEntity(
-                    messages.map {MessageMapper.toDto(it, viewerId)},
+                    messages.map { messageService.toDto(it, viewerId) },
                     HttpStatus.OK
                 )
                 else ResponseEntity(HttpStatus.NO_CONTENT)
@@ -214,6 +219,57 @@ class ChatController(
         } catch (e: Exception) {
             ResponseEntity.internalServerError().build()
         }
+    }
+
+
+
+    @GetMapping ("/get/chat_participants/{chatId}")
+    fun getChatParticipants(
+        @PathVariable("chatId") chatId: String
+    ): ResponseEntity<List<UserDto>> {
+
+        return try {
+            val chat: Chat = chatService.findChatById(chatId)
+
+            val body: List<UserDto> = when (chat.typeOfChat) {
+                is ChatType.UserToUser -> {
+                    chat.participants.map { userService.convertToDto(it.toString()) }
+                }
+                is ChatType.Group -> {
+                    TODO("Not yet implemented - chatController.getChatParticipants()")
+                }
+            }
+
+            return ResponseEntity(body, HttpStatus.OK)
+
+        } catch (e: ChatNotFoundException) {
+            ResponseEntity.badRequest().build()
+        } catch(e: Exception) {
+            println("ChatController.getChatView() - ${e.message}")
+            ResponseEntity.internalServerError().build()
+        }
+
+    }
+
+
+    @GetMapping("/get/{chatId}")
+    fun getChat(
+        @PathVariable("chatId") chatId: String
+    ): ResponseEntity<ChatDto> {
+
+        return try {
+            val chat = chatService.findChatById(chatId)
+            return ResponseEntity(
+                ChatMapper.toDto(chat),
+                HttpStatus.OK
+            )
+        } catch (e: ChatNotFoundException) {
+            ResponseEntity.badRequest().build()
+        } catch(e: Exception) {
+            println("ChatController.getChatView() - ${e.message}")
+            ResponseEntity.internalServerError().build()
+        }
+
     }
 
 }

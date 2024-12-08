@@ -13,6 +13,10 @@ import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.time.Instant
 import java.util.*
 
@@ -97,13 +101,32 @@ class MessageService(private val messageRepository: MessageRepository) {
         return messageRepository.save(newMessage)
     }
 
+    private fun getMessageTypeForDtoConversion(message: Message): MessageType {
+        return if(message.messageType is MessageType.Resource)
+            MessageType.Resource(message.getImageAsBase64()) //base64 image
+        else
+            message.messageType
+    }
+
+    fun toDto(message: Message, viewerId: String): MessageDto {
+        return MessageDto(
+            messageId = message.messageId.toHexString(),
+            senderId = message.senderId.toHexString(),
+            chatId = message.chatId.toHexString(),
+            timestamp = message.timestamp.toString(),
+            messageType = getMessageTypeForDtoConversion(message),
+            isEdited = message.isEdited,
+            isDeletedForViewer = message.messageType is MessageType.Deleted || viewerId in message.deletedBy,
+            replyTo = message.replyTo.toHexString()
+        )
+    }
     fun convertMessageToDtoAsSender(message: Message, deletedBy: List<String> = emptyList()): MessageDto {
         return MessageDto(
             messageId = message.messageId.toHexString(),
             senderId = message.senderId.toHexString(),
             chatId = message.chatId.toHexString(),
             timestamp = message.timestamp.toString(),
-            messageType = message.messageType,
+            messageType = getMessageTypeForDtoConversion(message),
             isEdited = message.isEdited,
             isDeletedForViewer = message.messageType is MessageType.Deleted,
             replyTo = message.replyTo.toHexString()
@@ -116,7 +139,7 @@ class MessageService(private val messageRepository: MessageRepository) {
             senderId = message.senderId.toHexString(),
             chatId = message.chatId.toHexString(),
             timestamp = message.timestamp.toString(),
-            messageType = message.messageType,
+            messageType = getMessageTypeForDtoConversion(message),
             isEdited = message.isEdited,
             isDeletedForViewer = message.messageType is MessageType.Deleted || viewerId in message.deletedBy,
             replyTo = message.replyTo.toHexString()
@@ -138,6 +161,25 @@ class MessageService(private val messageRepository: MessageRepository) {
 
     fun getAllMessagesFromChat(chatId: String): List<Message> {
         return messageRepository.findAllMessagesByChatId(ObjectId(chatId))
+    }
+
+    fun saveImage(image: MultipartFile, chatId: String): String {
+
+        val resourceFolder: File = File("src/main/resources/chats/$chatId")
+
+        if (!resourceFolder.exists()) {
+            val created = resourceFolder.mkdirs()
+            if (!created)
+                throw IOException("Cannot create directory to store chat images $chatId")
+        }
+
+        val iconAsBytes: ByteArray = image.bytes
+        val imageUri: String = ObjectId().toHexString() + ".png"
+        val outputFile: File = File(resourceFolder, imageUri)
+
+        FileOutputStream(outputFile).use { outputStream -> outputStream.write(iconAsBytes) }
+
+        return imageUri
     }
 
 

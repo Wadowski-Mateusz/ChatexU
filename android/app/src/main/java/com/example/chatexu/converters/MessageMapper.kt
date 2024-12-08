@@ -37,7 +37,7 @@ object MessageMapper {
             messageType = msg.messageType,
             senderId = msg.senderId,
             chatId = msg.chatId,
-            replyTo = msg.replyTo,
+            replyTo = msg.replyTo
         )
     }
 }

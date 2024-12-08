@@ -11,6 +11,7 @@ import com.example.chatexu.data.remote.dto.RegisterDto
 import com.example.chatexu.data.remote.dto.SendedMessageDto
 import com.example.chatexu.data.remote.dto.UserDto
 import com.example.chatexu.data.remote.dto.UserViewDto
+import com.example.chatexu.domain.model.Message
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import org.jetbrains.annotations.TestOnly
@@ -132,5 +133,18 @@ interface ChatApi {
         @Path("userId") userId: String,
         @Part icon: MultipartBody.Part
     ): Response<UserDto>
+
+    @GET("${Constants.CHAT_MAPPING}/get/chat_participants/{chatId}")
+    suspend fun getChatParticipants(
+        @Path("chatId") chatId: String
+    ): Response<List<UserDto>>
+
+    @Multipart
+    @PUT("${Constants.MESSAGE_MAPPING}/sendImage")
+    suspend fun postSendImage(
+        @Part("message") message: SendedMessageDto,
+        @Part image: MultipartBody.Part
+    ): Response<String>
+
 
 }

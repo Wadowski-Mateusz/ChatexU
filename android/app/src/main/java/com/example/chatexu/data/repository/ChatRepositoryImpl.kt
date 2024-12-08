@@ -185,6 +185,22 @@ class ChatRepositoryImpl @Inject constructor(
         return result.body()!!.map { UserMapper.toUser(it) }
     }
 
+    override suspend fun getChatParticipants(chatId: String): List<User> {
+        val response = api.getChatParticipants(chatId)
+        if(response.code() == HTTP_OK) {
+            val userDtos: List<UserDto> = response.body()
+                ?: throw Exception("Unexpected error in ChatRepositoryImpl.getChatParticipants() - returned list is null")
+            val users: List<User> = userDtos.map { UserMapper.toUser(it) }
+            return users
+        } else {
+            throw HttpException( Response.error<String>(
+                response.code(),
+                "Unexpected error in ChatRepositoryImpl.getChatParticipants()".toResponseBody()
+                )
+            )
+        }
+    }
+
     override suspend fun rejectFriendRequest(requestId: String): Boolean {
         return try {
             val result = api.rejectFriendRequest(requestId)
@@ -223,6 +239,22 @@ class ChatRepositoryImpl @Inject constructor(
 
     }
 
+
+    override suspend fun putSendImage(message: Message, image: MultipartBody.Part): String {
+
+        val messageDto = MessageMapper.toSend(message)
+
+        val response = api.postSendImage(messageDto, image)
+        if(response.code() == HTTP_OK) {
+            val messageId: String = response.body()
+                ?: throw Exception("Unexpected error in ChatRepositoryImpl.postSendImage() - returned user is null")
+            return messageId
+        } else {
+            val errorResponse = Response.error<String>(response.code(), "Unexpected error in ChatRepositoryImpl.postSendImage()".toResponseBody())
+            throw HttpException(errorResponse)
+        }
+
+    }
 
     // maybe after adding refresh feature
 //    override suspend fun getUserFriendsByNickname(

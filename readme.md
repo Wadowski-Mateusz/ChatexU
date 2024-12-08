@@ -18,7 +18,7 @@ sudo systemctl start docker.service
 
 ### Start containers:
 ```
-docker build -t chatexu-server:0.1.1 .
+docker build -t chatexu-server:0.3.0 .
 ```
 ```
 docker compose up
@@ -96,7 +96,7 @@ docker rm chatexu-server
 
 ### Remove `chatexu server` image:
 ```
-docker rmi chatexu-server:0.1.1
+docker rmi chatexu-server:0.3.0
 ```
 
 ### (Optional) Remove other images, if no longer needed:
