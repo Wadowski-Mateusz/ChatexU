@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.presentation.Screen
 import com.example.chatexu.presentation.auth.components.FastButton
+import com.example.chatexu.presentation.auth.components.PasswordInput
 import com.example.chatexu.presentation.commons.composable.ScreenName
 
 @Composable
@@ -37,6 +39,8 @@ fun AuthScreen(
     val state = viewModel.state.value
     val login = remember { mutableStateOf(TextFieldValue()) }
     val password = remember { mutableStateOf(TextFieldValue()) }
+    val loginMaxLength = 16
+    val passwordMaxLength = 24
 
     Column(
         Modifier
@@ -45,6 +49,10 @@ fun AuthScreen(
     ) {
         ScreenName(screenName = "Auth")
 
+        val fieldModifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp, vertical = 16.dp)
+            .align(Alignment.CenterHorizontally)
 
         if(state.error.isNotBlank()) {
             Text(
@@ -61,37 +69,35 @@ fun AuthScreen(
 
         if(state.loginPage) {
 
-            if(state.badLoginData)
+            if(state.badLoginData) {
                 Row(modifier = Modifier.background(Color.Red)) {
                     Text(text = "BAD DATA")
                 }
+            }
 
+            // Login - user login
             TextField(
-                modifier = Modifier
-                    .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 8.dp)
-                    .align(Alignment.CenterHorizontally),
+                modifier = fieldModifier,
                 value = login.value,
-                onValueChange = { login.value = it },
-                placeholder = { Text(text = "Login") },
-                maxLines = 1
+                onValueChange = { login.value = viewModel.trimInput(it, loginMaxLength) },
+                placeholder = { Text(text = "login") },
+                label = { Text(text = "Login") },
+                singleLine = true,
             )
 
-            TextField(
-                modifier = Modifier
-                    .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 8.dp)
-                    .align(Alignment.CenterHorizontally),
-                value = password.value,
-                onValueChange = { password.value = it },
-                placeholder = { Text(text = "********") },
-                maxLines = 1
+
+            PasswordInput(
+                password = password,
+                modifier = fieldModifier,
+                trimInput = viewModel::trimInput,
+                passwordMaxLength = passwordMaxLength
             )
 
             FastButton(
                 txt = "Login",
                 onClick = {
-                    Log.d("PEEK", "CLICK")
                     viewModel.login(login.value.text, password.value.text)
-                    Log.d("PEEK", "RESPONSE: ${viewModel.state.value.userId}")
+                    Log.d(DebugConstants.PEEK, "RESPONSE: ${viewModel.state.value.userId}")
 
                     if(state.error.isBlank() && state.userId != Constants.ID_DEFAULT) {
                         viewModel.setBadLoginDataAlertVisibility(false)
@@ -113,12 +119,9 @@ fun AuthScreen(
             FastButton(
                 txt = "GO TO DEBUG",
                 onClick = {
-                    Log.d("PEEK", "CLICK")
                     navController.navigate(Screen.AuthScreenDebug.route)
                 }
             )
-
-
         }
 
         if(state.registerPage) {
@@ -129,70 +132,75 @@ fun AuthScreen(
             val registerPasswordRepeat = remember { mutableStateOf(TextFieldValue()) }
 
             TextField(
-                modifier = Modifier
-                    .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 8.dp)
-                    .align(Alignment.CenterHorizontally),
+                modifier = fieldModifier,
                 value = registerEmail.value,
                 onValueChange = { registerEmail.value = it },
-                placeholder = { Text(text = "email") },
-                maxLines = 1
+                placeholder = { Text(text = "email@example.com") },
+                label = { Text(text = "email") },
+                singleLine = true,
             )
 
             TextField(
-                modifier = Modifier
-                    .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 8.dp)
-                    .align(Alignment.CenterHorizontally),
+                modifier = fieldModifier,
                 value = registerNickname.value,
-                onValueChange = { registerNickname.value = it },
+                onValueChange = { registerNickname.value = viewModel.trimInput(it, loginMaxLength) },
                 placeholder = { Text(text = "nickname") },
-                maxLines = 1
+                label = { Text(text = "Nickname") },
+                singleLine = true,
             )
 
-            TextField(
-                modifier = Modifier
-                    .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 8.dp)
-                    .align(Alignment.CenterHorizontally),
-                value = registerPassword.value,
-                onValueChange = { registerPassword.value = it },
-                placeholder = { Text(text = "pass") },
-                maxLines = 1
+            PasswordInput(
+                password = registerPassword,
+                modifier = fieldModifier,
+                trimInput = viewModel::trimInput,
+                passwordMaxLength = passwordMaxLength,
             )
 
-            TextField(
-                modifier = Modifier
-                    .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 8.dp)
-                    .align(Alignment.CenterHorizontally),
-                value = registerPasswordRepeat.value,
-                onValueChange = { registerPasswordRepeat.value = it },
-                placeholder = { Text(text = "repeat pass") },
-                maxLines = 1
+            PasswordInput(
+                password = registerPasswordRepeat,
+                modifier = fieldModifier,
+                trimInput = viewModel::trimInput,
+                passwordMaxLength = passwordMaxLength,
             )
 
             FastButton(
                 txt = "Register",
                 onClick = {
                     if(registerPassword.value.text == registerPasswordRepeat.value.text) {
-
-                        viewModel.register(
+                        viewModel.registerUser(
                             registerEmail.value.text,
                             registerNickname.value.text,
                             registerPassword.value.text
                         )
-                        viewModel.showLogin()
-                        navController.navigate(Screen.ChatListScreen.route  + "/${state.userId}")
                     } else {
-                        Log.d(DebugConstants.PEEK, "Passwords are not the same")
+                        Log.e(DebugConstants.PEEK, "Passwords are not the same")
                     }
                 }
             )
 
             FastButton(
-                txt = "Back to login",
+                txt = "Go back to login",
                 onClick = {
                     viewModel.showLogin()
                 }
             )
         }
+
+        LaunchedEffect(state) {
+            if (!state.isLoading && state.error.isBlank() && state.registerStatus) {
+                Log.i("REGISTER - SCREEN - true", state.userId)
+                navController.navigate(Screen.ChatListScreen.route + "/${state.userId}")
+            } else if (!state.isLoading && state.error.isBlank() && state.loginStatus) {
+                Log.i("LOGIN - SCREEN - true", state.userId)
+                navController.navigate(Screen.ChatListScreen.route + "/${state.userId}")
+//            } else if (!state.isLoading && state.error.isNotBlank() ) {
+//                viewModel.showRegister()
+//            }
+            }
+
+        }
+
+
 
 
 

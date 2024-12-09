@@ -2,6 +2,7 @@ package com.example.chatexu.domain.use_case.register_use_case
 
 import android.util.Log
 import com.example.chatexu.common.DataWrapper
+import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.domain.model.User
 import com.example.chatexu.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.Flow
@@ -20,10 +21,10 @@ class RegisterUseCase @Inject constructor(
             val userId = repository.register(email, nickname, password)
             emit(DataWrapper.Success<User>(userId))
         } catch(e: HttpException) {
-            Log.e("peek", "LoginUseCase e1 ${e.message.toString()}")
+            Log.e(DebugConstants.UC_ERR, "RegisterUseCase e1 ${e.message.toString()}")
             emit(DataWrapper.Error<User>(e.localizedMessage ?: e.message.toString()))
         } catch(e: IOException) {
-            Log.e("peek", "LoginUseCase e2 ${e.message.toString()}")
+            Log.e(DebugConstants.UC_ERR, "RegisterUseCase e2 ${e.message.toString()}")
             emit(DataWrapper.Error<User>("No internet connection."))
         }
 

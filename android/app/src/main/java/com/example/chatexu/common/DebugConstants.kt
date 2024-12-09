@@ -14,5 +14,6 @@ object DebugConstants {
     const val RESOURCE_LOADING = "RESOURCE_LOADING"
 
     val lorem: (Int) -> String = { words: Int -> LoremIpsum(words).values.reduce { acc, s -> acc + s }}
+    val loremChars: (Int) -> String = { chars: Int -> LoremIpsum(chars).values.reduce { acc, s -> acc + s }.take(chars)}
 
 }

@@ -43,6 +43,7 @@ android {
         compose true
     }
     composeOptions {
+        // Jetpack Compose Version
         kotlinCompilerExtensionVersion '1.5.15'
     }
     packaging {
@@ -123,6 +124,10 @@ dependencies {
     implementation "io.coil-kt:coil:2.7.0"
     implementation 'io.coil-kt.coil3:coil-compose:3.0.4'
 //    runtimeOnly "io.coil-kt:coil:2.7.0"
+
+    // icons
+//    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    implementation 'androidx.compose.material:material-icons-extended:1.5.15'
 
 
     // default

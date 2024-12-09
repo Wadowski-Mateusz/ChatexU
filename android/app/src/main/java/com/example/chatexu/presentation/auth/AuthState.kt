@@ -12,4 +12,6 @@ data class AuthState(
     var loginPage: Boolean = true,
     var registerPage: Boolean = false,
     var badLoginData: Boolean = false,
+    var registerStatus: Boolean = false,
+    var loginStatus: Boolean = false,
 )

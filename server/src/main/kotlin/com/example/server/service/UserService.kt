@@ -195,12 +195,12 @@ class UserService(
 
         val email: String = registerDto.email
         val nickname: String = registerDto.nickname
-        val username: String = registerDto.username
+//        val username: String = registerDto.username
         val password: String = registerDto.password
 
         require(email.isNotBlank()) { ErrorMessageCommons.isBlank(Field.EMAIL, "UserService.verifyRegisterDto()") }
         require(nickname.isNotBlank()) { ErrorMessageCommons.isBlank(Field.NICKNAME, "UserService.verifyRegisterDto()") }
-        require(username.isNotBlank()) { ErrorMessageCommons.isBlank(Field.USERNAME, "UserService.verifyRegisterDto()") }
+//        require(username.isNotBlank()) { ErrorMessageCommons.isBlank(Field.USERNAME, "UserService.verifyRegisterDto()") }
         require(password.isNotBlank()) { ErrorMessageCommons.isBlank(Field.PASSWORD, "UserService.verifyRegisterDto()") }
 
 
@@ -211,8 +211,8 @@ class UserService(
             inUse += (2.0).pow(RegisterVerificationPoints.EMAIL.ordinal).toInt()
         if(userRepository.existsByNickname(nickname))
             inUse += (2.0).pow(RegisterVerificationPoints.NICKNAME.ordinal).toInt()
-        if(userRepository.existsByUsername(username))
-            inUse += (2.0).pow(RegisterVerificationPoints.USERNAME.ordinal).toInt()
+//        if(userRepository.existsByUsername(username))
+//            inUse += (2.0).pow(RegisterVerificationPoints.USERNAME.ordinal).toInt()
 
         return inUse
     }
@@ -234,7 +234,7 @@ class UserService(
 
         val newUser = User(
             nickname = registerDto.nickname,
-            username = registerDto.username,
+            username = registerDto.nickname,
             email = registerDto.email,
             password = registerDto.password,
             profilePictureUri = Constants.DEFAULT_PROFILE_URI,

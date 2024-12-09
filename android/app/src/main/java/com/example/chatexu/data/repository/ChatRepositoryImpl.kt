@@ -80,12 +80,18 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
     override suspend fun register(email: String, password: String, nickname: String): User {
-        // TODO already in use
-        val registerDto = RegisterDto(nickname, email, password)
+        val registerDto: RegisterDto = RegisterDto(nickname, email, password)
+//        Log.d(DebugConstants.PEEK, "register() - repository - send request")
         val response = api.register(registerDto)
-//        Log.d("PEEK", "register() - repository: $response")
-        val user = UserMapper.toUser(response.body()!!)
-        return user
+//        Log.d(DebugConstants.PEEK, "register() - repository - response: $response")
+        if (response.code() != HTTP_OK) {
+            val errorResponse = Response.error<String>(
+                response.code(),
+                "Unexpected error in register()".toResponseBody()
+            )
+            throw HttpException(errorResponse)
+        }
+        return UserMapper.toUser(response.body()!!)
     }
 
     override suspend fun getAllUsers(): List<User> {

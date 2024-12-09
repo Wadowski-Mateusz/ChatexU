@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.domain.model.User
+import com.example.chatexu.presentation.commons.composable.UserIcon
 import com.example.chatexu.presentation.getUserErrorIcon
 import com.example.chatexu.presentation.ui.theme.LightBlue
 
@@ -42,11 +43,15 @@ fun FriendItem(
         
         val friendProfileIcon: Bitmap = user.icon ?: getUserErrorIcon(LocalContext.current)
 
-        Image(
-            modifier = Modifier.padding(8.dp),
-            bitmap = friendProfileIcon.asImageBitmap(),
-            contentDescription = "User icon"
-        )
+        UserIcon(icon = friendProfileIcon, modifier = Modifier.padding(8.dp), contentDescription = "Friend icon")
+//
+//        Image(
+//            modifier = Modifier.padding(8.dp),
+//            bitmap = friendProfileIcon.asImageBitmap(),
+//            contentDescription = "User icon"
+//        )
+
+
 
 //        Column {
             Text(

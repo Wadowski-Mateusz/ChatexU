@@ -45,10 +45,13 @@ class SecurityController(
 
         return try {
             val user: User = userService.login(loginDto)
+            println("success")
             ResponseEntity.status(HttpStatus.OK).body(user.userId.toString())
         } catch (e: BadLoginDataException) {
+            println("e1")
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         } catch (e: Exception) {
+            println("e2")
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
         }
     }

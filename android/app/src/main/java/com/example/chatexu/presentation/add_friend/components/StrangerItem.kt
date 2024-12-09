@@ -1,7 +1,6 @@
 package com.example.chatexu.presentation.add_friend.components
 
 import android.graphics.Bitmap
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -12,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -21,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chatexu.common.Constants
 import com.example.chatexu.domain.model.User
+import com.example.chatexu.presentation.commons.composable.UserIcon
 import com.example.chatexu.presentation.getUserErrorIcon
 
 @Composable
@@ -37,13 +36,14 @@ fun StrangerItem(
         , verticalAlignment = Alignment.CenterVertically,
     ) {
         
-        val friendProfileIcon: Bitmap = user.icon ?: getUserErrorIcon(LocalContext.current)
+        val strangerProfileIcon: Bitmap = user.icon ?: getUserErrorIcon(LocalContext.current)
 
-        Image(
-            modifier = Modifier.padding(8.dp),
-            bitmap = friendProfileIcon.asImageBitmap(),
-            contentDescription = "User icon"
-        )
+        UserIcon(icon = strangerProfileIcon, modifier = Modifier.padding(8.dp))
+//        Image(
+//            modifier = Modifier.padding(8.dp),
+//            bitmap = friendProfileIcon.asImageBitmap(),
+//            contentDescription = "User icon"
+//        )
 
 //        Column {
             Text(
@@ -64,9 +64,9 @@ fun StrangerItem(
 private fun ItemPreview() {
     val friend = User(
         id = Constants.ID_DEFAULT,
-        nickname = "USER NICKNAME",
+        nickname = "STRANGER USER NICKNAME",
         icon = null,
-        username = "USER USERNAME"
+        username = "STRANGER USER USERNAME"
     )
 
     StrangerItem(

@@ -3,6 +3,7 @@ package com.example.chatexu.presentation.auth
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatexu.common.Constants
@@ -17,6 +18,7 @@ import com.example.chatexu.domain.use_case.register_use_case.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.mongodb.kbson.BsonObjectId
 import org.mongodb.kbson.ObjectId
 import javax.inject.Inject
@@ -33,6 +35,9 @@ class AuthViewModel @Inject constructor(
     val state: State<AuthState> = _state
 
     init {
+        _state.value = AuthState(
+            isLoading = true
+        )
         getAllUsers()
     }
 
@@ -43,6 +48,10 @@ class AuthViewModel @Inject constructor(
             when(result) {
                 is DataWrapper.Success -> {
                     getAllUsers()
+                    _state.value = _state.value.copy(
+                        error = "",
+                        isLoading = false
+                    )
                 }
 
                 is DataWrapper.Loading -> {
@@ -57,9 +66,8 @@ class AuthViewModel @Inject constructor(
                     Log.d("peek", "Error AuthViewModel.create()")
                     _state.value = _state.value.copy(
                         error = result.message ?: "unknown error",
-                        isLoading = true
+                        isLoading = false
                     )
-
                 }
             }
 
@@ -78,14 +86,15 @@ class AuthViewModel @Inject constructor(
                         _state.value = AuthState(
                             users = emptyList(),
                             error = "",
+                            loginStatus = true,
                             isLoading = false,
                             userId = result.data
                         )
                     } else {
-                        Log.e("PEEK", userId)
                         _state.value = AuthState(
                             users = emptyList(),
                             error = userId,
+                            loginStatus = false,
                             isLoading = false,
                             userId = Constants.ID_DEFAULT,
                             badLoginData = true
@@ -97,6 +106,7 @@ class AuthViewModel @Inject constructor(
                     Log.d("peek", "Loading AuthViewModel.login()")
                     _state.value = _state.value.copy(
                         error = "",
+                        loginStatus = false,
                         isLoading = true
                     )
                 }
@@ -107,7 +117,8 @@ class AuthViewModel @Inject constructor(
                         users = emptyList(),
                         userId = Constants.ID_DEFAULT,
                         error = result.message ?: "unknown error",
-                        isLoading = false
+                        isLoading = false,
+                        loginStatus = false,
                     )
 
                 }
@@ -124,15 +135,15 @@ class AuthViewModel @Inject constructor(
         users.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
-                    _state.value = AuthState(
+                    _state.value = _state.value.copy(
                         users = result.data ?: emptyList(),
                         error = "",
-                        isLoading = false,
+//                        isLoading = false,
                     )
                 }
 
                 is DataWrapper.Loading -> {
-                    Log.d("peek", "Loading AuthViewModel.getAllUsers()")
+                    Log.i(DebugConstants.RESOURCE_LOADING, "Loading AuthViewModel.getAllUsers()")
                     _state.value = _state.value.copy(
                         error = "",
                         isLoading = true
@@ -140,10 +151,10 @@ class AuthViewModel @Inject constructor(
                 }
 
                 is DataWrapper.Error -> {
-                    Log.d("peek", "Error AuthViewModel.getAllUsers()")
+                    Log.d(DebugConstants.VM_ERR, "Error AuthViewModel.getAllUsers()")
                     _state.value = _state.value.copy(
                         error = result.message ?: "unknown error",
-                        isLoading = true
+//                        isLoading = false
                     )
                 }
             }
@@ -151,36 +162,48 @@ class AuthViewModel @Inject constructor(
         } .launchIn(viewModelScope)
     }
 
-    fun register(email: String, nickname: String, password: String) {
-        val result = registerUseCase(email, nickname, password)
+    fun registerUser(email: String, nickname: String, password: String) {
+        viewModelScope.launch {
+            register(email, nickname, password) // Call suspend function
+        }
+    }
 
-        result.onEach { result ->
+    private fun register(email: String, nickname: String, password: String) {
+        _state.value = AuthState(
+            isLoading = true
+        )
+
+        val response = registerUseCase(email, nickname, password)
+
+        response.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
+//                    Log.d("REGISTER - VM", "VM register success")
                     val user = result.data!!
-                    _state.value = AuthState(
+                    _state.value = _state.value.copy(
                         users = emptyList(),
-                        error = "",
+                        userId = user.id,
+                        registerStatus = true,
                         isLoading = false,
-                        userId = user.id
+                        error = "",
                     )
                 }
 
                 is DataWrapper.Loading -> {
-                    Log.d("peek", "Loading AuthViewModel.login()")
+                    Log.i(DebugConstants.RESOURCE_LOADING, "Loading AuthViewModel.register()")
                     _state.value = _state.value.copy(
+                        isLoading = true,
                         error = "",
-                        isLoading = true
                     )
                 }
 
                 is DataWrapper.Error -> {
-                    Log.d("peek", "Error AuthViewModel.login()")
+                    Log.e(DebugConstants.VM_ERR, "Error AuthViewModel.register()")
                     _state.value = _state.value.copy(
                         users = emptyList(),
                         userId = Constants.ID_DEFAULT,
+                        isLoading = false,
                         error = result.message ?: "unknown error",
-                        isLoading = false
                     )
 
                 }
@@ -209,6 +232,11 @@ class AuthViewModel @Inject constructor(
         )
     }
 
-
+    fun trimInput(txt: TextFieldValue, txtLength: Int = 32): TextFieldValue {
+        return if (txt.text.length > txtLength)
+                txt.copy(text = txt.text.take(txtLength))
+            else
+                txt
+    }
 
 }
