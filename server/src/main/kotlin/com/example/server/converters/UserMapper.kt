@@ -19,7 +19,8 @@ object UserMapper {
             try {
                 chatService.getChatWithParticipants(listOf(userId, friend.userId.toString()))
                 println("TODO - toFriendDto - nicknames")
-                "TODO - nicknames"
+//                "TODO - nicknames"
+                ""
             } catch (e: ChatNotFoundException) {
                 ""
             }

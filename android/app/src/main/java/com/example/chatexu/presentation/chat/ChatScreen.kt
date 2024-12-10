@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Send
@@ -23,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -46,6 +48,7 @@ import com.example.chatexu.presentation.Screen
 import com.example.chatexu.presentation.chat.components.MessageLazyList
 import com.example.chatexu.presentation.commons.composable.ScreenName
 import java.time.Instant
+import kotlin.math.max
 
 @Composable
 fun ChatScreen(
@@ -58,6 +61,7 @@ fun ChatScreen(
 
     val inputMessage = remember { mutableStateOf(TextFieldValue()) }
     val inputImageUri = remember { mutableStateOf<Uri?>(null) }
+    val listState = rememberLazyListState()
 
     fun sendImage() {
 //        val newIcon = iconUri.toMultipartBodyPart(iconUri, context, "image")
@@ -169,8 +173,13 @@ fun ChatScreen(
                 .fillMaxSize()
                 .background(Color.LightGray)
                 .padding(5.dp)
-                .weight(1f)
+                .weight(1f),
+            listState
         )
+
+        LaunchedEffect(state.messages) {
+            listState.animateScrollToItem(max(0, state.messages.size - 1))
+        }
 
         // Input
         Row(

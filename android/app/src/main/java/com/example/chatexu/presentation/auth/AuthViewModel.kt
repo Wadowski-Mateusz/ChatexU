@@ -76,14 +76,15 @@ class AuthViewModel @Inject constructor(
     }
 
     fun login(login: String, password: String) {
-        val result = loginUseCase(login, password)
+        val response = loginUseCase(login, password)
 
-        result.onEach { result ->
+        response.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
+                    Log.d(DebugConstants.PEEK, "Success AuthViewModel.login() - enter")
                     val userId = result.data!!
                     if (ObjectId().isStringValid(userId)) {
-                        _state.value = AuthState(
+                        _state.value = _state.value.copy(
                             users = emptyList(),
                             error = "",
                             loginStatus = true,
@@ -91,7 +92,7 @@ class AuthViewModel @Inject constructor(
                             userId = result.data
                         )
                     } else {
-                        _state.value = AuthState(
+                        _state.value = _state.value.copy(
                             users = emptyList(),
                             error = userId,
                             loginStatus = false,
@@ -103,7 +104,7 @@ class AuthViewModel @Inject constructor(
                 }
 
                 is DataWrapper.Loading -> {
-                    Log.d("peek", "Loading AuthViewModel.login()")
+                    Log.i(DebugConstants.RESOURCE_LOADING, "Loading AuthViewModel.login()")
                     _state.value = _state.value.copy(
                         error = "",
                         loginStatus = false,
@@ -112,7 +113,7 @@ class AuthViewModel @Inject constructor(
                 }
 
                 is DataWrapper.Error -> {
-                    Log.d("peek", "Error AuthViewModel.login()")
+                    Log.e(DebugConstants.VM_ERR, "Error AuthViewModel.login()")
                     _state.value = _state.value.copy(
                         users = emptyList(),
                         userId = Constants.ID_DEFAULT,
@@ -162,7 +163,10 @@ class AuthViewModel @Inject constructor(
         } .launchIn(viewModelScope)
     }
 
+
+
     fun registerUser(email: String, nickname: String, password: String) {
+
         viewModelScope.launch {
             register(email, nickname, password) // Call suspend function
         }
@@ -192,6 +196,8 @@ class AuthViewModel @Inject constructor(
                 is DataWrapper.Loading -> {
                     Log.i(DebugConstants.RESOURCE_LOADING, "Loading AuthViewModel.register()")
                     _state.value = _state.value.copy(
+                        loginPage = false,
+                        registerPage = true,
                         isLoading = true,
                         error = "",
                     )
@@ -202,6 +208,8 @@ class AuthViewModel @Inject constructor(
                     _state.value = _state.value.copy(
                         users = emptyList(),
                         userId = Constants.ID_DEFAULT,
+                        loginPage = false,
+                        registerPage = true,
                         isLoading = false,
                         error = result.message ?: "unknown error",
                     )
@@ -214,6 +222,11 @@ class AuthViewModel @Inject constructor(
 
     fun showLogin() {
         _state.value = _state.value.copy(
+            badLoginData = false,
+            isLoading = false,
+            badRegisterData =  false,
+            passwordsAreDifferent = false,
+            error = "",
             registerPage = false,
             loginPage = true
         )
@@ -221,9 +234,29 @@ class AuthViewModel @Inject constructor(
 
     fun showRegister() {
         _state.value = _state.value.copy(
+            badLoginData = false,
+            isLoading = false,
+            badRegisterData =  false,
+            passwordsAreDifferent = false,
+            error = "",
             loginPage = false,
-            registerPage = true
+            registerPage = true,
         )
+    }
+
+    fun validateRegisterInput(nickname: String, email: String, password: String, repeatedPassword: String): Boolean {
+
+        _state.value = _state.value.copy(passwordsAreDifferent = (password != repeatedPassword))
+
+        _state.value = _state.value.copy(badRegisterData =
+            nickname.isBlank()
+                    || email.isBlank()
+                    || password.isBlank()
+                    || repeatedPassword.isBlank()
+        )
+
+        return !_state.value.passwordsAreDifferent && !_state.value.badRegisterData
+
     }
 
     fun setBadLoginDataAlertVisibility(value: Boolean) {

@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chatexu.domain.model.Friend
+import com.example.chatexu.presentation.commons.composable.UserIcon
 import com.example.chatexu.presentation.getUserErrorIcon
 import org.mongodb.kbson.ObjectId
 
@@ -40,10 +41,12 @@ fun FriendItem(
         
         val friendProfileIcon: Bitmap = friend.icon ?: getUserErrorIcon(LocalContext.current)
 
-        Image(
+
+        UserIcon(
             modifier = Modifier.padding(8.dp),
-            bitmap = friendProfileIcon.asImageBitmap(),
-            contentDescription = "User icon"
+            icon = friendProfileIcon,
+            contentDescription = "Friend icon",
+            size = 64.dp
         )
 
         Column {

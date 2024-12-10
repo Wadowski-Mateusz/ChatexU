@@ -86,7 +86,8 @@ fun ChatListScreen(
         Row(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .background(Color.Blue),
+//                .background(Color.Blue)
+                ,
             horizontalArrangement = Arrangement.End
         ) {
 

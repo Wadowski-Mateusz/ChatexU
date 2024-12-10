@@ -74,10 +74,11 @@ fun ChatListItem(
             Text(
                 text = when (chatRow.lastMessage) {
                     is MessageType.Text -> chatRow.lastMessage.text
+                    is MessageType.Resource -> "Image"
                     is MessageType.Initialization -> "No messages yet."
                     else -> "Message type not implemented - ChatListItem"
                 },
-                maxLines = 3,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }

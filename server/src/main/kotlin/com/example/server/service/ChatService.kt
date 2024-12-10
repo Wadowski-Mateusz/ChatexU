@@ -131,4 +131,10 @@ class ChatService(private val chatRepository: ChatRepository) {
             ?: throw ChatNotFoundException()
     }
 
+    fun updateLastMessage(chatId: ObjectId, savedMessage: Message) {
+        // TODO no validation or anything
+        chatRepository.updateLastMessage(chatId.toString(), savedMessage.messageId.toString())
+
+    }
+
 }

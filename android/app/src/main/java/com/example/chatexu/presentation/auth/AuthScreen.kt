@@ -3,11 +3,15 @@ package com.example.chatexu.presentation.auth
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -17,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -45,39 +50,26 @@ fun AuthScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .background(Color.LightGray)
+            .background(Color.LightGray),
+        verticalArrangement = Arrangement.Center
     ) {
-        ScreenName(screenName = "Auth")
-
-        val fieldModifier = Modifier
+        val fieldModifierDefault = Modifier
             .fillMaxWidth()
             .padding(horizontal = 32.dp, vertical = 16.dp)
             .align(Alignment.CenterHorizontally)
+//            .border(width = 0.dp, color = Color.Red, shape = RoundedCornerShape(4.dp))
 
-        if(state.error.isNotBlank()) {
-            Text(
-                text = "Error when connecting to the database",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Yellow)
-                    .padding(vertical = 16.dp),
-                textAlign = TextAlign.Center,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-            )
-        }
+        val fieldModifierBad = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp, vertical = 16.dp)
+            .align(Alignment.CenterHorizontally)
+            .border(width = 1.dp, color = Color.Red, shape = RoundedCornerShape(4.dp))
 
         if(state.loginPage) {
 
-            if(state.badLoginData) {
-                Row(modifier = Modifier.background(Color.Red)) {
-                    Text(text = "BAD DATA")
-                }
-            }
-
             // Login - user login
             TextField(
-                modifier = fieldModifier,
+                modifier = if (state.badLoginData) fieldModifierBad else fieldModifierDefault,
                 value = login.value,
                 onValueChange = { login.value = viewModel.trimInput(it, loginMaxLength) },
                 placeholder = { Text(text = "login") },
@@ -85,10 +77,9 @@ fun AuthScreen(
                 singleLine = true,
             )
 
-
             PasswordInput(
                 password = password,
-                modifier = fieldModifier,
+                modifier = if (state.badLoginData) fieldModifierBad else fieldModifierDefault,
                 trimInput = viewModel::trimInput,
                 passwordMaxLength = passwordMaxLength
             )
@@ -97,7 +88,7 @@ fun AuthScreen(
                 txt = "Login",
                 onClick = {
                     viewModel.login(login.value.text, password.value.text)
-                    Log.d(DebugConstants.PEEK, "RESPONSE: ${viewModel.state.value.userId}")
+//                    Log.d(DebugConstants.PEEK, "RESPONSE: ${viewModel.state.value.userId}")
 
                     if(state.error.isBlank() && state.userId != Constants.ID_DEFAULT) {
                         viewModel.setBadLoginDataAlertVisibility(false)
@@ -132,7 +123,7 @@ fun AuthScreen(
             val registerPasswordRepeat = remember { mutableStateOf(TextFieldValue()) }
 
             TextField(
-                modifier = fieldModifier,
+                modifier = if (state.badRegisterData) fieldModifierBad else fieldModifierDefault,
                 value = registerEmail.value,
                 onValueChange = { registerEmail.value = it },
                 placeholder = { Text(text = "email@example.com") },
@@ -141,7 +132,7 @@ fun AuthScreen(
             )
 
             TextField(
-                modifier = fieldModifier,
+                modifier = if (state.badRegisterData) fieldModifierBad else fieldModifierDefault,
                 value = registerNickname.value,
                 onValueChange = { registerNickname.value = viewModel.trimInput(it, loginMaxLength) },
                 placeholder = { Text(text = "nickname") },
@@ -151,14 +142,14 @@ fun AuthScreen(
 
             PasswordInput(
                 password = registerPassword,
-                modifier = fieldModifier,
+                modifier = if (state.badRegisterData || state.passwordsAreDifferent) fieldModifierBad else fieldModifierDefault,
                 trimInput = viewModel::trimInput,
                 passwordMaxLength = passwordMaxLength,
             )
 
             PasswordInput(
                 password = registerPasswordRepeat,
-                modifier = fieldModifier,
+                modifier = if (state.badRegisterData || state.passwordsAreDifferent) fieldModifierBad else fieldModifierDefault,
                 trimInput = viewModel::trimInput,
                 passwordMaxLength = passwordMaxLength,
             )
@@ -166,14 +157,23 @@ fun AuthScreen(
             FastButton(
                 txt = "Register",
                 onClick = {
-                    if(registerPassword.value.text == registerPasswordRepeat.value.text) {
-                        viewModel.registerUser(
+
+
+                    if(
+                        viewModel.validateRegisterInput(
                             registerEmail.value.text,
                             registerNickname.value.text,
-                            registerPassword.value.text
+                            registerPassword.value.text,
+                            registerPasswordRepeat.value.text
                         )
-                    } else {
-                        Log.e(DebugConstants.PEEK, "Passwords are not the same")
+                    ) {
+//                        try {
+                            viewModel.registerUser(
+                                registerEmail.value.text,
+                                registerNickname.value.text,
+                                registerPassword.value.text
+                            )
+//                        }
                     }
                 }
             )
@@ -187,10 +187,10 @@ fun AuthScreen(
         }
 
         LaunchedEffect(state) {
-            if (!state.isLoading && state.error.isBlank() && state.registerStatus) {
+            if (!state.isLoading && state.error.isBlank() && state.registerStatus && state.userId != Constants.ID_DEFAULT) {
                 Log.i("REGISTER - SCREEN - true", state.userId)
                 navController.navigate(Screen.ChatListScreen.route + "/${state.userId}")
-            } else if (!state.isLoading && state.error.isBlank() && state.loginStatus) {
+            } else if (!state.isLoading && state.error.isBlank() && state.loginStatus && state.userId != Constants.ID_DEFAULT) {
                 Log.i("LOGIN - SCREEN - true", state.userId)
                 navController.navigate(Screen.ChatListScreen.route + "/${state.userId}")
 //            } else if (!state.isLoading && state.error.isNotBlank() ) {

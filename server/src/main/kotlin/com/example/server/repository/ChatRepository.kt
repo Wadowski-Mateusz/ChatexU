@@ -4,6 +4,7 @@ import com.example.server.model.Chat
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.data.mongodb.repository.Query
+import org.springframework.data.mongodb.repository.Update
 
 interface ChatRepository: MongoRepository<Chat, String> {
 
@@ -18,5 +19,9 @@ interface ChatRepository: MongoRepository<Chat, String> {
 
     fun findByChatId(chatId: ObjectId): Chat?
     fun findByChatId(chatId: String): Chat?
+
+    @Query("{ '_id' : ?0 }")
+    @Update("{ '\$set' : { 'lastMessage' : ?1 } }")
+    fun updateLastMessage(chatId: String?, lastMessage: String?): Long
 
 }

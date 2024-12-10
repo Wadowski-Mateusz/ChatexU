@@ -47,7 +47,7 @@ fun CreateChatScreen(
 
 
     Column {
-        ScreenName(screenName = "CREATE CHAT")
+//        ScreenName(screenName = "CREATE CHAT")
 
         if(state.error.isNotBlank()) {
             Text(

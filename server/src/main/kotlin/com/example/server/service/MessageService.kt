@@ -53,7 +53,8 @@ class MessageService(private val messageRepository: MessageRepository) {
 
         val savedMessage = messageRepository.save(message)
 
-//        chatService.updateLastMessage(message.chatId, savedMessage)
+
+        chatService.updateLastMessage(message.chatId, savedMessage)
 
         return savedMessage
     }

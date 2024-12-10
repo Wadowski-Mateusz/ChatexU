@@ -50,9 +50,9 @@ class MessageController(private val messageService: MessageService) {
     @PostMapping("/send")
     fun sendMessage(@RequestBody sentMessageDto: SentMessageDto): ResponseEntity<MessageDto> {
 
-        println(sentMessageDto.replyTo)
+//        println(sentMessageDto.replyTo)
         val message = MessageMapper.fromSendedMessage(sentMessageDto)
-        println(message.replyTo)
+//        println(message.replyTo)
         val savedMessage = messageService.save(message)
 
         return ResponseEntity(

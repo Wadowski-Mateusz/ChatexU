@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,15 +19,16 @@ fun MessageLazyList(
     messages: List<Message>,
     userId: String,
     modifier: Modifier = Modifier,
-//    state: LazyListState
+    state: LazyListState
 ) {
         var lastMessageSender = Constants.ID_DEFAULT
 
 
         LazyColumn(
             modifier = modifier,
-            verticalArrangement = Arrangement.Bottom
-//                    reverseLayout = true,
+            verticalArrangement = Arrangement.Bottom,
+            state = state
+//            reverseLayout = true,
         ) {
             items(items = messages, key = { it.messageId }) { message ->
 

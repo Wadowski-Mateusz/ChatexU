@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.domain.model.Message
@@ -33,7 +34,6 @@ fun ChatMessageItem(
 
 
     when(message.messageType) {
-            // TODO messages types
             is MessageType.Text -> {
                 Text(
                     text = message.messageType.text,
