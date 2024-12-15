@@ -107,12 +107,13 @@ fun AuthScreen(
                 }
             )
 
-            FastButton(
-                txt = "GO TO DEBUG",
-                onClick = {
-                    navController.navigate(Screen.AuthScreenDebug.route)
-                }
-            )
+            // Developer login screen
+//            FastButton(
+//                txt = "GO TO DEVELOPER LOGIN",
+//                onClick = {
+//                    navController.navigate(Screen.AuthScreenDebug.route)
+//                }
+//            )
         }
 
         if(state.registerPage) {
