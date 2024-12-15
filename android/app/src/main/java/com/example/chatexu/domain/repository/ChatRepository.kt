@@ -20,7 +20,7 @@ interface ChatRepository {
 
     suspend fun login(email: String, password: String): String
 
-    suspend fun register(email: String, password: String, nickname: String): User
+    suspend fun register(email: String, nickname: String, password: String): User
 
     @TestOnly
     suspend fun getAllUsers(): List<User>

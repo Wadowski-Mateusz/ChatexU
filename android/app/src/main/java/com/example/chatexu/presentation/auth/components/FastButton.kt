@@ -16,7 +16,7 @@ fun FastButton(txt: String, onClick: () -> Unit) {
     Button(
         modifier = Modifier
         .fillMaxWidth()
-        .padding(16.dp)
+        .padding(vertical = 8.dp, horizontal = 128.dp)
         .background(Color(red = 10, green = 200, blue = 50, alpha = 0)),
         onClick = { onClick() }
     ) {

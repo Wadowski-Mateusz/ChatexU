@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.example.chatexu.R
 import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.model.MessageType
-import com.example.chatexu.presentation.getUserErrorIcon
+import com.example.chatexu.common.getUserErrorIcon
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId

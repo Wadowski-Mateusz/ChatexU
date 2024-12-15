@@ -1,6 +1,9 @@
 package com.example.chatexu.domain.model
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import com.example.chatexu.R
 import com.example.chatexu.common.Constants
 
 data class User(
@@ -19,4 +22,5 @@ data class User(
                 )
             }
         }
+
 }

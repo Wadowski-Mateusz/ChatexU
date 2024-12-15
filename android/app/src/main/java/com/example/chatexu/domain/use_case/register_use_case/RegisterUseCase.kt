@@ -18,7 +18,7 @@ class RegisterUseCase @Inject constructor(
 
         try {
             emit(DataWrapper.Loading<User>())
-            val userId = repository.register(email, nickname, password)
+            val userId = repository.register(email = email, nickname = nickname, password =  password)
             emit(DataWrapper.Success<User>(userId))
         } catch(e: HttpException) {
             Log.e(DebugConstants.UC_ERR, "RegisterUseCase e1 ${e.message.toString()}")

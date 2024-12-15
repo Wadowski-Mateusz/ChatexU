@@ -122,7 +122,7 @@ fun ChatScreen(
             .background(Color.Gray)
     ) {
 
-        Row(verticalAlignment = Alignment.Top) { ScreenName(screenName = "Chat") }
+//        Row(verticalAlignment = Alignment.Top) { ScreenName(screenName = "Chat") }
 
         // Chat info
         if(viewModel.state.value.recipients.isNotEmpty()) {

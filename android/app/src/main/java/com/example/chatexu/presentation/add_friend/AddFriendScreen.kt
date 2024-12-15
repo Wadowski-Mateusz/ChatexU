@@ -45,7 +45,7 @@ fun AddFriendScreen(
 
 
     Column {
-        ScreenName(screenName = "ADD FRIEND")
+//        ScreenName(screenName = "ADD FRIEND")
 
         if(state.error.isNotBlank()) {
             Text(

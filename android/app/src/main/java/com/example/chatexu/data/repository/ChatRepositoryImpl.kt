@@ -79,8 +79,8 @@ class ChatRepositoryImpl @Inject constructor(
             ?: Constants.ID_DEFAULT
     }
 
-    override suspend fun register(email: String, password: String, nickname: String): User {
-        val registerDto: RegisterDto = RegisterDto(nickname, email, password)
+    override suspend fun register(email: String, nickname: String, password: String): User {
+        val registerDto: RegisterDto = RegisterDto(email = email, nickname = nickname,  password = password)
 //        Log.d(DebugConstants.PEEK, "register() - repository - send request")
         val response = api.register(registerDto)
 //        Log.d(DebugConstants.PEEK, "register() - repository - response: $response")

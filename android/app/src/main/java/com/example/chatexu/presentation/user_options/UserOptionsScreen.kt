@@ -47,7 +47,7 @@ import coil3.compose.rememberAsyncImagePainter
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.common.toMultipartBodyPart
 import com.example.chatexu.presentation.commons.composable.ScreenName
-import com.example.chatexu.presentation.getUserErrorIcon
+import com.example.chatexu.common.getUserErrorIcon
 
 
 @Composable
@@ -104,9 +104,7 @@ fun UserOptionsScreen(
 
 
             // Debug - screen name
-            Row {
-                ScreenName(screenName = "USER OPTIONS")
-            }
+//            Row { ScreenName(screenName = "USER OPTIONS") }
 
             // Change user icon
             Column {

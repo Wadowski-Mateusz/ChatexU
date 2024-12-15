@@ -30,7 +30,7 @@ import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.domain.model.User
 import com.example.chatexu.presentation.commons.composable.UserIcon
-import com.example.chatexu.presentation.getUserErrorIcon
+import com.example.chatexu.common.getUserErrorIcon
 import com.example.chatexu.presentation.ui.theme.LightGreen
 
 

@@ -39,7 +39,7 @@ fun AuthScreenDebug(
             .fillMaxSize()
             .background(Color.LightGray)
     ) {
-        ScreenName(screenName = "Auth DEBUG")
+        ScreenName(screenName = "Auth DEVELOPER")
 
 
         if(state.error.isNotBlank()) {

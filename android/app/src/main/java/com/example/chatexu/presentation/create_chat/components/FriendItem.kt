@@ -1,7 +1,6 @@
 package com.example.chatexu.presentation.create_chat.components
 
 import android.graphics.Bitmap
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -22,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chatexu.domain.model.Friend
 import com.example.chatexu.presentation.commons.composable.UserIcon
-import com.example.chatexu.presentation.getUserErrorIcon
+import com.example.chatexu.common.getUserErrorIcon
 import org.mongodb.kbson.ObjectId
 
 @Composable

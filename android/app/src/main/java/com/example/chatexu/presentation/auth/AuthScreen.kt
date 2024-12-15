@@ -124,7 +124,7 @@ fun AuthScreen(
             val registerPasswordRepeat = remember { mutableStateOf(TextFieldValue()) }
 
             TextField(
-                modifier = if (state.badRegisterData) fieldModifierBad else fieldModifierDefault,
+                modifier = if (state.badRegisterEmail) fieldModifierBad else fieldModifierDefault,
                 value = registerEmail.value,
                 onValueChange = { registerEmail.value = it },
                 placeholder = { Text(text = "email@example.com") },
@@ -133,7 +133,7 @@ fun AuthScreen(
             )
 
             TextField(
-                modifier = if (state.badRegisterData) fieldModifierBad else fieldModifierDefault,
+                modifier = if (state.badRegisterNickname) fieldModifierBad else fieldModifierDefault,
                 value = registerNickname.value,
                 onValueChange = { registerNickname.value = viewModel.trimInput(it, loginMaxLength) },
                 placeholder = { Text(text = "nickname") },
@@ -143,14 +143,14 @@ fun AuthScreen(
 
             PasswordInput(
                 password = registerPassword,
-                modifier = if (state.badRegisterData || state.passwordsAreDifferent) fieldModifierBad else fieldModifierDefault,
+                modifier = if (state.passwordsAreDifferent) fieldModifierBad else fieldModifierDefault,
                 trimInput = viewModel::trimInput,
                 passwordMaxLength = passwordMaxLength,
             )
 
             PasswordInput(
                 password = registerPasswordRepeat,
-                modifier = if (state.badRegisterData || state.passwordsAreDifferent) fieldModifierBad else fieldModifierDefault,
+                modifier = if (state.passwordsAreDifferent) fieldModifierBad else fieldModifierDefault,
                 trimInput = viewModel::trimInput,
                 passwordMaxLength = passwordMaxLength,
             )
@@ -162,17 +162,17 @@ fun AuthScreen(
 
                     if(
                         viewModel.validateRegisterInput(
-                            registerEmail.value.text,
                             registerNickname.value.text,
+                            registerEmail.value.text,
                             registerPassword.value.text,
                             registerPasswordRepeat.value.text
                         )
                     ) {
 //                        try {
                             viewModel.registerUser(
-                                registerEmail.value.text,
-                                registerNickname.value.text,
-                                registerPassword.value.text
+                                email = registerEmail.value.text,
+                                nickname = registerNickname.value.text,
+                                password = registerPassword.value.text
                             )
 //                        }
                     }

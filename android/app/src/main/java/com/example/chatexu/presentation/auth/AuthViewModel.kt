@@ -168,7 +168,7 @@ class AuthViewModel @Inject constructor(
     fun registerUser(email: String, nickname: String, password: String) {
 
         viewModelScope.launch {
-            register(email, nickname, password) // Call suspend function
+            register(email = email, nickname = nickname, password = password)
         }
     }
 
@@ -177,7 +177,9 @@ class AuthViewModel @Inject constructor(
             isLoading = true
         )
 
-        val response = registerUseCase(email, nickname, password)
+
+
+        val response = registerUseCase(email = email, nickname = nickname,  password = password)
 
         response.onEach { result ->
             when(result) {
@@ -224,7 +226,8 @@ class AuthViewModel @Inject constructor(
         _state.value = _state.value.copy(
             badLoginData = false,
             isLoading = false,
-            badRegisterData =  false,
+            badRegisterEmail  = false,
+            badRegisterNickname = false,
             passwordsAreDifferent = false,
             error = "",
             registerPage = false,
@@ -236,7 +239,8 @@ class AuthViewModel @Inject constructor(
         _state.value = _state.value.copy(
             badLoginData = false,
             isLoading = false,
-            badRegisterData =  false,
+            badRegisterEmail  = false,
+            badRegisterNickname = false,
             passwordsAreDifferent = false,
             error = "",
             loginPage = false,
@@ -246,16 +250,29 @@ class AuthViewModel @Inject constructor(
 
     fun validateRegisterInput(nickname: String, email: String, password: String, repeatedPassword: String): Boolean {
 
-        _state.value = _state.value.copy(passwordsAreDifferent = (password != repeatedPassword))
-
-        _state.value = _state.value.copy(badRegisterData =
-            nickname.isBlank()
-                    || email.isBlank()
-                    || password.isBlank()
-                    || repeatedPassword.isBlank()
+        _state.value = _state.value.copy(
+            passwordsAreDifferent = (
+                    password != repeatedPassword
+                            || password.isBlank()
+                    )
         )
 
-        return !_state.value.passwordsAreDifferent && !_state.value.badRegisterData
+
+        _state.value = _state.value.copy(
+            badRegisterEmail = (
+                    email.count { it == '@' } != 1
+                            || email.first() == '@'
+                            || email.indexOf('@') >= email.length - 4
+                    )
+        )
+
+        _state.value = _state.value.copy(
+            badRegisterNickname = nickname.isBlank() || nickname.length < 3
+        )
+
+
+        return !state.value.badRegisterEmail && !state.value.badRegisterNickname && !state.value.passwordsAreDifferent
+
 
     }
 

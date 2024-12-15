@@ -66,7 +66,7 @@ fun ChatListScreen(
                 .background(Color.LightGray)
         ) {
 //        ChatsListLazy(chatRows = state.chatRows, navController = navController)
-            ScreenName(screenName = "Chat List")
+//            ScreenName(screenName = "Chat List")
             LazyColumn(modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.Magenta)) {
