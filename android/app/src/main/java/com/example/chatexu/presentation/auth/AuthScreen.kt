@@ -6,12 +6,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -21,20 +19,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.chatexu.common.Constants
-import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.presentation.Screen
 import com.example.chatexu.presentation.auth.components.FastButton
 import com.example.chatexu.presentation.auth.components.PasswordInput
-import com.example.chatexu.presentation.commons.composable.ScreenName
 
 @Composable
 fun AuthScreen(
@@ -108,12 +100,12 @@ fun AuthScreen(
             )
 
             // Developer login screen
-//            FastButton(
-//                txt = "GO TO DEVELOPER LOGIN",
-//                onClick = {
-//                    navController.navigate(Screen.AuthScreenDebug.route)
-//                }
-//            )
+            FastButton(
+                txt = "GO TO DEVELOPER LOGIN",
+                onClick = {
+                    navController.navigate(Screen.AuthScreenDebug.route)
+                }
+            )
         }
 
         if(state.registerPage) {
@@ -143,14 +135,14 @@ fun AuthScreen(
 
             PasswordInput(
                 password = registerPassword,
-                modifier = if (state.passwordsAreDifferent) fieldModifierBad else fieldModifierDefault,
+                modifier = if (state.badRegisterPasswords) fieldModifierBad else fieldModifierDefault,
                 trimInput = viewModel::trimInput,
                 passwordMaxLength = passwordMaxLength,
             )
 
             PasswordInput(
                 password = registerPasswordRepeat,
-                modifier = if (state.passwordsAreDifferent) fieldModifierBad else fieldModifierDefault,
+                modifier = if (state.badRegisterPasswords) fieldModifierBad else fieldModifierDefault,
                 trimInput = viewModel::trimInput,
                 passwordMaxLength = passwordMaxLength,
             )

@@ -104,7 +104,7 @@ docker rmi chatexu-server:0.3.0
 docker rmi mongo
 ```
 ```
-docker rmi openjdk:17-jdk
+docker rmi openjdk:21-jdk
 ```
 
 # App overview

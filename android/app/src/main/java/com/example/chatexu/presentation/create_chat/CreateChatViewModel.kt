@@ -51,7 +51,6 @@ class CreateChatViewModel @Inject constructor(
     }
 
     fun getChatId(userId: String, friendId: String): String {
-        // TODO it may broke, I dont know how to use Datawrapper here as with lists
         val result = getChatOrElseCreateUseCase(listOf(userId, friendId))
 
         var chatId: DataWrapper<String> = DataWrapper.Success<String>(Constants.ID_DEFAULT)

@@ -42,7 +42,7 @@ fun CreateChatScreen(
 
     fun search() {
         viewModel.filterFriendsByNickname(phrase.value)
-        active.value = false
+//        active.value = false
     }
 
 
@@ -63,11 +63,12 @@ fun CreateChatScreen(
         SearchBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(1.dp),
+                .padding(4.dp),
             query = phrase.value,
             onQueryChange = { phrase.value = it },
             onSearch = { search() },
-            active = active.value,
+//            active = active.value,
+            active = false, // do not show list
             onActiveChange = { active.value = it },
             placeholder = { Text(text = "Friend nickname") },
             leadingIcon = {

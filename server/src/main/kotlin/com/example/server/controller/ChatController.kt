@@ -86,12 +86,6 @@ class ChatController(
     fun createChat(
         @RequestBody participantsDto: ParticipantsDto
     ): ResponseEntity<String> {
-        println("======Create chat")
-
-        participantsDto.participants.forEach{
-            println(it)
-        }
-
 
         val participants = participantsDto.participants
         return try {

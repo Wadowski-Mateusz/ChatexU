@@ -69,7 +69,8 @@ fun ChatListScreen(
 //            ScreenName(screenName = "Chat List")
             LazyColumn(modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Magenta)) {
+//                .background(Color.Magenta)
+            ) {
                 items(items = state.chatRows, key = { it.chatId }) { chatRow ->
                     ChatListItem(
                         chatRow = chatRow,

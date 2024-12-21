@@ -64,15 +64,6 @@ class AddFriendViewModel @Inject constructor(
 
         val trimmedPartOfNickname = partOfNickname.trim()
 
-//        _state.value = _state.value.copy(
-//            // TODO change to not fetching all users from database
-//            //  start filtering after 3 sec pass from last input or icon click
-//            //  string has to be at least 3 chars
-//            matchingUsers = state.value.users.filter { it.nickname.contains(trimmedPartOfNickname, ignoreCase = true) },
-//            isLoading = false,
-//            error = ""
-//        )
-
         if(trimmedPartOfNickname.isNotEmpty())
             fetchAndGroupUsersByPhrase(trimmedPartOfNickname)
         else

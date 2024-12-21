@@ -42,8 +42,11 @@ class ChatListViewModel @Inject constructor(
             when(result) {
                 is DataWrapper.Success -> {
                     Log.d("peek", "Success ChatListViewModel")
+
+                    val chatRows = result.data?.sortedByDescending { it.timestamp } ?: emptyList<ChatRow>()
+
                     _state.value = ChatListState(
-                        chatRows = result.data ?: emptyList<ChatRow>(),
+                        chatRows = chatRows,
                         userId = userId
                     )
                 }

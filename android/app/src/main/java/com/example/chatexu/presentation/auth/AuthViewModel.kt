@@ -10,7 +10,6 @@ import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DataWrapper
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.common.isStringValid
-import com.example.chatexu.domain.model.User
 import com.example.chatexu.domain.use_case.debug.create_users_and_chat.CreateUserAndChatUseCase
 import com.example.chatexu.domain.use_case.debug.get_all_users.GetAllUsersUseCase
 import com.example.chatexu.domain.use_case.login_use_case.LoginUseCase
@@ -19,7 +18,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.mongodb.kbson.BsonObjectId
 import org.mongodb.kbson.ObjectId
 import javax.inject.Inject
 
@@ -228,7 +226,7 @@ class AuthViewModel @Inject constructor(
             isLoading = false,
             badRegisterEmail  = false,
             badRegisterNickname = false,
-            passwordsAreDifferent = false,
+            badRegisterPasswords = false,
             error = "",
             registerPage = false,
             loginPage = true
@@ -241,7 +239,7 @@ class AuthViewModel @Inject constructor(
             isLoading = false,
             badRegisterEmail  = false,
             badRegisterNickname = false,
-            passwordsAreDifferent = false,
+            badRegisterPasswords = false,
             error = "",
             loginPage = false,
             registerPage = true,
@@ -251,9 +249,10 @@ class AuthViewModel @Inject constructor(
     fun validateRegisterInput(nickname: String, email: String, password: String, repeatedPassword: String): Boolean {
 
         _state.value = _state.value.copy(
-            passwordsAreDifferent = (
+            badRegisterPasswords = (
                     password != repeatedPassword
                             || password.isBlank()
+                            || password.length < 8
                     )
         )
 
@@ -271,7 +270,7 @@ class AuthViewModel @Inject constructor(
         )
 
 
-        return !state.value.badRegisterEmail && !state.value.badRegisterNickname && !state.value.passwordsAreDifferent
+        return !state.value.badRegisterEmail && !state.value.badRegisterNickname && !state.value.badRegisterPasswords
 
 
     }

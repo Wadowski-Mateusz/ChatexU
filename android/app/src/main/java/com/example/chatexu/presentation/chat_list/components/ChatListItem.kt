@@ -3,6 +3,8 @@ package com.example.chatexu.presentation.chat_list.components
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -22,6 +25,7 @@ import com.example.chatexu.domain.model.ChatRow
 import com.example.chatexu.domain.model.MessageType
 import com.example.chatexu.common.getUserErrorIcon
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -33,8 +37,11 @@ fun ChatListItem(
     onItemClick: (ChatRow) -> Unit
 ) {
     Row(modifier = Modifier
+        .background(Color(0xFFDDDDDD))
         .clickable { onItemClick(chatRow) }
-        .padding(8.dp),
+        .border(width = 1.dp, color = Color.LightGray)
+        .padding(8.dp)
+        ,
         verticalAlignment = Alignment.CenterVertically,
 //        horizontalArrangement = Arrangement.SpaceAround
     ) {
@@ -86,8 +93,15 @@ fun ChatListItem(
         // Time of last activity
         Column {
             val zoneId = ZoneId.systemDefault()
-            val datetime  = LocalDateTime.ofInstant(chatRow.timestamp, zoneId)
-            val formatted = DateTimeFormatter.ofPattern("d LLL yyyy hh:mm:ss").format(datetime)
+            val datetime: LocalDateTime  = LocalDateTime.ofInstant(chatRow.timestamp, zoneId)
+
+            val formatted = if (datetime.toLocalDate() == LocalDate.now())
+                DateTimeFormatter.ofPattern("hh:mm a").format(datetime)
+            else if (datetime.toLocalDate().year == LocalDate.now().year)
+                DateTimeFormatter.ofPattern("d LLL").format(datetime)
+            else
+                DateTimeFormatter.ofPattern("d LLL yyyy").format(datetime)
+
             Text(text = formatted)
         }
         // TODO

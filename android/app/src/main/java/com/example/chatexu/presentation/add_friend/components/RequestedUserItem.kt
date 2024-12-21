@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,7 +36,7 @@ fun RequestedUserItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onItemClick(user) }
-            .background(LightGreen)
+            .background(Color(0xFF246424))
             .padding(8.dp)
 //        , verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -82,7 +83,7 @@ fun RequestedUserItem(
 private fun ItemPreview() {
     val friend = User(
         id = Constants.ID_DEFAULT,
-        nickname = "USER NICKNAME NICKNAME NICKNAME NICKNAME NICKNAME NICKNAME",
+        nickname = "USER NICKNAME",
         icon = null,
         username = "USER USERNAME"
     )

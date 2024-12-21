@@ -16,7 +16,7 @@ data class AuthState(
 
     var badRegisterEmail: Boolean = false,
     var badRegisterNickname: Boolean = false,
-    var passwordsAreDifferent: Boolean = false,
+    var badRegisterPasswords: Boolean = false,
 
     var registerStatus: Boolean = false,
     var loginStatus: Boolean = false,

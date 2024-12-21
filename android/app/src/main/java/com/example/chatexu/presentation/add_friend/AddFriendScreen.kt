@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -40,7 +41,7 @@ fun AddFriendScreen(
 
     val search = {
         viewModel.filterUsersByNickname(phrase.value)
-        isSearchActive.value = false
+//        isSearchActive.value = false // commented to keep trailing icon
     }
 
 
@@ -61,12 +62,15 @@ fun AddFriendScreen(
         SearchBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .clickable { isSearchActive.value = true },
             query = phrase.value,
+            shape = RoundedCornerShape(16.dp),
             onQueryChange = { phrase.value = it },
             onSearch = { search() },
-            active = isSearchActive.value,
-            onActiveChange = { isSearchActive.value = it },
+//            active = isSearchActive.value,
+            active = false,// don't show list on click
+            onActiveChange = { isSearchActive.value = it},
             placeholder = { Text(text = "User nickname") },
             leadingIcon = {
                 Icon(
@@ -74,7 +78,7 @@ fun AddFriendScreen(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search icon"
                 )
-                          },
+            },
             trailingIcon = {
                 if (isSearchActive.value) {
                     Icon(

@@ -1,4 +1,3 @@
-version: '3'
 services:
 
   chatexu-db:
@@ -14,20 +13,6 @@ services:
       - mongo:/var/lib
     networks:
       - app-network
-  
-  # chatexu-test-db:
-  #   container_name: chatexu-test-db
-  #   image: mongo
-  #   restart: always
-  #   ports:
-  #     - '27018:27017' # Use a different port for the test database
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: test
-  #     MONGO_INITDB_ROOT_PASSWORD: test
-  #   volumes:
-  #     - mongo-test:/var/lib
-  #   networks:
-  #     - app-network
 
   chatexu-server:
     container_name: chatexu-server
