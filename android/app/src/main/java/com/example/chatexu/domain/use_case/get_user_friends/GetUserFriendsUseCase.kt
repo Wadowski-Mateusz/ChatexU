@@ -14,10 +14,10 @@ import javax.inject.Inject
 class GetUserFriendsUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke (userId: String, partOfNickname: String = ""): Flow<DataWrapper<List<Friend>>> = flow {
+    operator fun invoke (userId: String, partOfNickname: String = "", jwt: String): Flow<DataWrapper<List<Friend>>> = flow {
         try {
             emit(DataWrapper.Loading<List<Friend>>())
-            val friends: List<Friend> = repository.getUserFriends(userId)
+            val friends: List<Friend> = repository.getUserFriends(userId = userId, jwt = jwt)
             Log.d(DebugConstants.PEEK, "GetUserFriendsUseCase() - no. of friends: ${friends.size}")
             emit(DataWrapper.Success<List<Friend>>(friends))
         } catch(e: HttpException) {

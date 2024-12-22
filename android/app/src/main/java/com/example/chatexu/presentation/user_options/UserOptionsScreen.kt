@@ -239,7 +239,7 @@ fun UserOptionsScreen(
                                         } else {
 //                                            nicknameInput.value.text.trim()
 //                                            Log.d(DebugConstants.TODO, "Nickname is valid, send to backend")
-                                            Log.d(DebugConstants.PEEK, "Update nickname click")
+//                                            Log.d(DebugConstants.PEEK, "Update nickname click")
                                             viewModel.updateNickname(nicknameInput.value.text)
                                         }
                                     }

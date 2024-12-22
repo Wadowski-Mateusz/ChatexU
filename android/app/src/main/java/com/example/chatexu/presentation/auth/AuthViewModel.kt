@@ -10,8 +10,9 @@ import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DataWrapper
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.common.isStringValid
-import com.example.chatexu.domain.use_case.debug.create_users_and_chat.CreateUserAndChatUseCase
-import com.example.chatexu.domain.use_case.debug.get_all_users.GetAllUsersUseCase
+import com.example.chatexu.domain.model.Authentication
+//import com.example.chatexu.domain.use_case.debug.create_users_and_chat.CreateUserAndChatUseCase
+//import com.example.chatexu.domain.use_case.debug.get_all_users.GetAllUsersUseCase
 import com.example.chatexu.domain.use_case.login_use_case.LoginUseCase
 import com.example.chatexu.domain.use_case.register_use_case.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,8 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val getAllUsersUseCase: GetAllUsersUseCase,
-    private val createUserAndChatUseCase: CreateUserAndChatUseCase,
+//    private val getAllUsersUseCase: GetAllUsersUseCase,
+//    private val createUserAndChatUseCase: CreateUserAndChatUseCase,
     private val loginUseCase: LoginUseCase,
     private val registerUseCase: RegisterUseCase,
 ): ViewModel() {
@@ -36,42 +37,41 @@ class AuthViewModel @Inject constructor(
         _state.value = AuthState(
             isLoading = true
         )
-        getAllUsers()
+//        getAllUsers()
     }
 
-    fun create() {
-        val result = createUserAndChatUseCase()
-
-        result.onEach { result ->
-            when(result) {
-                is DataWrapper.Success -> {
-                    getAllUsers()
-                    _state.value = _state.value.copy(
-                        error = "",
-                        isLoading = false
-                    )
-                }
-
-                is DataWrapper.Loading -> {
-                    Log.d("peek", "Loading AuthViewModel.create()")
-                    _state.value = _state.value.copy(
-                        error = "",
-                        isLoading = true
-                    )
-                }
-
-                is DataWrapper.Error -> {
-                    Log.d("peek", "Error AuthViewModel.create()")
-                    _state.value = _state.value.copy(
-                        error = result.message ?: "unknown error",
-                        isLoading = false
-                    )
-                }
-            }
-
-        } .launchIn(viewModelScope)
-
-    }
+//    fun create() {
+//        val response = createUserAndChatUseCase()
+//
+//        response.onEach { result ->
+//            when(result) {
+//                is DataWrapper.Success -> {
+//                    getAllUsers()
+//                    _state.value = _state.value.copy(
+//                        error = "",
+//                        isLoading = false
+//                    )
+//                }
+//
+//                is DataWrapper.Loading -> {
+//                    Log.d("peek", "Loading AuthViewModel.create()")
+//                    _state.value = _state.value.copy(
+//                        error = "",
+//                        isLoading = true
+//                    )
+//                }
+//
+//                is DataWrapper.Error -> {
+//                    Log.d("peek", "Error AuthViewModel.create()")
+//                    _state.value = _state.value.copy(
+//                        error = result.message ?: "unknown error",
+//                        isLoading = false
+//                    )
+//                }
+//            }
+//
+//        } .launchIn(viewModelScope)
+//    }
 
     fun login(login: String, password: String) {
         val response = loginUseCase(login, password)
@@ -80,19 +80,22 @@ class AuthViewModel @Inject constructor(
             when(result) {
                 is DataWrapper.Success -> {
                     Log.d(DebugConstants.PEEK, "Success AuthViewModel.login() - enter")
-                    val userId = result.data!!
-                    if (ObjectId().isStringValid(userId)) {
+                    val data = result.data!!
+                    if (ObjectId().isStringValid(data.userId)) {
+                        Log.d(DebugConstants.PEEK, "Success AuthViewModel.login() - if\nuserid: " + data.userId)
                         _state.value = _state.value.copy(
                             users = emptyList(),
-                            error = "",
+                            userId = data.userId,
+                            jwt = data.token,
                             loginStatus = true,
                             isLoading = false,
-                            userId = result.data
+                            error = "",
                         )
                     } else {
+                        Log.i(DebugConstants.PEEK, "Success AuthViewModel.login() - else - invalid userid \n" + data.userId)
                         _state.value = _state.value.copy(
                             users = emptyList(),
-                            error = userId,
+                            error = data.userId,
                             loginStatus = false,
                             isLoading = false,
                             userId = Constants.ID_DEFAULT,
@@ -129,37 +132,37 @@ class AuthViewModel @Inject constructor(
 
 
 
-    private fun getAllUsers() {
-        val users = getAllUsersUseCase()
-        users.onEach { result ->
-            when(result) {
-                is DataWrapper.Success -> {
-                    _state.value = _state.value.copy(
-                        users = result.data ?: emptyList(),
-                        error = "",
-//                        isLoading = false,
-                    )
-                }
-
-                is DataWrapper.Loading -> {
-                    Log.i(DebugConstants.RESOURCE_LOADING, "Loading AuthViewModel.getAllUsers()")
-                    _state.value = _state.value.copy(
-                        error = "",
-                        isLoading = true
-                    )
-                }
-
-                is DataWrapper.Error -> {
-                    Log.d(DebugConstants.VM_ERR, "Error AuthViewModel.getAllUsers()")
-                    _state.value = _state.value.copy(
-                        error = result.message ?: "unknown error",
-//                        isLoading = false
-                    )
-                }
-            }
-
-        } .launchIn(viewModelScope)
-    }
+//    private fun getAllUsers() {
+//        val users = getAllUsersUseCase()
+//        users.onEach { result ->
+//            when(result) {
+//                is DataWrapper.Success -> {
+//                    _state.value = _state.value.copy(
+//                        users = result.data ?: emptyList(),
+//                        error = "",
+////                        isLoading = false,
+//                    )
+//                }
+//
+//                is DataWrapper.Loading -> {
+//                    Log.i(DebugConstants.RESOURCE_LOADING, "Loading AuthViewModel.getAllUsers()")
+//                    _state.value = _state.value.copy(
+//                        error = "",
+//                        isLoading = true
+//                    )
+//                }
+//
+//                is DataWrapper.Error -> {
+//                    Log.d(DebugConstants.VM_ERR, "Error AuthViewModel.getAllUsers()")
+//                    _state.value = _state.value.copy(
+//                        error = result.message ?: "unknown error",
+////                        isLoading = false
+//                    )
+//                }
+//            }
+//
+//        } .launchIn(viewModelScope)
+//    }
 
 
 
@@ -171,11 +174,9 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun register(email: String, nickname: String, password: String) {
-        _state.value = AuthState(
+        _state.value = _state.value.copy(
             isLoading = true
         )
-
-
 
         val response = registerUseCase(email = email, nickname = nickname,  password = password)
 
@@ -183,10 +184,11 @@ class AuthViewModel @Inject constructor(
             when(result) {
                 is DataWrapper.Success -> {
 //                    Log.d("REGISTER - VM", "VM register success")
-                    val user = result.data!!
+                    val data: Authentication = result.data!!
                     _state.value = _state.value.copy(
                         users = emptyList(),
-                        userId = user.id,
+                        userId = data.userId,
+                        jwt = data.token,
                         registerStatus = true,
                         isLoading = false,
                         error = "",

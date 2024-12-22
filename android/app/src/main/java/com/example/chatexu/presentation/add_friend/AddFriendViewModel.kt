@@ -42,13 +42,14 @@ class AddFriendViewModel @Inject constructor(
     val state: State<AddFriendState> = _state
 
     init {
+        val jwt: String = savedStateHandle.get<String>(Constants.PARAM_JWT) ?: ""
+        val currentUserId = savedStateHandle.get<String>(Constants.PARAM_USER_ID)
+            ?: Constants.ID_DEFAULT
         _state.value = _state.value.copy(
-            currentUserId = savedStateHandle.get<String>(Constants.PARAM_USER_ID)
-                ?: Constants.ID_DEFAULT // TODO what if null
+            currentUserId = currentUserId,
+            jwt = jwt,
         )
-
         reload()
-
     }
 
     fun reload() {
@@ -61,7 +62,6 @@ class AddFriendViewModel @Inject constructor(
 
     fun filterUsersByNickname(partOfNickname: String) {
 
-
         val trimmedPartOfNickname = partOfNickname.trim()
 
         if(trimmedPartOfNickname.isNotEmpty())
@@ -73,7 +73,11 @@ class AddFriendViewModel @Inject constructor(
 
     private fun fetchAndGroupUsersByPhrase(partOfNickname: String) {
 
-        val users = getUsersByPartOfNicknameUseCase(_state.value.currentUserId, partOfNickname)
+        val users = getUsersByPartOfNicknameUseCase(
+            userId = state.value.currentUserId,
+            partOfNickname = partOfNickname,
+            jwt = state.value.jwt
+        )
 
         users.onEach { result ->
             when(result) {
@@ -95,7 +99,7 @@ class AddFriendViewModel @Inject constructor(
                     )
                 }
                 is DataWrapper.Error -> {
-                    Log.d(DebugConstants.PEEK, "AddFriendViewModel.fetchAndGroupUsersByPhrase() - Error ")
+                    Log.e(DebugConstants.VM_ERR, "AddFriendViewModel.fetchAndGroupUsersByPhrase() - Error ")
                     _state.value = _state.value.copy(
                         isLoading = false,
                         error = result.message ?: "Unknown error"
@@ -108,7 +112,11 @@ class AddFriendViewModel @Inject constructor(
     fun sendFriendRequest(userToAddId: String)  {
         Log.d(DebugConstants.PEEK, "AddFriendViewModel.sendFriendRequest() - send request to user $userToAddId")
 
-        val request = postFriendRequestUseCase(state.value.currentUserId, userToAddId)
+        val request = postFriendRequestUseCase(
+            senderId = state.value.currentUserId,
+            recipientId = userToAddId,
+            jwt = state.value.jwt
+        )
 
         request.onEach { result ->
             when(result) {
@@ -145,12 +153,15 @@ class AddFriendViewModel @Inject constructor(
     }
 
     fun deleteFriendRequest(friendRequest: FriendRequest) {
-        Log.d(DebugConstants.PEEK, "AddFriendViewModel.deleteFriendRequest() - delete request ${friendRequest.requestId}")
+//        Log.d(DebugConstants.PEEK, "AddFriendViewModel.deleteFriendRequest() - delete request ${friendRequest.requestId}")
 
         val requestId = friendRequest.requestId
-        val request = deleteFriendRequestUseCase(requestId)
+        val response = deleteFriendRequestUseCase(
+            requestId = requestId,
+            jwt = state.value.jwt
+        )
 
-        request.onEach { result ->
+        response.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
                     Log.d(DebugConstants.PEEK, "AddFriendViewModel.deleteFriendRequest() - Enter success deleteFriendRequest, ${result.data}")
@@ -170,7 +181,7 @@ class AddFriendViewModel @Inject constructor(
                     )
                 }
                 is DataWrapper.Error -> {
-                    Log.e(DebugConstants.PEEK, "AddFriendViewModel.deleteFriendRequest() - Error")
+                    Log.e(DebugConstants.VM_ERR, "AddFriendViewModel.deleteFriendRequest() - Error")
                     _state.value = _state.value.copy(
                         isLoading = false,
                         error = result.message ?: "Unknown error"
@@ -184,7 +195,10 @@ class AddFriendViewModel @Inject constructor(
     fun acceptFriendRequest(friendRequest: FriendRequest) {
 //        Log.d(DebugConstants.PEEK, "AddFriendViewModel.acceptFriendRequest()")
 
-        val response = postAcceptFriendRequestUseCase(friendRequest.requestId)
+        val response = postAcceptFriendRequestUseCase(
+            requestId = friendRequest.requestId,
+            jwt = state.value.jwt
+        )
 
         response.onEach { result ->
             when(result) {
@@ -206,7 +220,7 @@ class AddFriendViewModel @Inject constructor(
                     )
                 }
                 is DataWrapper.Error -> {
-                    Log.e(DebugConstants.PEEK, "AddFriendViewModel.acceptFriendRequest() - Error")
+                    Log.e(DebugConstants.VM_ERR, "AddFriendViewModel.acceptFriendRequest() - Error")
                     _state.value = _state.value.copy(
                         isLoading = false,
                         error = result.message ?: "Unknown error"
@@ -221,7 +235,10 @@ class AddFriendViewModel @Inject constructor(
     fun rejectFriendRequest(friendRequest: FriendRequest) {
 //        Log.w(DebugConstants.IN_PROGRESS, "AddFriendViewModel.rejectFriendRequest()")
 
-        val response = deleteRejectFriendRequestUseCase(friendRequest.requestId)
+        val response = deleteRejectFriendRequestUseCase(
+            requestId = friendRequest.requestId,
+            jwt = state.value.jwt
+        )
 
         response.onEach { result ->
             when(result) {
@@ -256,27 +273,21 @@ class AddFriendViewModel @Inject constructor(
 
 
     private fun loadSuggestedUsers() {
-        Log.d("loadSuggestedUsers", "ENTER loadSuggestedUsers")
+//        Log.d("loadSuggestedUsers", "ENTER loadSuggestedUsers")
         val userId: String = _state.value.currentUserId
-//        Log.d("loadSuggestedUsers", "1: $userId")
-        val users = getAllUsersUseCase()
-//        Log.d("loadSuggestedUsers", "2")
+        val users = getAllUsersUseCase(jwt = state.value.jwt)
         users.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
-//                    Log.d("loadSuggestedUsers", "3: ENTER when success")
                     // all but current user
                     val u = result.data!!.filter { it.id != userId }
-//                    Log.d("loadSuggestedUsers", "4")
                     val friends = result.data.findLast { it.id == userId }!!.friends
-//                    Log.d("loadSuggestedUsers", "5: ${friends.size}")
                     _state.value = _state.value.copy(
                         users = u.filter { !friends.contains(it.id) }, // result.data ?: emptyList<User>(),
 //                        matchingUsers = u, // result.data ?: emptyList<User>(),
                         isLoading = false,
                         error = ""
                     )
-                    Log.d("loadSuggestedUsers", "FINAL: ${friends.size}")
                 }
                 is DataWrapper.Loading -> {
                     Log.i(DebugConstants.RESOURCE_LOADING, "Loading loadSuggestedUsers")
@@ -286,9 +297,9 @@ class AddFriendViewModel @Inject constructor(
                     )
                 }
                 is DataWrapper.Error -> {
-                    Log.d(DebugConstants.PEEK, "Error loadSuggestedUsers")
-                    _state.value = AddFriendState(
-                        currentUserId = userId,
+                    Log.d(DebugConstants.VM_ERR, "Error loadSuggestedUsers")
+                    _state.value = _state.value.copy(
+                        isLoading = false,
                         error = result.message ?: "Unknown error"
                     )
                 }
@@ -299,7 +310,10 @@ class AddFriendViewModel @Inject constructor(
 
     private fun loadFriendRequest() {
         val currentUserId: String = _state.value.currentUserId
-        val request = getUserFriendRequestsUseCase(currentUserId)
+        val request = getUserFriendRequestsUseCase(
+            userId = currentUserId,
+            jwt = state.value.jwt
+        )
 
         request.onEach { result ->
             when(result) {
@@ -307,29 +321,18 @@ class AddFriendViewModel @Inject constructor(
                     Log.d(DebugConstants.PEEK, "AddFriendViewModel.loadFriendRequest() - success - start")
 
                     val users: Set<User> = _state.value.users.toSet()
-//                        Log.d(DebugConstants.PEEK, "Success loadFriendRequest1 + request users size ${users.size}")
                     val requests = result.data!!
-//                        Log.d(DebugConstants.PEEK, "Success loadFriendRequest2 + requests size: ${requests.size}")
 //                    val recipients = requests.map { it.recipientId }
-
-//                    Log.i(DebugConstants.IN_PROGRESS, "loadFriendRequest - current user ${currentUserId}")
-//
-//                    Log.d(DebugConstants.IN_PROGRESS, "loadFriendRequest - List of users (${users.size})")
 //                    users.forEach { it -> Log.i(DebugConstants.IN_PROGRESS, "userID: ${it.id.takeLast(8)},\t Username: ${it.username}" ) }
-//
-//                    Log.d(DebugConstants.IN_PROGRESS, "loadFriendRequest - List of requests (${requests.size})")
 //                    requests.forEach {  Log.i(DebugConstants.IN_PROGRESS, "Sender: ${it.senderId.takeLast(8)},\t Recipient:${it.recipientId.takeLast(8)}") }
 
                     val incomingRequests: Set<FriendRequest> = requests
                         .filter { it.recipientId == currentUserId }
                         .toSet()
-//                    Log.d(DebugConstants.PEEK, "Success loadFriendRequest6")
 
                     val outgoingRequests: Set<FriendRequest> = requests
                         .filter { it.senderId == currentUserId }
                         .toSet()
-
-//                    Log.d(DebugConstants.PEEK, "Success loadFriendRequest7")
 
                     _state.value = _state.value.copy(
                         requests = requests, // todo check if is it possible to be null
@@ -350,7 +353,7 @@ class AddFriendViewModel @Inject constructor(
                     )
                 }
                 is DataWrapper.Error -> {
-                    Log.e(DebugConstants.PEEK, "Error loadFriendRequest()")
+                    Log.e(DebugConstants.VM_ERR, "Error loadFriendRequest()")
                     _state.value = state.value.copy(
                         isLoading = false,
                         error = result.message ?: "Unknown error"
@@ -363,7 +366,10 @@ class AddFriendViewModel @Inject constructor(
 
     private fun loadFriends() {
         val userId: String = _state.value.currentUserId
-        val friends = getUserFriendsUseCase(userId)
+        val friends = getUserFriendsUseCase(
+            userId = userId,
+            jwt = state.value.jwt
+        )
 
         friends.onEach { result ->
             when(result) {

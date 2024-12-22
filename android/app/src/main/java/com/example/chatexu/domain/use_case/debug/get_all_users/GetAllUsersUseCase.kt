@@ -13,10 +13,10 @@ import javax.inject.Inject
 class GetAllUsersUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke(): Flow<DataWrapper<List<User>>> = flow {
+    operator fun invoke(jwt: String): Flow<DataWrapper<List<User>>> = flow {
         try {
             emit(DataWrapper.Loading<List<User>>())
-            val users: List<User> = repository.getAllUsers()
+            val users: List<User> = repository.getAllUsers(jwt = jwt)
             emit(DataWrapper.Success<List<User>>(users))
         } catch(e: HttpException) {
             Log.e("peek", "e1/GetAllUsersUseCase: ${e.message.toString()}")

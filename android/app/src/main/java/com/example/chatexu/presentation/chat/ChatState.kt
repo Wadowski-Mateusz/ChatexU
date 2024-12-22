@@ -9,6 +9,7 @@ data class ChatState (
     var error: String = "",
     var userId: String = "",
     var chatId: String = "",
+    var jwt: String = "",
 
     var user: User = User.emptyUser(),
     var recipients: List<User> = emptyList(),

@@ -16,11 +16,11 @@ class PutUpdateUserIconUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
 
-    operator fun invoke(userId: String, icon: MultipartBody.Part): Flow<DataWrapper<User>> = flow {
+    operator fun invoke(userId: String, icon: MultipartBody.Part, jwt: String): Flow<DataWrapper<User>> = flow {
 
         try {
             emit(DataWrapper.Loading<User>())
-            val success = repository.putUpdateIcon(userId, icon)
+            val success = repository.putUpdateIcon(userId = userId, icon = icon, jwt = jwt)
             Log.d(DebugConstants.PEEK, "PutUpdateUserIconUseCase()")
             emit(DataWrapper.Success<User>(success))
         } catch(e: HttpException) {

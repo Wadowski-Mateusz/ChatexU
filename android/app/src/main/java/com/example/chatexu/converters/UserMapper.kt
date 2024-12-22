@@ -21,6 +21,7 @@ object UserMapper {
             username = userDto.username,
             friends = userDto.friends.map { it.toString() },
             icon = icon,
+            role = userDto.role
         )
     }
 

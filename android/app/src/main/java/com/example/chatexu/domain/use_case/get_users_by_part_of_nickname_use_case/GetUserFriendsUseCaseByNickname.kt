@@ -15,10 +15,14 @@ import javax.inject.Inject
 class GetUsersByPartOfNicknameUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke (userId: String, partOfNickname: String): Flow<DataWrapper<List<User>>> = flow {
+    operator fun invoke (userId: String, partOfNickname: String, jwt: String): Flow<DataWrapper<List<User>>> = flow {
         try {
             emit(DataWrapper.Loading<List<User>>())
-            val users: List<User> = repository.getUsersByPartOfNickname(userId, partOfNickname)
+            val users: List<User> = repository.getUsersByPartOfNickname(
+                userId = userId,
+                partOfNickname = partOfNickname,
+                jwt = jwt
+            )
             Log.d(DebugConstants.PEEK, "GetUsersByPartOfNicknameUseCase() - no. of users: ${users.size}")
             emit(DataWrapper.Success<List<User>>(users))
         } catch(e: HttpException) {

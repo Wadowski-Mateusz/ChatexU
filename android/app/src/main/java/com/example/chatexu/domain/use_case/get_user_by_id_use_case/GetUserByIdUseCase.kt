@@ -14,10 +14,10 @@ import javax.inject.Inject
 class GetUserByIdUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke (userId: String): Flow<DataWrapper<User>> = flow {
+    operator fun invoke (userId: String, jwt: String): Flow<DataWrapper<User>> = flow {
         try {
             emit(DataWrapper.Loading<User>())
-            val user: User = repository.getUserById(userId)
+            val user: User = repository.getUserById(userId = userId, jwt = jwt)
             Log.d(DebugConstants.PEEK, "GetUserByIdUseCase()")
             emit(DataWrapper.Success<User>(user))
         } catch(e: HttpException) {

@@ -47,7 +47,6 @@ fun ChatListScreen(
 
     Box() {
 
-
         if (state.error.isNotBlank()) {
             Text(
                 text = state.error,
@@ -76,7 +75,10 @@ fun ChatListScreen(
                         chatRow = chatRow,
                         onItemClick = {
                             navController.navigate(
-                                Screen.ChatScreen.route + "/${state.userId}/${chatRow.chatId}"
+                                Screen.ChatScreen.route
+                                        + "/${state.userId}"
+                                        + "/${state.jwt}"
+                                        + "/${chatRow.chatId}"
                             )
                         }
                     )
@@ -98,8 +100,15 @@ fun ChatListScreen(
                     .padding(8.dp)
                     .wrapContentSize(),
                 onClick = {
-                    Log.d(DebugConstants.PEEK, "Add friend")
-                    navController.navigate(Screen.AddFriendScreen.route + "/${state.userId}")
+//                    Log.d(DebugConstants.PEEK, "Add friend")
+//                    navController.navigate(Screen.AddFriendScreen.route + "/${state.userId}")
+                    navController.navigate(
+                        Screen.AddFriendScreen.route
+                                + "/${state.userId}"
+                                + "/${state.jwt}"
+                    )
+
+//                    navigate()
                 }
             ) {
                 Icon(Icons.Filled.AddCircle, "Create chat", modifier = Modifier.size(32.dp))
@@ -113,7 +122,13 @@ fun ChatListScreen(
                     .wrapContentSize(),
                 onClick = {
                     Log.d(DebugConstants.PEEK, "Create chat")
-                    navController.navigate(Screen.CreateChatScreen.route + "/${state.userId}")
+//                    navController.navigate(Screen.CreateChatScreen.route + "/${state.userId}")
+                    navController.navigate(
+                        Screen.CreateChatScreen.route
+                                + "/${state.userId}"
+                                + "/${state.jwt}"
+                    )
+//                    navigate()
                 }
             ) {
                 Icon(Icons.Filled.MailOutline, "Create chat", modifier = Modifier.size(32.dp))
@@ -127,7 +142,13 @@ fun ChatListScreen(
                     .wrapContentSize(),
                 onClick = {
                     Log.d(DebugConstants.PEEK, "User options")
-                    navController.navigate(Screen.UserOptionsScreen.route + "/${state.userId}")
+//                    navController.navigate(Screen.UserOptionsScreen.route + "/${state.userId}")
+                    navController.navigate(
+                        Screen.UserOptionsScreen.route
+                                + "/${state.userId}"
+                                + "/${state.jwt}"
+                    )
+//                    navigate()
                 }
             ) {
                 Icon(Icons.Filled.AccountCircle, "User options", modifier = Modifier.size(32.dp))

@@ -11,10 +11,10 @@ import javax.inject.Inject
 class GetChatOrElseCreateUseCase  @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke(participants: List<String>): Flow<DataWrapper<String>>  = flow {
+    operator fun invoke(participants: List<String>, jwt: String): Flow<DataWrapper<String>>  = flow {
         try {
             emit(DataWrapper.Loading<String>())
-            val result = repository.getOrElseCreateChat(participants)
+            val result = repository.getOrElseCreateChat(participants = participants, jwt = jwt)
             Log.d("PEEK", "UseCase: $result")
             emit(DataWrapper.Success<String>(result))
         } catch(e: HttpException) {

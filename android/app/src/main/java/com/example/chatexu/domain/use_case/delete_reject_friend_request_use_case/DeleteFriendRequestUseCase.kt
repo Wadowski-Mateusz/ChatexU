@@ -15,11 +15,11 @@ import javax.inject.Inject
 class DeleteRejectFriendRequestUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke(requestId: String): Flow<DataWrapper<Boolean>> = flow {
+    operator fun invoke(requestId: String, jwt: String): Flow<DataWrapper<Boolean>> = flow {
 
         try {
             emit(DataWrapper.Loading<Boolean>())
-            val success = repository.rejectFriendRequest(requestId)
+            val success = repository.rejectFriendRequest(requestId = requestId, jwt = jwt)
             Log.d(DebugConstants.PEEK, "DeleteRejectFriendRequestUseCase()")
             emit(DataWrapper.Success<Boolean>(success))
         } catch(e: HttpException) {

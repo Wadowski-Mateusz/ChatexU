@@ -1,5 +1,6 @@
 package com.example.server.controller
 
+import com.example.server.dto.AuthenticationDTO
 import com.example.server.dto.LoginDto
 import com.example.server.dto.RegisterDto
 import com.example.server.exceptions.BadLoginDataException
@@ -7,54 +8,97 @@ import com.example.server.exceptions.DataAlreadyInTheDatabaseException
 import com.example.server.model.User
 import com.example.server.service.UserService
 import lombok.AllArgsConstructor
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.InternalAuthenticationServiceException
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
-
 
 @RestController
 @RequestMapping("/auth")
 @AllArgsConstructor
 @CrossOrigin
 class SecurityController(
-    private val userService: UserService
+    private val userService: UserService,
+    private val passwordEncoder: PasswordEncoder,
+    private val authenticationManager: AuthenticationManager
 ) {
 
+    private val logger = LoggerFactory.getLogger(UserService::class.java)
+
     @PostMapping("/register")
-    fun registerUser(@RequestBody registerDto: RegisterDto)
-    : ResponseEntity<Any /*UserDto or error*/> {
+    fun registerUser(
+        @RequestBody registerDto: RegisterDto
+    ): ResponseEntity<AuthenticationDTO> {
 
         return try {
-            val user = userService.createUserFromRegisterDto(registerDto)
+            val user = userService.createUserFromRegisterDto(registerDto.copy(
+                password = passwordEncoder.encode(registerDto.password)
+            ))
 
-            ResponseEntity(userService.convertToDto(user), HttpStatus.OK)
-        } catch (exception: DataAlreadyInTheDatabaseException) {
-            println("registerUser() - DataAlreadyInTheDatabase ${exception.message} \n1 - Email\n2 - Nickname\n3-Username")
-            ResponseEntity.status(HttpStatus.CONFLICT).body(exception.message)
-        } catch (exception: Exception) {
-            println("registerUser() - ${exception.message}")
+            val jwt: String = userService.createToken(user)
+            val success = userService.saveToken(user, jwt)
+
+            if(success) {
+                ResponseEntity.status(HttpStatus.OK).body(AuthenticationDTO(token = jwt, userId = user.userId.toString()))
+            }
+            else {
+                logger.error("register: Could not save JWT to the database")
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+            }
+        } catch (e: DataAlreadyInTheDatabaseException) {
+            logger.error("registerUser(): ${e::class.simpleName}\n${e.cause} \n1 - Email\n2 - Nickname\n3 - Username")
+            ResponseEntity.status(HttpStatus.CONFLICT).build()
+        } catch (e: Exception) {
+            logger.error("registerUser() unknown error- ${e::class.simpleName}")
             ResponseEntity.internalServerError().build()
         }
+
     }
 
-
     @PostMapping("/login")
-    fun login(@RequestBody loginDto: LoginDto?): ResponseEntity<String> {
-
+    fun login(
+        @RequestBody loginDto: LoginDto?
+    ): ResponseEntity<AuthenticationDTO> {
         loginDto ?: return ResponseEntity(HttpStatus.BAD_REQUEST)
-
         return try {
-            val user: User = userService.login(loginDto)
-            println("success")
-            ResponseEntity.status(HttpStatus.OK).body(user.userId.toString())
+            authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(
+                    loginDto.login,
+                    loginDto.password
+                )
+            )
+
+            val user: User = try {
+                userService.getUserByLogin(loginDto.login)
+            } catch (e: NullPointerException) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+            }
+            val jwt: String = userService.createToken(user)
+            val success = userService.saveToken(user, jwt)
+            if(success) {
+                ResponseEntity.status(HttpStatus.OK).body(AuthenticationDTO(jwt, user.userId.toString()))
+            }
+            else {
+                logger.error("login(): Could not save JWT to the database")
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+            }
+
         } catch (e: BadLoginDataException) {
-            println("e1")
+            logger.error("login e1: ${e::class.simpleName}\n${e.cause}")
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        } catch (e: InternalAuthenticationServiceException) {
+            logger.error("login e2: ${e::class.simpleName}\n${e.cause}")
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         } catch (e: Exception) {
-            println("e2")
+            logger.error("login e3: ${e::class.simpleName}\n${e.cause}")
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
         }
     }
+
 
 
     @PutMapping("/change_email/{userId}/{password}/{email}")

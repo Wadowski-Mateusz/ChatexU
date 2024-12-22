@@ -33,25 +33,32 @@ class UserOptionsViewModel @Inject constructor(
 
 
     init {
+        val currentUserId: String = savedStateHandle.get<String>(Constants.PARAM_USER_ID) ?: Constants.ID_DEFAULT
+        val jwt: String = savedStateHandle.get<String>(Constants.PARAM_JWT) ?: ""
+
         _state.value = _state.value.copy(
-            currentUserId = savedStateHandle.get<String>(Constants.PARAM_USER_ID)
-                ?: Constants.ID_DEFAULT // TODO what if null, can it be null?
+            currentUserId = currentUserId,
+            jwt = jwt,
         )
         fetchUser()
     }
 
     fun updateNickname(nickname: String) {
-        val response =  putUpdateUserNicknameUseCase(_state.value.currentUserId, nickname)
+        val response =  putUpdateUserNicknameUseCase(
+            userId = _state.value.currentUserId,
+            nickname = nickname,
+            jwt = state.value.jwt
+        )
         response.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
-                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.updateNickname() - success - start")
+//                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.updateNickname() - success - start")
                     _state.value = _state.value.copy(
                         currentUser = result.data!!,
                         isLoading = false,
                         error = ""
                     )
-                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.updateNickname() - success - end")
+//                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.updateNickname() - success - end")
                 }
 
                 is DataWrapper.Loading -> {
@@ -80,17 +87,21 @@ class UserOptionsViewModel @Inject constructor(
 //        Log.w(DebugConstants.PEEK, "-----------------------------------------------")
 
 
-        val response =  putUpdateUserIconUseCase(_state.value.currentUserId, icon)
+        val response =  putUpdateUserIconUseCase(
+            userId = state.value.currentUserId,
+            icon = icon,
+            jwt = state.value.jwt
+        )
         response.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
-                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.updateIcon() - success - start")
+//                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.updateIcon() - success - start")
                     _state.value = _state.value.copy(
                         currentUser = result.data!!,
                         isLoading = false,
                         error = ""
                     )
-                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.updateIcon() - success - end")
+//                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.updateIcon() - success - end")
                 }
 
                 is DataWrapper.Loading -> {
@@ -115,17 +126,20 @@ class UserOptionsViewModel @Inject constructor(
 
 
     private fun fetchUser() {
-        val response =  getUserByIdUseCase(_state.value.currentUserId)
+        val response =  getUserByIdUseCase(
+            userId = _state.value.currentUserId,
+            jwt = state.value.jwt
+        )
         response.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
-                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.fetchUser() - success - start")
+//                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.fetchUser() - success - start")
                     _state.value = _state.value.copy(
                         currentUser = result.data!!,
                         isLoading = false,
                         error = ""
                     )
-                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.fetchUser() - success - end")
+//                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.fetchUser() - success - end")
                 }
 
                 is DataWrapper.Loading -> {

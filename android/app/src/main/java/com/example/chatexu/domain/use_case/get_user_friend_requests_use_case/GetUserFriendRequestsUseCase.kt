@@ -15,10 +15,10 @@ import javax.inject.Inject
 class GetUserFriendRequestsUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke (userId: String): Flow<DataWrapper<List<FriendRequest>>> = flow {
+    operator fun invoke (userId: String, jwt: String): Flow<DataWrapper<List<FriendRequest>>> = flow {
         try {
             emit(DataWrapper.Loading<List<FriendRequest>>())
-            val requests: List<FriendRequest> = repository.getAllFriendRequestsForUser(userId)
+            val requests: List<FriendRequest> = repository.getAllFriendRequestsForUser(userId = userId, jwt = jwt)
             Log.d(DebugConstants.PEEK, "GetUserFriendRequestsUseCase() - no. of requests: ${requests.size}")
             emit(DataWrapper.Success<List<FriendRequest>>(requests))
         } catch(e: HttpException) {

@@ -31,66 +31,74 @@ class ChatListViewModel @Inject constructor(
 
 
     init {
-        savedStateHandle.get<String>(Constants.PARAM_USER_ID)?.let { chatId ->
-            getChatList(chatId)
+        val jwt: String = savedStateHandle.get<String>(Constants.PARAM_JWT) ?: ""
+        val userId: String = savedStateHandle.get<String>(Constants.PARAM_USER_ID) ?: Constants.ID_DEFAULT
+
+        _state.value = ChatListState(userId = userId, jwt = jwt)
+
+        if(userId != Constants.ID_DEFAULT) {
+            getChatList(userId)
         }
     }
 
     private fun getChatList(userId: String) {
-        val chats = getChatListUseCase(userId)
-        chats.onEach { result ->
+        val response = getChatListUseCase(userId = userId, jwt = _state.value.jwt)
+
+        response.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
-                    Log.d("peek", "Success ChatListViewModel")
+                    Log.d(DebugConstants.PEEK, "Success ChatListViewModel - entered")
 
                     val chatRows = result.data?.sortedByDescending { it.timestamp } ?: emptyList<ChatRow>()
 
-                    _state.value = ChatListState(
+                    _state.value = _state.value.copy(
                         chatRows = chatRows,
-                        userId = userId
+                        isLoading = false,
+                        error = ""
                     )
                 }
                 is DataWrapper.Loading -> {
                     Log.i(DebugConstants.RESOURCE_LOADING, "Loading in: ChatListViewModel.")
-                    _state.value = ChatListState(
-                        error = result.message ?: "Unknown error"
-                    )
-                }
-                is DataWrapper.Error -> {
-                    Log.d("peek", "Error ChatListViewModel")
-                    _state.value = ChatListState(
+                    _state.value = _state.value.copy(
                         isLoading = true,
-                        userId = userId
-                    )
-                }
-
-            }
-        } .launchIn(viewModelScope)
-    }
-
-
-    // TODO no ids
-    private fun getSingleChatRowAsList() {
-        getChatRowUseCase() .onEach { result ->
-            when(result) {
-                is DataWrapper.Success -> {
-                    _state.value = ChatListState(
-                        chatRows = listOfNotNull(result.data)
-                    )
-                }
-                is DataWrapper.Loading -> {
-                    Log.i(DebugConstants.RESOURCE_LOADING, "Error in: ChatListViewModel.")
-                    _state.value = ChatListState(
-                        error = result.message ?: "Unknown error"
+                        error = "",
                     )
                 }
                 is DataWrapper.Error -> {
-                    _state.value = ChatListState(isLoading = true)
+                    Log.e(DebugConstants.VM_ERR, "Error ChatListViewModel")
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        error = result.message ?: "Unknown error"
+                    )
                 }
 
             }
         } .launchIn(viewModelScope)
-
     }
+
+
+//    // TODO no ids
+//    private fun getSingleChatRowAsList() {
+//        getChatRowUseCase() .onEach { result ->
+//            when(result) {
+//                is DataWrapper.Success -> {
+//                    _state.value = ChatListState(
+//                        chatRows = listOfNotNull(result.data)
+//                    )
+//                }
+//                is DataWrapper.Loading -> {
+//                    Log.i(DebugConstants.RESOURCE_LOADING, "Error in: ChatListViewModel.")
+//                    _state.value = ChatListState(
+//                        error = result.message ?: "Unknown error"
+//                    )
+//                }
+//                is DataWrapper.Error -> {
+//                    _state.value = ChatListState(isLoading = true)
+//                }
+//
+//            }
+//        } .launchIn(viewModelScope)
+//
+//    }
 
 }

@@ -15,11 +15,15 @@ import javax.inject.Inject
 class PostFriendRequestUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke(senderId: String, recipientId: String): Flow<DataWrapper<FriendRequest>> = flow {
+    operator fun invoke(senderId: String, recipientId: String, jwt: String): Flow<DataWrapper<FriendRequest>> = flow {
 
         try {
             emit(DataWrapper.Loading<FriendRequest>())
-            val friendRequest = repository.sendFriendRequest(senderId, recipientId)
+            val friendRequest = repository.sendFriendRequest(
+                senderId = senderId,
+                recipientId = recipientId,
+                jwt = jwt
+            )
             Log.d(DebugConstants.USE_CASE, "PostFriendRequestUseCase()")
             emit(DataWrapper.Success<FriendRequest>(friendRequest))
         } catch(e: HttpException) {

@@ -36,9 +36,7 @@ fun CreateChatScreen(
 ) {
     val state = viewModel.state.value
     val phrase = remember { mutableStateOf("") }
-//    val inputMessage = remember { mutableStateOf(TextFieldValue()) }
     val active = remember { mutableStateOf(false) }
-
 
     fun search() {
         viewModel.filterFriendsByNickname(phrase.value)
@@ -77,13 +75,12 @@ fun CreateChatScreen(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search icon"
                 )
-                          },
+            },
             trailingIcon = {
                 if (active.value) {
                     Icon(
                         modifier = Modifier.clickable {
                             if (phrase.value.isEmpty()) {
-                                Log.d("PRRK", "EMPTY")
                                 active.value = false
                             }
                             phrase.value = ""
@@ -92,7 +89,7 @@ fun CreateChatScreen(
                         contentDescription = "Clear icon"
                     )
                 }
-                           },
+            },
         ) {}
 
         FriendLazyList(
@@ -100,7 +97,8 @@ fun CreateChatScreen(
             navController = navController,
             modifier = Modifier.fillMaxSize(),
             userId = state.userId,
-            getChatOrElseCreate = viewModel::getChatId
+            jwt = state.jwt,
+            getChatOrElseCreate = viewModel::getChatId,
         )
 
 

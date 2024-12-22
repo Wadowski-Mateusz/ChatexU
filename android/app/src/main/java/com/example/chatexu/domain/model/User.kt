@@ -12,6 +12,7 @@ data class User(
     val username: String,
     val icon: Bitmap? = null,
     val friends: List<String> = emptyList(),
+    val role: String = ""
 ) {
         companion object {
             fun emptyUser() : User {

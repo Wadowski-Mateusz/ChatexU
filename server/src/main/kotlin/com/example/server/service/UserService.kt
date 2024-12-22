@@ -10,21 +10,32 @@ import com.example.server.exceptions.*
 import com.example.server.model.FriendRequest
 import com.example.server.model.User
 import com.example.server.repository.UserRepository
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.MalformedJwtException
+import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.io.Decoders
+import io.jsonwebtoken.security.Keys
 import lombok.AllArgsConstructor
 import org.bson.types.ObjectId
 import org.jetbrains.annotations.TestOnly
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.security.Key
 import java.time.Instant
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
+import kotlin.math.log
 import kotlin.math.pow
 
 
@@ -38,12 +49,17 @@ import kotlin.math.pow
 @AllArgsConstructor
 class UserService(
     private val userRepository: UserRepository,
-) {
+): UserDetailsService {
     @Lazy
     @Autowired
     private val _friendRequestService: FriendRequestService? = null
     private val friendRequestService: FriendRequestService by lazy { _friendRequestService!! }
     private val logger = LoggerFactory.getLogger(UserService::class.java)
+
+    private val KEY =
+        "70337336763979244226452948404D635166546A576E5A7134743777217A25432A462D4A614E645267556B58703273357538782F413F4428472B4B6250655368"
+    private val KEY_LIFESPAN = 1000L * 60L * 60L * 24L * 30L
+
 
     /**
      * Get user by nickname
@@ -127,9 +143,19 @@ class UserService(
      * @return
      */
     @Transactional
-    fun saveAll(users: List<User>): List<User> {
+    fun saveAll(users: List<User>) {
         logger.info("UserService.saveAll()")
-        return userRepository.saveAll(users)
+
+        // TODO bad fix for token saving problems
+        val usersToSave = users.map { it.copy(tokens = emptyMap()) }
+        userRepository.saveAll(usersToSave)
+        usersToSave.forEach {newUser ->
+            saveToken(
+                newUser,
+                users.first { it.userId == newUser.userId }.tokens.keys.first()
+                )
+        }
+
     }
 
     /**
@@ -240,6 +266,8 @@ class UserService(
             profilePictureUri = Constants.DEFAULT_PROFILE_URI,
             friends = setOf(),
             blockedUsers = setOf(),
+            tokens = emptyMap(),
+            role = Constants.ROLE_USER
         )
 
         return save(newUser)
@@ -260,13 +288,17 @@ class UserService(
 
         val login: String = loginDto.login
         val password: String = loginDto.password
-
+        println("login -3.1")
         require(login.isNotBlank()) { ErrorMessageCommons.isBlank(Field.LOGIN, "UserService.login()") }
         require(password.isNotBlank()) { ErrorMessageCommons.isBlank(Field.PASSWORD, "UserService.login()") }
-
+        println("login -3.2")
         return if(login.contains('@')) {
+            println("login -3.3")
+            println(login)
+            println(password)
             userRepository.findByEmailAndPassword(login, password)
         } else {
+            println("login -3.4")
             userRepository.findByUsernameAndPassword(login, password)
         } ?: throw BadLoginDataException()
     }
@@ -304,7 +336,8 @@ class UserService(
             profilePictureUri = user.profilePictureUri,
             friends = user.friends,
             blockedUsers = user.blockedUsers,
-            profilePicture = icon
+            profilePicture = icon,
+            role = user.role
         )
     }
 
@@ -448,6 +481,7 @@ class UserService(
         val friend1withNewFriend = senderUser.copy(friends = senderUser.friends.plus(recipientId).toSet())
         val friend2withNewFriend = recipientUser.copy(friends = recipientUser.friends.plus(senderId).toSet())
         saveAll(listOf(friend1withNewFriend, friend2withNewFriend))
+
 
         friendRequestService.delete(request)
     }
@@ -664,6 +698,136 @@ class UserService(
         }
 
         return getUserById(userId)
+    }
+
+    fun getUserByLogin(login: String): User {
+        return if (login.contains('@')) {
+            userRepository.findUserByEmail(login)
+                ?: throw UserNotFoundException(ErrorMessageCommons.notFound(
+                        ClassName.USER,
+                        Field.EMAIL,
+                        login,
+                        "UserService.getUserByLogin(login)"
+                    ))
+        }
+        else
+            userRepository.findByNickname(login)
+                ?: throw UserNotFoundException(ErrorMessageCommons.notFound(
+                    ClassName.USER,
+                    Field.NICKNAME,
+                    login,
+                    "UserService.getUserByLogin(login)"
+                ))
+    }
+
+    /************************************ TOKENS ************************************/
+
+    @Throws(UsernameNotFoundException::class)
+    override fun loadUserByUsername(login: String): UserDetails {
+        try {
+            return getUserByLogin(login)
+        } catch (e: UserNotFoundException) {
+            throw BadLoginDataException(ErrorMessageCommons.notFound(
+                ClassName.USER,
+                Field.LOGIN,
+                login,
+                "UserService.loadUserByUsername(login)"
+            ))
+        }
+    }
+
+    fun saveToken(user: User, jwt: String): Boolean {
+        return saveToken(user.userId.toString(), jwt)
+//        expireAllUserTokens(user)
+//        val success = userRepository.saveNewTokensByUserId(user.userId.toString(), jwt, false)
+//        return success > 0
+//        return true
+    }
+
+    fun saveToken(userId: String, jwt: String): Boolean {
+//        expireAllUserTokens(user)
+        val success = userRepository.saveNewTokensByUserId(userId, jwt, false)
+        return success > 0
+//        return true
+    }
+
+
+
+    fun expireAllUserTokens(user: User) {
+
+        val tokens: Map<String, Boolean> = user.tokens.map { (key, _) -> key to false }.toMap()
+
+        val userWithExpiredTokens: User = user.copy(
+            tokens = tokens
+        )
+
+        userRepository.saveNewTokensByUserId(user.userId.toString(), tokens.keys.toList(), tokens.values.toList())
+    }
+
+//    fun findByToken(jwt: String?): User {
+//        return userRepository.findByToken(jwt)
+//    }
+
+
+    @Throws(MalformedJwtException::class)
+    fun extractLogin(token: String): String {
+        return extractClaim(token, Claims::getSubject) // TODO change to `Claims::subject` in kotlin 2.2 () - https://youtrack.jetbrains.com/issue/KT-8575/Support-Java-synthetic-property-references
+    }
+
+    fun isTokenValid(token: String, securityUserDetails: UserDetails): Boolean {
+        val login = extractLogin(token)
+        return login == securityUserDetails.username && !isTokenExpired(token)
+    }
+
+    private fun isTokenExpired(token: String): Boolean {
+        return extractExpiration(token).before(Date())
+    }
+
+    private fun extractExpiration(token: String): Date {
+        return extractClaim(token, Claims::getExpiration) // TODO change to `Claims::expiration` in kotlin 2.2 - https://youtrack.jetbrains.com/issue/KT-8575/Support-Java-synthetic-property-references
+    }
+
+    fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
+        val claims = extractAllClaims(token)
+        return claimsResolver(claims)
+    }
+
+    fun createToken(user: User): String {
+        val map = HashMap<String, Any?>()
+        map["userId"] = user.userId
+        map["role"] = user.role
+        map["email"] = user.email
+        map["username"] = user.email
+
+        return createToken(map, user)
+    }
+
+    private fun createToken(
+        extraClaims: Map<String, Any?>?,
+        securityUserDetails: UserDetails
+    ): String {
+        return Jwts
+            .builder()
+            .setClaims(extraClaims)
+            .setSubject(securityUserDetails.username)
+            .setIssuedAt(Date(System.currentTimeMillis()))
+            .setExpiration(Date(System.currentTimeMillis() + KEY_LIFESPAN))
+            .signWith(getSignInKey(), SignatureAlgorithm.HS512)
+            .compact()
+    }
+
+    private fun extractAllClaims(token: String?): Claims {
+        return Jwts
+            .parserBuilder()
+            .setSigningKey(getSignInKey())
+            .build()
+            .parseClaimsJws(token)
+            .body
+    }
+
+    private fun getSignInKey(): Key {
+        val keyBytes = Decoders.BASE64.decode(KEY)
+        return Keys.hmacShaKeyFor(keyBytes)
     }
 
 

@@ -15,10 +15,10 @@ import javax.inject.Inject
 class GetChatParticipantsUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke (chatId: String): Flow<DataWrapper<List<User>>> = flow {
+    operator fun invoke (chatId: String, jwt: String): Flow<DataWrapper<List<User>>> = flow {
         try {
             emit(DataWrapper.Loading<List<User>>())
-            val participants: List<User> = repository.getChatParticipants(chatId)
+            val participants: List<User> = repository.getChatParticipants(chatId = chatId, jwt = jwt)
             Log.d(DebugConstants.USE_CASE, "GetChatParticipantsUseCase() - no. of : ${participants.size}")
             emit(DataWrapper.Success<List<User>>(participants))
         } catch(e: HttpException) {

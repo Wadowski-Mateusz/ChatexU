@@ -19,6 +19,9 @@ services:
     image: chatexu-server:0.3.0
     ports:
       - '8091:8091'
+    volumes:
+      - icons:/server/src/main/resources/icons/
+      - images:/server/src/main/resources/chats/
     networks:
       - app-network
     depends_on:
@@ -26,6 +29,8 @@ services:
 
 volumes:
   mongo:
+  icons:
+  images:
   # mongo-test:
 
 networks:

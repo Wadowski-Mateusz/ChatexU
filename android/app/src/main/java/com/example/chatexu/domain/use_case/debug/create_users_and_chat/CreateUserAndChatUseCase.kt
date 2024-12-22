@@ -9,12 +9,12 @@ import retrofit2.HttpException
 import javax.inject.Inject
 
 class CreateUserAndChatUseCase  @Inject constructor(
-    private val repository: ChatRepository
+    private val repository: ChatRepository,
 ) {
-    operator fun invoke(): Flow<DataWrapper<Boolean>>  = flow {
+    operator fun invoke(jwt: String): Flow<DataWrapper<Boolean>>  = flow {
         try {
             emit(DataWrapper.Loading<Boolean>())
-            val result = repository.createUsersAndChat()
+            val result = repository.createUsersAndChat(jwt = jwt)
             emit(DataWrapper.Success<Boolean>(result))
         } catch(e: HttpException) {
             Log.e("peek", "e1/CreateUserAndChatUseCase: ${e.message.toString()}")

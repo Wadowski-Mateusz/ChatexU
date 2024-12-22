@@ -13,11 +13,11 @@ import javax.inject.Inject
 class PostMessageUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke(message: Message): Flow<DataWrapper<Message>> = flow {
+    operator fun invoke(message: Message, jwt: String): Flow<DataWrapper<Message>> = flow {
 
         try {
             emit(DataWrapper.Loading<Message>())
-            val messageResponse = repository.sendMessage(message)
+            val messageResponse = repository.sendMessage(message = message, jwt = jwt)
             Log.d("peek", "PostMessageUseCase()")
             emit(DataWrapper.Success<Message>(messageResponse))
         } catch(e: HttpException) {

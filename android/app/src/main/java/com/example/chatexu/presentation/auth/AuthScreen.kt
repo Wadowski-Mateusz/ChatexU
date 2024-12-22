@@ -1,7 +1,6 @@
 package com.example.chatexu.presentation.auth
 
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +37,10 @@ fun AuthScreen(
     val password = remember { mutableStateOf(TextFieldValue()) }
     val loginMaxLength = 16
     val passwordMaxLength = 24
+
+    fun navigate() {
+        navController.navigate(Screen.ChatListScreen.route + "/${state.userId}/${state.jwt}")
+    }
 
     Column(
         Modifier
@@ -79,16 +82,13 @@ fun AuthScreen(
             FastButton(
                 txt = "Login",
                 onClick = {
-                    viewModel.login(login.value.text, password.value.text)
-//                    Log.d(DebugConstants.PEEK, "RESPONSE: ${viewModel.state.value.userId}")
+                    // login logic in LaunchedEffect
+                    if (login.value.text.isNotBlank() && password.value.text.isNotBlank())
+                        viewModel.login(login.value.text, password.value.text)
 
-                    if(state.error.isBlank() && state.userId != Constants.ID_DEFAULT) {
-                        viewModel.setBadLoginDataAlertVisibility(false)
-                        navController.navigate(Screen.ChatListScreen.route  + "/${state.userId}")
-                    } else {
+                    if(state.error.isNotBlank()) {
                         viewModel.setBadLoginDataAlertVisibility(true)
                     }
-
                 }
             )
 
@@ -100,12 +100,12 @@ fun AuthScreen(
             )
 
             // Developer login screen
-            FastButton(
-                txt = "GO TO DEVELOPER LOGIN",
-                onClick = {
-                    navController.navigate(Screen.AuthScreenDebug.route)
-                }
-            )
+//            FastButton(
+//                txt = "GO TO DEVELOPER LOGIN",
+//                onClick = {
+//                    navController.navigate(Screen.AuthScreenDebug.route)
+//                }
+//            )
         }
 
         if(state.registerPage) {
@@ -180,23 +180,20 @@ fun AuthScreen(
         }
 
         LaunchedEffect(state) {
-            if (!state.isLoading && state.error.isBlank() && state.registerStatus && state.userId != Constants.ID_DEFAULT) {
-                Log.i("REGISTER - SCREEN - true", state.userId)
-                navController.navigate(Screen.ChatListScreen.route + "/${state.userId}")
-            } else if (!state.isLoading && state.error.isBlank() && state.loginStatus && state.userId != Constants.ID_DEFAULT) {
-                Log.i("LOGIN - SCREEN - true", state.userId)
-                navController.navigate(Screen.ChatListScreen.route + "/${state.userId}")
-//            } else if (!state.isLoading && state.error.isNotBlank() ) {
-//                viewModel.showRegister()
-//            }
+            if (!state.isLoading && state.error.isBlank() && state.registerStatus && state.userId != Constants.ID_DEFAULT && state.jwt != "") {
+//                Log.i("REGISTER - SCREEN - true", state.userId)
+                navigate()
+//                navController.navigate(Screen.ChatListScreen.route + "/${state.userId}")
+            } else if (!state.isLoading && state.error.isBlank() && state.loginStatus && state.userId != Constants.ID_DEFAULT && state.jwt != "") {
+                navigate()
+//                navController.navigate(Screen.ChatListScreen.route + "/${state.userId}" + "/${state.jwt}")
             }
 
         }
 
 
-
-
-
     }
+
+
 }
 

@@ -18,10 +18,12 @@ import com.example.server.service.ChatService
 import com.example.server.service.MessageService
 import com.example.server.service.UserService
 import lombok.AllArgsConstructor
+import org.apache.logging.log4j.ThreadContext.ContextStack
 import org.bson.types.ObjectId
 import org.jetbrains.annotations.TestOnly
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import kotlin.math.abs
@@ -38,6 +40,7 @@ class TestController(
     private val userRepository: UserRepository,
     private val chatService: ChatService,
     private val userService: UserService,
+    private val passwordEncoder: PasswordEncoder,
 ) {
 
     @GetMapping("/hello")
@@ -101,7 +104,9 @@ class TestController(
             password = "pass",
             profilePictureUri = Constants.DEFAULT_PROFILE_URI,
             friends = setOf(),
-            blockedUsers = setOf()
+            blockedUsers = setOf(),
+            tokens = emptyMap(),
+            role = Constants.ROLE_USER
         )
         userRepository.save(user)
         return user.userId.toHexString()
@@ -123,24 +128,36 @@ class TestController(
             nickname = "User${random()}",
             username = "User${random()}",
             email = "email${random()}@mail.com",
-            password = "pass",
+            password = passwordEncoder.encode("pass"),
             profilePictureUri = Constants.DEFAULT_PROFILE_URI,
             friends = setOf(userId2.toString()),
-            blockedUsers = setOf()
+            blockedUsers = setOf(),
+            tokens = emptyMap(),
+            role = Constants.ROLE_USER
         )
         println("Inside create 2")
+
         val user2 = User(
             userId = userId2,
             nickname = "User${random()}",
             username = "User${random()}",
             email = "email${random()}@mail.com",
-            password = "pass",
+            password = passwordEncoder.encode("pass"),
             profilePictureUri = Constants.DEFAULT_PROFILE_URI,
             friends = setOf(userId1.toString()),
-            blockedUsers = setOf()
+            blockedUsers = setOf(),
+            tokens = emptyMap(),
+            role = Constants.ROLE_USER
         )
         userRepository.save(user)
         userRepository.save(user2)
+
+        println("Inside test create - save tokens")
+        val jwt: String = userService.createToken(user)
+        userService.saveToken(user, jwt)
+        val jwt2: String = userService.createToken(user)
+        userService.saveToken(user2, jwt2)
+
         println("Inside create 3")
 
         val participants = listOf(user.userId.toHexString(), user2.userId.toHexString())

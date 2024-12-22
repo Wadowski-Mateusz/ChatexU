@@ -14,12 +14,12 @@ import javax.inject.Inject
 class GetChatRowUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke(): Flow<DataWrapper<ChatRow>> = flow {
+    operator fun invoke(jwt: String): Flow<DataWrapper<ChatRow>> = flow {
         try {
             emit(DataWrapper.Loading<ChatRow>())
             // TODO id
             Log.e(DebugConstants.TODO, "GetChatRowUseCase() - hardcoded ids")
-            val chat = repository.getChatRow("123", "123")
+            val chat = repository.getChatRow("123", "123", jwt = jwt)
             emit(DataWrapper.Success<ChatRow>(chat))
         } catch(e: HttpException) {
             emit(DataWrapper.Error<ChatRow>(e.localizedMessage ?: "Unknown error"))

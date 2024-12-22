@@ -18,7 +18,7 @@
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="34">
         <activity
-            android:name=".MainActivity"
+            android:name=".ChatexU"
             android:exported="true"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.ChatexU">

@@ -142,7 +142,7 @@ fun ChatScreen(
                             .align(Alignment.CenterVertically)
                             .padding(horizontal = 12.dp)
                             .clickable {
-                                navController.navigate(Screen.ChatListScreen.route + "/${state.userId}")
+                                navController.navigate(Screen.ChatListScreen.route + "/${state.userId}/${state.jwt}")
                             },
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Go back to chat list"

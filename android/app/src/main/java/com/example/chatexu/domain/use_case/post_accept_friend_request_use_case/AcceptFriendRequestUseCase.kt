@@ -13,11 +13,11 @@ import javax.inject.Inject
 class AcceptFriendRequestUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke(requestId: String): Flow<DataWrapper<Boolean>> = flow {
+    operator fun invoke(requestId: String, jwt: String): Flow<DataWrapper<Boolean>> = flow {
 
         try {
             emit(DataWrapper.Loading<Boolean>())
-            val success = repository.postAcceptFriendRequest(requestId)
+            val success = repository.postAcceptFriendRequest(requestId = requestId, jwt = jwt)
             Log.d(DebugConstants.PEEK, "AcceptFriendRequestUseCase()")
             emit(DataWrapper.Success<Boolean>(success))
         } catch(e: HttpException) {

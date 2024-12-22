@@ -20,11 +20,12 @@ class GetAllChatMessagesUseCase @Inject constructor(
     operator fun invoke(
         chatId: String,
         userId: String,
+        jwt: String,
     ): Flow<DataWrapper<List<Message>>> = flow {
         try {
             emit(DataWrapper.Loading<List<Message>>())
 
-            val messages = repository.getAllChatMessages(chatId, userId)
+            val messages = repository.getAllChatMessages(chatId = chatId, userId = userId, jwt = jwt)
 
             emit(DataWrapper.Success<List<Message>>(messages))
 

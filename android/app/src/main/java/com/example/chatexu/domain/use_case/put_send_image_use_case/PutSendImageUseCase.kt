@@ -14,11 +14,11 @@ import javax.inject.Inject
 class PutSendImageUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke(message: Message, image: MultipartBody.Part): Flow<DataWrapper<String>> = flow {
+    operator fun invoke(message: Message, image: MultipartBody.Part, jwt: String): Flow<DataWrapper<String>> = flow {
 
         try {
             emit(DataWrapper.Loading<String>())
-            val response = repository.putSendImage(message, image)
+            val response = repository.putSendImage(message = message, image = image, jwt = jwt)
             Log.d("peek", "PutSendImageUseCase()")
             emit(DataWrapper.Success<String>(response))
         } catch(e: HttpException) {

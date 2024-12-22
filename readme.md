@@ -1,12 +1,45 @@
-# Requirements:
+# Requirements (for local hosting):
 * Docker
-* Android Studio (for UI) + device with Android 10-13
-* Postman (for server only)
-* Internet connection (if required images are not in local repository)
+* Android Studio (emulator with Android 10+)
 
 *Tested under Linux and Windows*
 
 # Set up
+
+## Android Studio
+
+###  Set IPv4 address of server
+
+Go to *android/app/src/main/java/com/example/chatexu/common/Constants.kt* 
+
+
+1) Find line with URL_BACKEND constant
+
+    ![Alt text](readme_screens/urls.png)
+
+2)  Find and copy paste Docker's IP
+
+    
+    Windows: 
+    
+    Open CMD and type
+    ``` 
+    ipconfig 
+    ```
+    Example:
+    `Ethernet adapter vEthernet (WSL):  IPv4 Address. . . . . . . . . . . : 172.29.96.1 `
+
+    \
+    Linux:
+    ```
+    ip a | grep docker
+    ```
+    Example: `3: docker0: 172.17.0.1`
+
+\
+Change `URL_BACKEND`
+
+![Alt text](readme_screens/base_url.png)
 
 ## Docker 
 ### Start Docker
@@ -16,57 +49,20 @@ Linux:
 sudo systemctl start docker.service
 ```
 
-### Start containers:
+### Build backend image:
 ```
 docker build -t chatexu-server:0.3.0 .
 ```
+### Start containers:
 ```
 docker compose up
 ```
 
-### Check if everything is running:
+### Check if backend is running:
 ```
 curl http://localhost:8091/test/hello
 ```
 You should see: `Hello world!`
-
-
-
-
-
-## Android Studio
-
-###  Set IPv4 address of server
-
-Go to *android/app/src/main/java/com/example/chatexu/common/Constants.kt* 
-
-
-1) Find line with BASE_URL constant
-
-![Alt text](readme_screens/urls.png)
-
-2)  Find and copy paste Docker's IP
-
-\
-Windows 
-``` 
-ipconfig 
-```
-Example:
-`Ethernet adapter vEthernet (WSL):  IPv4 Address. . . . . . . . . . . : 172.29.96.1 `
-
-\
-Linux:
-```
-ip a | grep docker
-```
-Example: `3: docker0: 172.17.0.1`
-
-\
-Change `BASE_URL`
-
-![Alt text](readme_screens/base_url.png)
-
 
 
 
@@ -104,13 +100,13 @@ docker rmi chatexu-server:0.3.0
 docker rmi mongo
 ```
 ```
-docker rmi openjdk:21-jdk
+docker rmi chatexu-server
 ```
 
-# App overview
 
-For now, UI is, well, poor. You can create users by button, open chats, and write messages. Chat is live, so You can write from two emulators to each other.
+# THIS SECTION IS DEPRECATED
 
+## App overview
 
 ![Alt text](readme_screens/image.png)
 ![Alt text](readme_screens/image-1.png)

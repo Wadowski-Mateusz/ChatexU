@@ -8,6 +8,7 @@ data class AuthState(
     var users: List<User> = emptyList(),
     var isLoading: Boolean = false,
     var error: String = "",
+    var jwt: String = "",
 
     var loginPage: Boolean = true,
     var registerPage: Boolean = false,

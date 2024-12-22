@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DataWrapper
+import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.domain.model.Friend
 import com.example.chatexu.domain.use_case.get_chat_or_else_create_use_case.GetChatOrElseCreateUseCase
 import com.example.chatexu.domain.use_case.get_user_friends.GetUserFriendsUseCase
@@ -27,31 +28,35 @@ class CreateChatViewModel @Inject constructor(
     val state: State<CreateChatState> = _state
 
     init {
+        val jwt: String = savedStateHandle.get<String>(Constants.PARAM_JWT) ?: ""
+        val userId: String = savedStateHandle.get<String>(Constants.PARAM_USER_ID) ?: Constants.ID_DEFAULT
+
         _state.value = _state.value.copy(
-            userId = savedStateHandle.get<String>(Constants.PARAM_USER_ID)
-                ?: Constants.ID_DEFAULT //TODO what if null
+            userId = userId,
+            jwt = jwt
         )
 
-        savedStateHandle.get<String>(Constants.PARAM_USER_ID)
-            ?.let { userId ->
-                getUserFriends(userId)
-            }
-
-//        Log.d(DebugConstants.PEEK, "id: ${state.value.userId}")
+        if(userId != Constants.ID_DEFAULT)
+            getUserFriends(userId)
     }
 
     fun filterFriendsByNickname(partOfNickname: String) {
         // todo loading?
         val trimmedPartOfNickname = partOfNickname.trim()
         _state.value = _state.value.copy(
-            matchingFriends = state.value.friends.filter { it.nickname.contains(trimmedPartOfNickname, ignoreCase = true) },
+            matchingFriends = state.value.friends.filter {
+                it.nickname.contains(trimmedPartOfNickname, ignoreCase = true)
+            },
             isLoading = false,
             error = ""
         )
     }
 
     fun getChatId(userId: String, friendId: String): String {
-        val result = getChatOrElseCreateUseCase(listOf(userId, friendId))
+        val result = getChatOrElseCreateUseCase(
+            participants = listOf(userId, friendId),
+            jwt = state.value.jwt
+        )
 
         var chatId: DataWrapper<String> = DataWrapper.Success<String>(Constants.ID_DEFAULT)
         runBlocking {
@@ -61,17 +66,15 @@ class CreateChatViewModel @Inject constructor(
             }
         }
 
-//        Log.d("PEEK", chatId.data!!)
-
         return chatId.data!!
     }
 
     private fun getUserFriends(userId: String) {
-        val friends = getUserFriendsUseCase(userId)
+        val friends = getUserFriendsUseCase(userId, jwt = state.value.jwt)
         friends.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
-                    Log.d("peek", "Success getUserFriends")
+                    Log.d(DebugConstants.PEEK, "Success getUserFriends")
                     _state.value = _state.value.copy(
                         friends = result.data ?: emptyList<Friend>(),
                         matchingFriends = result.data ?: emptyList<Friend>(),
@@ -80,16 +83,16 @@ class CreateChatViewModel @Inject constructor(
                     )
                 }
                 is DataWrapper.Loading -> {
-                    Log.d("peek", "Loading getUserFriends")
+                    Log.i(DebugConstants.RESOURCE_LOADING, "Loading getUserFriends()")
                     _state.value = state.value.copy(
                         isLoading = true,
                         error = ""
                     )
                 }
                 is DataWrapper.Error -> {
-                    Log.d("peek", "Error getUserFriends")
-                    _state.value = CreateChatState(
-                        userId = userId,
+                    Log.e(DebugConstants.VM_ERR, "Error getUserFriends()")
+                    _state.value = state.value.copy(
+                        isLoading = false,
                         error = result.message ?: "Unknown error"
                     )
                 }

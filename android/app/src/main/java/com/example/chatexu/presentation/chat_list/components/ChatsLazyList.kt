@@ -28,13 +28,21 @@ import kotlin.random.Random
 fun ChatsListLazy(
     chatRows: List<ChatRow>,
     navController: NavController,
+    userId: String,
+    jwt: String,
+
 ) {
     LazyColumn() {
         items(items = chatRows, key = {it.chatId}) { chatRow ->
             ChatListItem(
                 chatRow = chatRow,
                 onItemClick = {
-                    navController.navigate(Screen.ChatScreen.route + "/${chatRow.chatId}")
+                    navController.navigate(
+                        Screen.ChatScreen.route
+                                + "/${userId}"
+                                + "/${jwt}"
+                                + "/${chatRow.chatId}"
+                    )
                 }
             )
         }
@@ -69,5 +77,5 @@ fun ChatsListLazyPreview() {
     }
         .take(10)
         .toList()
-    ChatsListLazy(list, NavController(LocalContext.current))
+    ChatsListLazy(list, NavController(LocalContext.current), userId = "", jwt = "")
 }

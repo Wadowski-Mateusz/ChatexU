@@ -39,30 +39,22 @@ class ChatViewModel @Inject constructor(
     init {
         val chatId: String? = savedStateHandle.get<String>(Constants.PARAM_CHAT_ID)
         val userId: String? = savedStateHandle.get<String>(Constants.PARAM_USER_ID)
+        val jwt: String? = savedStateHandle.get<String>(Constants.PARAM_JWT)
 
         _state.value.chatId = chatId!! // TODO why it would be null?
         _state.value.userId = userId!!
-
-
+        _state.value.jwt = jwt!!
 
         getMessagesPeriodically()
-
         getChatParticipants()
-
-        // if chatID and userID could be null
-//        chatId?.let {
-//            userId?. let {
-//                getMessagesPeriodically(chatId, userId)
-//              //  getMessages(chatId, userId)
-//            }
-//        }
-
-
     }
 
     private fun getChatParticipants() {
 
-        val response = getChatParticipantsUseCase(_state.value.chatId)
+        val response = getChatParticipantsUseCase(
+            chatId = _state.value.chatId,
+            jwt = _state.value.jwt
+        )
 
         response.onEach { result ->
             when(result) {
@@ -76,7 +68,7 @@ class ChatViewModel @Inject constructor(
                     )
                 }
                 is DataWrapper.Loading -> {
-//                    Log.i(DebugConstants.RESOURCE_LOADING, "Loading ChatViewModel.getChatParticipants()")
+                    Log.i(DebugConstants.RESOURCE_LOADING, "Loading ChatViewModel.getChatParticipants()")
                     _state.value = _state.value.copy(
                         isLoading = true,
                         error = ""
@@ -106,7 +98,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun getMessages() {
-        val messages = getAllChatMessagesUseCase(_state.value.chatId, _state.value.userId)
+        val messages = getAllChatMessagesUseCase(_state.value.chatId, _state.value.userId, _state.value.jwt)
         messages.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
@@ -138,7 +130,7 @@ class ChatViewModel @Inject constructor(
 
 
     fun sendMessage(message: Message) {
-        val responseMessage = postMessageUseCase(message)
+        val responseMessage = postMessageUseCase(message, _state.value.jwt)
 
         responseMessage.onEach { result -> // TODO what to use instead of 'onEach'
             when(result) {
@@ -175,7 +167,7 @@ class ChatViewModel @Inject constructor(
 
     fun sendImage(message: Message, image: MultipartBody.Part) {
 
-        val response = putSendImageUseCase(message, image)
+        val response = putSendImageUseCase(message, image, _state.value.jwt)
         response.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {

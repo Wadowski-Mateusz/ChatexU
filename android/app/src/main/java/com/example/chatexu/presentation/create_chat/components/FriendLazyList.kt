@@ -14,6 +14,7 @@ fun FriendLazyList(
     friends: List<Friend>,
     navController: NavController,
     userId: String,
+    jwt: String,
     getChatOrElseCreate: (String, String) -> String,
     modifier: Modifier = Modifier,
 ) {
@@ -27,7 +28,11 @@ fun FriendLazyList(
 //                    Log.d("PEEK", "Friend ${friend.nickname} clicked for user $userId.")
                     val chatId = getChatOrElseCreate(userId, friend.id)
 //                    Log.d("PEEK", "item - Returned id: $chatId")
-                    navController.navigate(Screen.ChatScreen.route + "/${userId}" + "/${chatId}")
+                    navController.navigate(Screen.ChatScreen.route
+                            + "/${userId}"
+                            + "/${jwt}"
+                            + "/${chatId}"
+                    )
                 }
             )
         }

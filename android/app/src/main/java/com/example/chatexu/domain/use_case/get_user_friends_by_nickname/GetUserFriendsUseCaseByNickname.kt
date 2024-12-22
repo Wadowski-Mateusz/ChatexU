@@ -14,7 +14,7 @@ import javax.inject.Inject
 class GetUserFriendsByNicknameUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke (userId: String, partOfNickname: String = ""): Flow<DataWrapper<List<Friend>>> = flow {
+    operator fun invoke (userId: String, partOfNickname: String = "", jwt: String): Flow<DataWrapper<List<Friend>>> = flow {
         TODO("Not implemented GetUserFriendsByNicknameUseCase")
 //        try {
 //            emit(DataWrapper.Loading<List<Friend>>())

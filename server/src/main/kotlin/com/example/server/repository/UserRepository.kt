@@ -39,4 +39,19 @@ interface UserRepository: MongoRepository<User, String> {
     @Update("{ '\$pull': { 'friends': ?1  } }")
     fun deleteFriendsByUserId(userId: String, friendId: String): Long
 
+
+    @Query("{ '_id' : ?0 }")
+    @Update("{ '\$set': { 'tokens': {?1 : ?2}  } }")
+    fun saveNewTokensByUserId(userId: String, jwt: String, isExpired: Boolean = false): Long
+
+    @Query("{ '_id' : ?0 }")
+    @Update("{ '\$set': { 'tokens': {?1 : ?2}  } }")
+    fun saveNewTokensByUserId(userId: String, jwt: List<String>, isExpired: List<Boolean>): Long
+
+
+
+//    fun findAllByUserIdAndExpiredIsFalse(userId: UUID?): List<Token?>? // this
+//    fun findByToken(token: String?): Optional<Token?>?
+//        fun findByRole(role: String?): Optional<Role?>?
+
 }

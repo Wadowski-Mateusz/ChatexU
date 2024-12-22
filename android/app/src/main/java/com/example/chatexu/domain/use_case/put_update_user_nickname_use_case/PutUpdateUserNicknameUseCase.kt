@@ -15,11 +15,11 @@ import javax.inject.Inject
 class PutUpdateUserNicknameUseCase @Inject constructor(
     private val repository: ChatRepository
 ) {
-    operator fun invoke(userId: String, nickname: String): Flow<DataWrapper<User>> = flow {
+    operator fun invoke(userId: String, nickname: String, jwt: String): Flow<DataWrapper<User>> = flow {
 
         try {
             emit(DataWrapper.Loading<User>())
-            val success = repository.putUpdateNickname(userId, nickname)
+            val success = repository.putUpdateNickname(userId = userId, nickname = nickname, jwt = jwt)
             Log.d(DebugConstants.PEEK, "PutUpdateUserNicknameUseCase()")
             emit(DataWrapper.Success<User>(success))
         } catch(e: HttpException) {

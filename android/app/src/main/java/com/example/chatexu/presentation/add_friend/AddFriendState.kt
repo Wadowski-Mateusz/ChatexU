@@ -5,6 +5,7 @@ import com.example.chatexu.domain.model.User
 
 data class AddFriendState(
     val currentUserId: String = "",
+    val jwt: String = "",
 
     val users: List<User> = emptyList(),
 

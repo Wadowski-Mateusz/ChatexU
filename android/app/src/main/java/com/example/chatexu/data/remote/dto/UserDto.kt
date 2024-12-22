@@ -22,4 +22,7 @@ data class UserDto(
     val profilePictureUri: String,
     @JsonProperty("profilePicture")
     val profilePicture: String,
+    @JsonProperty("role")
+    val role: String,
+
 )
