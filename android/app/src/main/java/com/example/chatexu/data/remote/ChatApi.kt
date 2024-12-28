@@ -9,13 +9,10 @@ import com.example.chatexu.data.remote.dto.LoginDto
 import com.example.chatexu.data.remote.dto.MessageDto
 import com.example.chatexu.data.remote.dto.ParticipantsDto
 import com.example.chatexu.data.remote.dto.RegisterDto
-import com.example.chatexu.data.remote.dto.SendedMessageDto
+import com.example.chatexu.data.remote.dto.SentMessageDto
 import com.example.chatexu.data.remote.dto.UserDto
 import com.example.chatexu.data.remote.dto.UserViewDto
-import com.example.chatexu.domain.model.Authentication
-import com.example.chatexu.domain.model.Message
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import org.jetbrains.annotations.TestOnly
 import retrofit2.Response
 import retrofit2.http.Body
@@ -156,14 +153,14 @@ interface ChatApi {
     @POST("${Constants.MESSAGE_MAPPING}/send")
     suspend fun sendMessage(
         @Header("Authorization") jwt: String,
-        @Body sendedMessageDto: SendedMessageDto
+        @Body sentMessageDto: SentMessageDto
     ): Response<MessageDto>
 
     @Multipart
     @PUT("${Constants.MESSAGE_MAPPING}/sendImage")
     suspend fun postSendImage(
         @Header("Authorization") jwt: String,
-        @Part("message") message: SendedMessageDto,
+        @Part("message") message: SentMessageDto,
         @Part image: MultipartBody.Part
     ): Response<String>
 

@@ -14,7 +14,7 @@ data class UserDto(
     val password: String,
     val profilePictureUri: String,
     val friends: Set<String>,
-    val blockedUsers: Set<String>,
+//    val blockedUsers: Set<String>,
     val profilePicture: ByteArray, // TODO null for default
     val role: String
 )

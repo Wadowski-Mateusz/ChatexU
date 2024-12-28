@@ -11,6 +11,6 @@ data class SentMessageDto @JsonCreator constructor(
     val senderId: String,
     @JsonProperty("chatId")
     val chatId: String,
-    @JsonProperty("replyTo")
-    val replyTo: String,
+//    @JsonProperty("replyTo")
+//    val replyTo: String,
 )

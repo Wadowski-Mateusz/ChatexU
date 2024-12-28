@@ -32,9 +32,9 @@ data class User (
     val profilePictureUri: String,
 
     val friends: Set<String>,
-    val blockedUsers: Set<String>,
+//    val blockedUsers: Set<String>,
 
-    val tokens: Map<String, Boolean> = emptyMap<String, Boolean>(), // <token, is expired>
+    val token: String = "",
     val role: String,
 
 //    val lastTimeOnline: Instant = Instant.MIN, // when to update it?

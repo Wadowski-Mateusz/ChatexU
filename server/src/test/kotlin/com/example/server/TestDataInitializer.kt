@@ -24,9 +24,9 @@ class TestDataInitializer(
             chatId = ObjectId(),
             timestamp = Instant.now(),
             messageType = MessageType.Text("Test message"),
-            isEdited = false,
-            deletedBy = listOf(),
-            replyTo = ObjectId().default()
+//            isEdited = false,
+//            deletedBy = listOf(),
+//            replyTo = ObjectId().default()
         )
 
         messageServiceTest.save(msg)

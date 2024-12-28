@@ -72,35 +72,35 @@ class MessageService(private val messageRepository: MessageRepository) {
     }
 
 
-    fun deleteMessage(messageId: String, userId: String): Message {
-        val message = this.findMessageById(messageId)
+//    fun deleteMessage(messageId: String, userId: String): Message {
+//        val message = this.findMessageById(messageId)
+//
+//        val deletedMessage =
+//            if (message.senderId.toHexString().equals(userId))
+//                message.copy(
+//                    messageType = MessageType.Deleted(),
+//                    isEdited = true,
+//                    deletedBy = emptyList(),
+//                    replyTo = ObjectId().default(),
+//                )
+//            else
+//                message.copy(deletedBy = message.deletedBy + userId)
+//
+//        return messageRepository.save(deletedMessage)
+//    }
 
-        val deletedMessage =
-            if (message.senderId.toHexString().equals(userId))
-                message.copy(
-                    messageType = MessageType.Deleted(),
-                    isEdited = true,
-                    deletedBy = emptyList(),
-                    replyTo = ObjectId().default(),
-                )
-            else
-                message.copy(deletedBy = message.deletedBy + userId)
-
-        return messageRepository.save(deletedMessage)
-    }
-
-    fun updateTextMessage(messageId: String, newContent: String): Message {
-        val message = messageRepository.findMessageByMessageId(messageId)
-            ?: throw MessageNotFoundException(ErrorMessageCommons.notFound(ClassName.MESSAGE, Field.ID, messageId))
-        if (message.messageType !is MessageType.Text)
-            throw IllegalArgumentException("Unexpected content type.")
-
-        val newMessage = message.copy(
-            messageType = MessageType.Text("newContent"),
-            isEdited = true,
-        )
-        return messageRepository.save(newMessage)
-    }
+//    fun updateTextMessage(messageId: String, newContent: String): Message {
+//        val message = messageRepository.findMessageByMessageId(messageId)
+//            ?: throw MessageNotFoundException(ErrorMessageCommons.notFound(ClassName.MESSAGE, Field.ID, messageId))
+//        if (message.messageType !is MessageType.Text)
+//            throw IllegalArgumentException("Unexpected content type.")
+//
+//        val newMessage = message.copy(
+//            messageType = MessageType.Text("newContent"),
+//            isEdited = true,
+//        )
+//        return messageRepository.save(newMessage)
+//    }
 
     private fun getMessageTypeForDtoConversion(message: Message): MessageType {
         return if(message.messageType is MessageType.Resource)
@@ -116,9 +116,9 @@ class MessageService(private val messageRepository: MessageRepository) {
             chatId = message.chatId.toHexString(),
             timestamp = message.timestamp.toString(),
             messageType = getMessageTypeForDtoConversion(message),
-            isEdited = message.isEdited,
-            isDeletedForViewer = message.messageType is MessageType.Deleted || viewerId in message.deletedBy,
-            replyTo = message.replyTo.toHexString()
+//            isEdited = message.isEdited,
+//            isDeletedForViewer = message.messageType is MessageType.Deleted || viewerId in message.deletedBy,
+//            replyTo = message.replyTo.toHexString()
         )
     }
     fun convertMessageToDtoAsSender(message: Message, deletedBy: List<String> = emptyList()): MessageDto {
@@ -128,9 +128,9 @@ class MessageService(private val messageRepository: MessageRepository) {
             chatId = message.chatId.toHexString(),
             timestamp = message.timestamp.toString(),
             messageType = getMessageTypeForDtoConversion(message),
-            isEdited = message.isEdited,
-            isDeletedForViewer = message.messageType is MessageType.Deleted,
-            replyTo = message.replyTo.toHexString()
+//            isEdited = message.isEdited,
+//            isDeletedForViewer = message.messageType is MessageType.Deleted,
+//            replyTo = message.replyTo.toHexString()
         )
     }
 
@@ -141,9 +141,9 @@ class MessageService(private val messageRepository: MessageRepository) {
             chatId = message.chatId.toHexString(),
             timestamp = message.timestamp.toString(),
             messageType = getMessageTypeForDtoConversion(message),
-            isEdited = message.isEdited,
-            isDeletedForViewer = message.messageType is MessageType.Deleted || viewerId in message.deletedBy,
-            replyTo = message.replyTo.toHexString()
+//            isEdited = message.isEdited,
+//            isDeletedForViewer = message.messageType is MessageType.Deleted || viewerId in message.deletedBy,
+//            replyTo = message.replyTo.toHexString()
         )
     }
 
@@ -154,9 +154,9 @@ class MessageService(private val messageRepository: MessageRepository) {
             chatId = ObjectId(messageDto.chatId),
             timestamp = Instant.parse(messageDto.timestamp),
             messageType = messageDto.messageType,
-            isEdited =  messageDto.isEdited,
-            deletedBy = deletedBy,
-            replyTo = ObjectId(messageDto.replyTo)
+//            isEdited =  messageDto.isEdited,
+//            deletedBy = deletedBy,
+//            replyTo = ObjectId(messageDto.replyTo)
         )
     }
 

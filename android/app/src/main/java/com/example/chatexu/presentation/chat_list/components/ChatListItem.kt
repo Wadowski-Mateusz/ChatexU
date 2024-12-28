@@ -40,29 +40,15 @@ fun ChatListItem(
         .background(Color(0xFFDDDDDD))
         .clickable { onItemClick(chatRow) }
         .border(width = 1.dp, color = Color.LightGray)
-        .padding(8.dp)
-        ,
+        .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
-//        horizontalArrangement = Arrangement.SpaceAround
     ) {
-
-
-        // Chat icon
-//        val context = LocalContext.current
-//        val icon: Bitmap = chatRow.icon ?: run {
-//            val inputStream = context.resources.openRawResource(R.raw.error)
-//            val bitmap: Bitmap = BitmapFactory.decodeStream(inputStream)
-//            inputStream.close()
-//            bitmap
-//        }
         val icon: Bitmap = chatRow.icon ?: getUserErrorIcon(LocalContext.current)
-
-        Column (
-            modifier = Modifier.weight(1.0f)
-        ) {
+        Column ( modifier = Modifier.weight(1.0f) ) {
             Image(
                 bitmap = icon.asImageBitmap(),
-                contentDescription = "User icon",)
+                contentDescription = "User icon"
+            )
         }
 
         // Chat name and last message
@@ -70,13 +56,10 @@ fun ChatListItem(
             modifier = Modifier
                 .weight(4.0f)
                 .padding(horizontal = 8.dp),
-//            horizontalAlignment = Alignment.Start,
-//            verticalArrangement = Arrangement.Top,
             ) {
             Text(
                 text = chatRow.chatName,
                 fontWeight = FontWeight.Bold,
-//                    , modifier = Modifier.align(Alignment.Start)
             )
             Text(
                 text = when (chatRow.lastMessage) {
@@ -95,18 +78,14 @@ fun ChatListItem(
             val zoneId = ZoneId.systemDefault()
             val datetime: LocalDateTime  = LocalDateTime.ofInstant(chatRow.timestamp, zoneId)
 
-            val formatted = if (datetime.toLocalDate() == LocalDate.now())
+            val formattedDate = if (datetime.toLocalDate() == LocalDate.now())
                 DateTimeFormatter.ofPattern("hh:mm a").format(datetime)
             else if (datetime.toLocalDate().year == LocalDate.now().year)
                 DateTimeFormatter.ofPattern("d LLL").format(datetime)
             else
                 DateTimeFormatter.ofPattern("d LLL yyyy").format(datetime)
-
-            Text(text = formatted)
+            Text(text = formattedDate)
         }
-        // TODO
-        // is chat muted icon
-
 
     }
 }
@@ -119,14 +98,13 @@ fun ChatRowPreview() {
     val bitmap = BitmapFactory.decodeStream(input)
     input.close()
 
-    val chat1 = ChatRow(
+    val chat = ChatRow(
         chatId = UUID.randomUUID().toString(),
         chatName = "User1",
-        lastMessage = MessageType.Text("Message"),
+        lastMessage = MessageType.Text("Hello"),
         timestamp = Instant.now(),
         icon = bitmap
     )
-
-    ChatListItem(chatRow = chat1, {})
+    ChatListItem(chatRow = chat, {})
 }
 

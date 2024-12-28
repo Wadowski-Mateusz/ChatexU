@@ -11,9 +11,9 @@ data class MessageDto(
     val chatId: String,
     val timestamp: String,
     val messageType: MessageType,
-    val isEdited: Boolean,
-    val isDeletedForViewer: Boolean,
-    val replyTo: String = ObjectId().default().toHexString(),
+//    val isEdited: Boolean,
+//    val isDeletedForViewer: Boolean,
+//    val replyTo: String = ObjectId().default().toHexString(),
     ) {
 
 //     Jackson needs either a no-argument constructor (default constructor) or properly annotated properties.

@@ -52,9 +52,10 @@ class SecurityConfig(
                     .requestMatchers("/message/**").hasAnyRole(ROLE_USER, ROLE_ADMIN)
                     .requestMatchers("/user/**").hasAnyRole(ROLE_USER, ROLE_ADMIN)
 //                    .requestMatchers("/test/**").hasRole(ROLE_ADMIN)
-                    .requestMatchers("/test/**").permitAll()
                     .requestMatchers("/auth/**").permitAll() // login, register
 //                    .anyRequest().authenticated()
+                    .requestMatchers("/test/**").permitAll()
+                    .requestMatchers("/test/hello").permitAll()
                     .anyRequest().hasRole(ROLE_ADMIN)
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }

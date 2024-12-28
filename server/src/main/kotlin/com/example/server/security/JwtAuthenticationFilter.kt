@@ -1,6 +1,8 @@
 package com.example.server.security
 
 import com.example.server.commons.Constants
+import com.example.server.exceptions.UserNotFoundException
+import com.example.server.model.User
 import com.example.server.service.UserService
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.MalformedJwtException
@@ -53,8 +55,14 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
             return filterChain.doFilter(request, response)
         }
 
-        val user = usersService.getUserByLogin(login)
-        val validJWT = user.tokens.keys.first()
+
+        val user: User = try {
+            usersService.getUserByLogin(login)
+        } catch (e: UserNotFoundException) {
+            return filterChain.doFilter(request, response)
+        }
+
+        val validJWT: String = user.token
 
         if (SecurityContextHolder.getContext().authentication == null) {
             val securityUserDetails: UserDetails = usersService.loadUserByUsername(login)

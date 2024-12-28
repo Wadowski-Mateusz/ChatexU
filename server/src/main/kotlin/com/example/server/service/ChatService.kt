@@ -120,8 +120,8 @@ class ChatService(private val chatRepository: ChatRepository) {
             typeOfChat = ChatType.UserToUser(),
             participants = participants.map { ObjectId(it) },
             created = Instant.now(),
-            lastViewedBy = mapOf(),
-            mutedBy = mapOf()
+//            lastViewedBy = mapOf(),
+//            mutedBy = mapOf()
         )
         return save(chat)
     }

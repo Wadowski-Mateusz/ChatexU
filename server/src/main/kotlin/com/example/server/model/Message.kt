@@ -23,9 +23,9 @@ data class Message(
     @Indexed
     val timestamp: Instant,
     val messageType: MessageType,
-    val isEdited: Boolean = false,
-    val deletedBy: List<String>,
-    val replyTo: ObjectId = ObjectId().default(),
+//    val isEdited: Boolean = false,
+//    val deletedBy: List<String>,
+//    val replyTo: ObjectId = ObjectId().default(),
     ) {
 
     companion object {
@@ -36,15 +36,15 @@ data class Message(
                 chatId = chat.chatId,
                 timestamp = chat.created,
                 messageType = MessageType.Initialization(),
-                isEdited = false,
-                deletedBy = emptyList(),
-                replyTo = ObjectId().default(),
+//                isEdited = false,
+//                deletedBy = emptyList(),
+//                replyTo = ObjectId().default(),
             )
         }
     }
 
 
-    fun getImageAsByteArray(): ByteArray {
+    private fun getImageAsByteArray(): ByteArray {
         require(this.messageType is MessageType.Resource)  {"This message is not a Resource Message, cannot fetch image!"}
         val resourceFolder: File = File("src/main/resources/chats/${this.chatId}/")
         val resource: File = File(resourceFolder, this.messageType.uri)

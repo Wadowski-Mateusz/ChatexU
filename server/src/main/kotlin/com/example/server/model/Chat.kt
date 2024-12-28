@@ -17,8 +17,8 @@ data class Chat(
     val created: Instant,
 
     val participants: List<ObjectId>,
-    val lastViewedBy: Map<ObjectId, Instant> = emptyMap(),  // when user has been seeing chat last chat, to show him how many unread messages he has
-    val mutedBy: Map<ObjectId, Instant> = emptyMap(),       // how long conversation is muted for user
+//    val lastViewedBy: Map<ObjectId, Instant> = emptyMap(),  // when user has been seeing chat last chat, to show him how many unread messages he has
+//    val mutedBy: Map<ObjectId, Instant> = emptyMap(),       // how long conversation is muted for user
 
 
 //    val bannedBy: Set<ObjectId>, // users who banned conversation

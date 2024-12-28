@@ -24,8 +24,9 @@ class FriendRequestService(
     private val userService: UserService by lazy { _userService!! }
 
     fun createWithoutSave(senderId: String, recipientId: String): FriendRequest {
-        if(userService.isUserBlockedByGivenUser(recipientId, senderId))
-            throw UserBlockedByGivenUserException()
+        // TODO blocked implementation
+//        if(userService.isUserBlockedByGivenUser(recipientId, senderId))
+//            throw UserBlockedByGivenUserException()
         return FriendRequest(
             senderId = ObjectId(senderId),
             recipientId = ObjectId(recipientId),

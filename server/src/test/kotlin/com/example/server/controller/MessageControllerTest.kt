@@ -36,9 +36,9 @@ class MessageControllerTest{
                 chatId = ObjectId(),
                 timestamp = Instant.now(),
                 messageType = MessageType.Text("test message"),
-                isEdited = false,
-                deletedBy = listOf(),
-                replyTo = ObjectId().default()
+//                isEdited = false,
+//                deletedBy = listOf(),
+//                replyTo = ObjectId().default()
             )
         }
         generateSequence(msg)

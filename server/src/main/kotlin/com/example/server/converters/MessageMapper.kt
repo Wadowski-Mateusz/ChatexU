@@ -7,16 +7,16 @@ import java.time.Instant
 
 object MessageMapper {
 
-    fun fromSendedMessage(sentMessageDto: SentMessageDto): Message {
+    fun fromSentMessage(sentMessageDto: SentMessageDto): Message {
         return Message(
             messageId = ObjectId(),
             senderId = ObjectId(sentMessageDto.senderId),
             chatId = ObjectId(sentMessageDto.chatId),
             timestamp = Instant.now(),
             messageType = sentMessageDto.messageType,
-            isEdited = false,
-            deletedBy = emptyList(),
-            replyTo = ObjectId(sentMessageDto.replyTo)
+//            isEdited = false,
+//            deletedBy = emptyList(),
+//            replyTo = ObjectId(sentMessageDto.replyTo)
         )
     }
     

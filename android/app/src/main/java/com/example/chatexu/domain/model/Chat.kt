@@ -12,8 +12,8 @@ data class Chat(
     val created: Instant,
 
     val participants: List<String> = emptyList(),
-    val lastViewedBy: Map<String, Instant> = emptyMap(),
-    val mutedBy: Map<String, Instant> = emptyMap(),
+//    val lastViewedBy: Map<String, Instant> = emptyMap(),
+//    val mutedBy: Map<String, Instant> = emptyMap(),
 
     ) {
 

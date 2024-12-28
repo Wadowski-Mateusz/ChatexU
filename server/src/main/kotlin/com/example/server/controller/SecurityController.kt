@@ -50,8 +50,8 @@ class SecurityController(
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
             }
         } catch (e: DataAlreadyInTheDatabaseException) {
-            logger.error("registerUser(): ${e::class.simpleName}\n${e.cause} \n1 - Email\n2 - Nickname\n3 - Username")
-            ResponseEntity.status(HttpStatus.CONFLICT).build()
+            logger.error("registerUser(): ${e::class.simpleName}")
+            ResponseEntity.status(HttpStatus.CONFLICT).body(AuthenticationDTO(token = "${e.inDatabaseFlag}", userId = "0"))
         } catch (e: Exception) {
             logger.error("registerUser() unknown error- ${e::class.simpleName}")
             ResponseEntity.internalServerError().build()

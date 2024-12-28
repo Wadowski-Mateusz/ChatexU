@@ -22,8 +22,6 @@ import javax.inject.Inject
 class ChatListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getChatListUseCase: GetChatListUseCase,
-    private val getChatRowUseCase: GetChatRowUseCase,
-
     ): ViewModel() {
 
     private val _state = mutableStateOf<ChatListState>(ChatListState())
@@ -32,24 +30,26 @@ class ChatListViewModel @Inject constructor(
 
     init {
         val jwt: String = savedStateHandle.get<String>(Constants.PARAM_JWT) ?: ""
-        val userId: String = savedStateHandle.get<String>(Constants.PARAM_USER_ID) ?: Constants.ID_DEFAULT
+        val userId: String = savedStateHandle.get<String>(Constants.PARAM_USER_ID)
+            ?: Constants.ID_DEFAULT
 
         _state.value = ChatListState(userId = userId, jwt = jwt)
 
         if(userId != Constants.ID_DEFAULT) {
-            getChatList(userId)
+            getChatList()
         }
     }
 
-    private fun getChatList(userId: String) {
-        val response = getChatListUseCase(userId = userId, jwt = _state.value.jwt)
+    private fun getChatList() {
+        val response = getChatListUseCase(userId = _state.value.userId, jwt = _state.value.jwt)
 
         response.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
                     Log.d(DebugConstants.PEEK, "Success ChatListViewModel - entered")
 
-                    val chatRows = result.data?.sortedByDescending { it.timestamp } ?: emptyList<ChatRow>()
+                    val chatRows = result.data?.sortedByDescending { it.timestamp }
+                        ?: emptyList<ChatRow>()
 
                     _state.value = _state.value.copy(
                         chatRows = chatRows,
@@ -75,30 +75,4 @@ class ChatListViewModel @Inject constructor(
             }
         } .launchIn(viewModelScope)
     }
-
-
-//    // TODO no ids
-//    private fun getSingleChatRowAsList() {
-//        getChatRowUseCase() .onEach { result ->
-//            when(result) {
-//                is DataWrapper.Success -> {
-//                    _state.value = ChatListState(
-//                        chatRows = listOfNotNull(result.data)
-//                    )
-//                }
-//                is DataWrapper.Loading -> {
-//                    Log.i(DebugConstants.RESOURCE_LOADING, "Error in: ChatListViewModel.")
-//                    _state.value = ChatListState(
-//                        error = result.message ?: "Unknown error"
-//                    )
-//                }
-//                is DataWrapper.Error -> {
-//                    _state.value = ChatListState(isLoading = true)
-//                }
-//
-//            }
-//        } .launchIn(viewModelScope)
-//
-//    }
-
 }

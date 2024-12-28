@@ -76,7 +76,7 @@ fun ChatScreen(
                 chatId = state.chatId,
                 timestamp = Instant.MIN,
                 messageType = MessageType.Resource(uri.toString()), // Do I even need to send it?
-                isEdited = false,
+//                isEdited = false,
                 //            replyTo = answear // TODO
             )
 
@@ -106,8 +106,8 @@ fun ChatScreen(
                 chatId = state.chatId,
                 timestamp = Instant.MIN,
                 messageType = MessageType.Text(inputMessage.value.text), //
-                isEdited = false,
-                replyTo = answear
+//                isEdited = false,
+//                replyTo = answear
             )
             viewModel.sendMessage(message = m)
             inputMessage.value = TextFieldValue() // clear input

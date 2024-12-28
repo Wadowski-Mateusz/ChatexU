@@ -36,7 +36,6 @@ import androidx.navigation.NavController
 import com.example.chatexu.common.DebugConstants
 import com.example.chatexu.presentation.Screen
 import com.example.chatexu.presentation.chat_list.components.ChatListItem
-import com.example.chatexu.presentation.commons.composable.ScreenName
 
 @Composable
 fun ChatListScreen(
@@ -45,8 +44,7 @@ fun ChatListScreen(
 ) {
     val state = viewModel.state.value
 
-    Box() {
-
+    Box {
         if (state.error.isNotBlank()) {
             Text(
                 text = state.error,
@@ -54,22 +52,17 @@ fun ChatListScreen(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 16.dp)
             )
         }
 
-        // Chats
+        // List of chats
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.LightGray)
         ) {
-//        ChatsListLazy(chatRows = state.chatRows, navController = navController)
-//            ScreenName(screenName = "Chat List")
-            LazyColumn(modifier = Modifier
-                .fillMaxWidth()
-//                .background(Color.Magenta)
-            ) {
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 items(items = state.chatRows, key = { it.chatId }) { chatRow ->
                     ChatListItem(
                         chatRow = chatRow,
@@ -84,80 +77,72 @@ fun ChatListScreen(
                     )
                 }
             }
-
         }
+
+        // Buttons
         Row(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-//                .background(Color.Blue)
-                ,
+            modifier = Modifier.align(Alignment.BottomEnd),
             horizontalArrangement = Arrangement.End
         ) {
 
+            val floatingActionButtonModifier: Modifier = Modifier.padding(8.dp).wrapContentSize()
+            val floatingActionButtonIconModifier: Modifier = Modifier.size(32.dp)
+
             // Add friend
             FloatingActionButton(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .wrapContentSize(),
+                modifier = floatingActionButtonModifier,
                 onClick = {
-//                    Log.d(DebugConstants.PEEK, "Add friend")
-//                    navController.navigate(Screen.AddFriendScreen.route + "/${state.userId}")
                     navController.navigate(
                         Screen.AddFriendScreen.route
                                 + "/${state.userId}"
                                 + "/${state.jwt}"
                     )
-
-//                    navigate()
                 }
             ) {
-                Icon(Icons.Filled.AddCircle, "Create chat", modifier = Modifier.size(32.dp))
+                Icon(
+                    imageVector = Icons.Filled.AddCircle,
+                    contentDescription = "Add friend",
+                    modifier = floatingActionButtonIconModifier
+                )
             }
-
 
             // Create chat
             FloatingActionButton(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .wrapContentSize(),
+                modifier = floatingActionButtonModifier,
                 onClick = {
                     Log.d(DebugConstants.PEEK, "Create chat")
-//                    navController.navigate(Screen.CreateChatScreen.route + "/${state.userId}")
                     navController.navigate(
                         Screen.CreateChatScreen.route
                                 + "/${state.userId}"
                                 + "/${state.jwt}"
                     )
-//                    navigate()
                 }
             ) {
-                Icon(Icons.Filled.MailOutline, "Create chat", modifier = Modifier.size(32.dp))
+                Icon(
+                    imageVector = Icons.Filled.MailOutline,
+                    contentDescription = "Create chat",
+                    modifier = floatingActionButtonIconModifier
+                )
             }
-
 
             // User Options
             FloatingActionButton(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .wrapContentSize(),
+                modifier = floatingActionButtonModifier,
                 onClick = {
-                    Log.d(DebugConstants.PEEK, "User options")
-//                    navController.navigate(Screen.UserOptionsScreen.route + "/${state.userId}")
                     navController.navigate(
                         Screen.UserOptionsScreen.route
                                 + "/${state.userId}"
                                 + "/${state.jwt}"
                     )
-//                    navigate()
                 }
             ) {
-                Icon(Icons.Filled.AccountCircle, "User options", modifier = Modifier.size(32.dp))
+                Icon(
+                    imageVector = Icons.Filled.AccountCircle,
+                    contentDescription = "User options",
+                    modifier = floatingActionButtonIconModifier
+                )
             }
-
-
-
-
         }
-    }
 
+    }
 }

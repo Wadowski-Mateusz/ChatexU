@@ -10,6 +10,7 @@ import com.example.chatexu.converters.MessageMapper
 import com.example.chatexu.converters.UserMapper
 import com.example.chatexu.data.remote.ChatApi
 import com.example.chatexu.data.remote.dto.AuthenticationDto
+import com.example.chatexu.data.remote.dto.ChatRowDto
 import com.example.chatexu.data.remote.dto.LoginDto
 import com.example.chatexu.data.remote.dto.MessageDto
 import com.example.chatexu.data.remote.dto.ParticipantsDto
@@ -22,12 +23,10 @@ import com.example.chatexu.domain.model.FriendRequest
 import com.example.chatexu.domain.model.Message
 import com.example.chatexu.domain.model.User
 import com.example.chatexu.domain.repository.ChatRepository
-import com.google.gson.JsonObject
-import okhttp3.MediaType
+import com.google.gson.Gson
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.ResponseBody.Companion.toResponseBody
-import okhttp3.internal.http.HTTP_BAD_REQUEST
+import okhttp3.internal.http.HTTP_CONFLICT
 import okhttp3.internal.http.HTTP_OK
 import okhttp3.internal.http.HTTP_UNAUTHORIZED
 import retrofit2.HttpException
@@ -41,12 +40,16 @@ class ChatRepositoryImpl @Inject constructor(
 
     private val BEARER: String = "Bearer "
 
-//        val chatRowResponse = api.getChatRow(chatId, userId)
-//        return chatRowResponse.body() ?: emptyList()
-
     override suspend fun getUserChatList(userId: String, jwt: String): List<ChatRow> {
-        val chats = api.getUserChatList(userId = userId, jwt = BEARER + jwt).body() ?: emptyList()
-//        Log.d("peek", "repo imp: size = ${chats.size}")
+        val response = api.getUserChatList(userId = userId, jwt = BEARER + jwt)
+        if(response.code() != HTTP_OK) {
+            val errorResponse = Response.error<String>(
+                response.code(),
+                "Unexpected error while fetching from server.".toResponseBody()
+            )
+            throw HttpException(errorResponse)
+        }
+        val chats: List<ChatRowDto> = response.body() ?: emptyList()
         return chats.map{ ChatMapper.toChatRow(it) }
     }
 
@@ -66,7 +69,7 @@ class ChatRepositoryImpl @Inject constructor(
 
     override suspend fun sendMessage(message: Message, jwt: String): Message {
         val messageDto = MessageMapper.toSend(message)
-        val response = api.sendMessage(sendedMessageDto = messageDto, jwt = BEARER + jwt)
+        val response = api.sendMessage(sentMessageDto = messageDto, jwt = BEARER + jwt)
         Log.d(DebugConstants.TODO, "ChatRepositoryImpl.sendMessage() - handle response.")
         val body = response.body()
 
@@ -96,7 +99,16 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun register(email: String, nickname: String, password: String): Authentication {
         val registerDto: RegisterDto = RegisterDto(email = email, nickname = nickname,  password = password)
         val response = api.register(registerDto = registerDto)
-        if (response.code() != HTTP_OK) {
+
+        if (response.code() == HTTP_CONFLICT) {
+
+            // reuse authenticationdto and authentication to report data in the database
+            val errorBody = response.errorBody()
+                ?: return Authentication("", Constants.ID_DEFAULT)
+            val authJson = errorBody.string()
+            val auth = Gson().fromJson(authJson, Authentication::class.java)
+            return auth
+        } else if (response.code() != HTTP_OK) {
             val errorResponse = Response.error<String>(
                 response.code(),
                 "Unexpected error in register()".toResponseBody()
@@ -260,7 +272,6 @@ class ChatRepositoryImpl @Inject constructor(
 
     }
 
-
     override suspend fun putSendImage(message: Message, image: MultipartBody.Part, jwt: String): String {
 
         val messageDto = MessageMapper.toSend(message)
@@ -276,21 +287,5 @@ class ChatRepositoryImpl @Inject constructor(
         }
 
     }
-
-    // maybe after adding refresh feature
-//    override suspend fun getUserFriendsByNickname(
-//        userId: String,
-//        partOfNickname: String
-//    ): List<Friend> {
-//        Log.d(DebugConstants.PEEK, "ChatRepositoryImpl - Fetching friends of $userId, with phrase: $partOfNickname.")
-//        val result = api.getUserFriendsByNickname(userId, partOfNickname)
-//        Log.d(DebugConstants.PEEK, "ChatRepositoryImpl - Fetched friends of $userId, with phrase: $partOfNickname.")
-//        val friends = result.body()
-//            ?: let {
-//                Log.w(DebugConstants.PEEK, "repositoryImpl - getUserFriendsByNickname - null")
-//                emptyList()
-//            }
-//        return friends.map { FriendMapper.toFriend(it) }
-//    }
 
 }

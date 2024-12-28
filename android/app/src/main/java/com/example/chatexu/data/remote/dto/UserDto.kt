@@ -16,8 +16,8 @@ data class UserDto(
     val password: String,
     @JsonProperty("friends")
     val friends: List<Any>,
-    @JsonProperty("blockedUsers")
-    val blockedUsers: List<Any>,
+//    @JsonProperty("blockedUsers")
+//    val blockedUsers: List<Any>,
     @JsonProperty("profilePictureUri")
     val profilePictureUri: String,
     @JsonProperty("profilePicture")

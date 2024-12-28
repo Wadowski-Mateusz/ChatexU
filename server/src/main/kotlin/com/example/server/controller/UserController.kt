@@ -62,8 +62,8 @@ class UserController(
     ): ResponseEntity<UserViewDto> {
         return try {
             val user: User = userService.getUserByNickname(nickname)
-            if(userService.isUserBlockedByGivenUser(user.userId.toString(), searcherId))
-                throw UserBlockedByGivenUserException()
+//            if(userService.isUserBlockedByGivenUser(user.userId.toString(), searcherId))
+//                throw UserBlockedByGivenUserException()
             val userViewDto: UserViewDto = UserMapper.toViewDto(user)
             ResponseEntity(userViewDto, HttpStatus.OK)
         } catch (e: UserNotFoundException) {
@@ -84,15 +84,25 @@ class UserController(
 
         return try {
             val users: List<User> = userService.getUsersByPartOfNickname(partOfNickname)
-            // TODO move notBlockingUsers to Service
-            val notBlockingUsers =
-                users.filterNot { foundUser ->
-                    userService.isUserBlockedByGivenUser(foundUser.userId.toString(), searcherId)
-                }
-            val notBlockingUsersDtos: List<UserViewDto> = notBlockingUsers.map { UserMapper.toViewDto(it) }
-            logger.info("UserController.getUserByPartOfNickname() size: ${notBlockingUsersDtos.size}")
-            notBlockingUsersDtos.forEach{logger.info("fetched users: ${ it.nickname }")}
-            ResponseEntity(notBlockingUsersDtos, HttpStatus.OK)
+//            val notBlockingUsers =
+//                users.filterNot { foundUser ->
+//                    userService.isUserBlockedByGivenUser(foundUser.userId.toString(), searcherId)
+//                }
+//            val notBlockingUsersDtos: List<UserViewDto> = notBlockingUsers.map { UserMapper.toViewDto(it) }
+            val userViewDtos: List<UserViewDto> = users.map { UserMapper.toViewDto(it) }
+            ResponseEntity(userViewDtos, HttpStatus.OK)
+
+
+            //  TODO blocked users implementation
+//            val users: List<User> = userService.getUsersByPartOfNickname(partOfNickname)
+//            val notBlockingUsers =
+//                users.filterNot { foundUser ->
+//                    userService.isUserBlockedByGivenUser(foundUser.userId.toString(), searcherId)
+//                }
+//            val notBlockingUsersDtos: List<UserViewDto> = notBlockingUsers.map { UserMapper.toViewDto(it) }
+//            logger.info("UserController.getUserByPartOfNickname() size: ${notBlockingUsersDtos.size}")
+//            notBlockingUsersDtos.forEach{logger.info("fetched users: ${ it.nickname }")}
+//            ResponseEntity(notBlockingUsersDtos, HttpStatus.OK)
         } catch (e: UserNotFoundException) {
             ResponseEntity(HttpStatus.NO_CONTENT)
         } catch (e: UserBlockedByGivenUserException) {
@@ -265,26 +275,26 @@ class UserController(
         }
     }
 
-    @PutMapping("/block_user/{blockingUserId}/{blockedUserId}")
-    fun blockUser(
-        @PathVariable("blockingUserId") blockingUserId: String,
-        @PathVariable("blockedUserId") blockedUserId: String
-    ): ResponseEntity<Any> {
-        return try {
-            val blockingUser = userService.getUserById(blockedUserId)
-            userService.getUserById(blockedUserId) // just to check if user exists
-            val updatedBlockedUsersSet = blockingUser.blockedUsers + blockedUserId
-            userService.save(blockingUser.copy(blockedUsers = updatedBlockedUsersSet))
-
-            ResponseEntity(HttpStatus.OK)
-
-        } catch (e: UserNotFoundException) {
-            ResponseEntity(HttpStatus.NOT_FOUND)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ResponseEntity( HttpStatus.INTERNAL_SERVER_ERROR)
-        }
-    }
+//    @PutMapping("/block_user/{blockingUserId}/{blockedUserId}")
+//    fun blockUser(
+//        @PathVariable("blockingUserId") blockingUserId: String,
+//        @PathVariable("blockedUserId") blockedUserId: String
+//    ): ResponseEntity<Any> {
+//        return try {
+//            val blockingUser = userService.getUserById(blockedUserId)
+//            userService.getUserById(blockedUserId) // just to check if user exists
+//            val updatedBlockedUsersSet = blockingUser.blockedUsers + blockedUserId
+//            userService.save(blockingUser.copy(blockedUsers = updatedBlockedUsersSet))
+//
+//            ResponseEntity(HttpStatus.OK)
+//
+//        } catch (e: UserNotFoundException) {
+//            ResponseEntity(HttpStatus.NOT_FOUND)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            ResponseEntity( HttpStatus.INTERNAL_SERVER_ERROR)
+//        }
+//    }
 
     @PostMapping("/friendRequest/accept/{friendRequestId}")
     fun acceptFriendRequest(

@@ -15,12 +15,12 @@ data class MessageDto @JsonCreator constructor(
     val timestamp: String,
     @JsonProperty("messageType")
     val messageType: MessageType,
-    @JsonProperty("isEdited")
-    val isEdited: Boolean,
-    @JsonProperty("isDeletedForViewer")
-    val isDeletedForViewer: Boolean, // TODO unused?
-    @JsonProperty("replyTo")
-    val replyTo: String
+//    @JsonProperty("isEdited")
+//    val isEdited: Boolean,
+//    @JsonProperty("isDeletedForViewer")
+//    val isDeletedForViewer: Boolean, // TODO unused?
+//    @JsonProperty("replyTo")
+//    val replyTo: String
 ) {
 
 //     Jackson needs either a no-argument constructor (default constructor) or properly annotated properties.

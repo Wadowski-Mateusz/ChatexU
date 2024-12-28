@@ -13,8 +13,8 @@ data class Message(
     val chatId: String,
     val timestamp: Instant,
     val messageType: MessageType,
-    val isEdited: Boolean = false,
-    val replyTo: String = Constants.ID_DEFAULT,
+//    val isEdited: Boolean = false,
+//    val replyTo: String = Constants.ID_DEFAULT,
 ) {
     companion object {
         fun getEmpty(): Message = Message(
@@ -23,8 +23,8 @@ data class Message(
             chatId = Constants.ID_DEFAULT,
             timestamp = Instant.MIN,
             messageType = MessageType.Initialization(),
-            isEdited = false,
-            replyTo = Constants.ID_DEFAULT
+//            isEdited = false,
+//            replyTo = Constants.ID_DEFAULT
         )
     }
 }

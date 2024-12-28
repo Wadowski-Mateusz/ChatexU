@@ -18,8 +18,7 @@ object UserMapper {
         val chatNickname: String =
             try {
                 chatService.getChatWithParticipants(listOf(userId, friend.userId.toString()))
-                println("TODO - toFriendDto - nicknames")
-//                "TODO - nicknames"
+//                "TODO - chat nicknames"
                 ""
             } catch (e: ChatNotFoundException) {
                 ""

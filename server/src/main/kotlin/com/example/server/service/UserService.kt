@@ -137,7 +137,7 @@ class UserService(
     }
 
     /**
-     * Save all given users in the database. Test only.
+     * Save all given users in the database.
      *
      * @param users
      * @return
@@ -147,12 +147,12 @@ class UserService(
         logger.info("UserService.saveAll()")
 
         // TODO bad fix for token saving problems
-        val usersToSave = users.map { it.copy(tokens = emptyMap()) }
+        val usersToSave = users.map { it.copy(token = "") }
         userRepository.saveAll(usersToSave)
         usersToSave.forEach {newUser ->
             saveToken(
                 newUser,
-                users.first { it.userId == newUser.userId }.tokens.keys.first()
+                users.first { it.userId == newUser.userId }.token
                 )
         }
 
@@ -256,7 +256,7 @@ class UserService(
 
         val flagsInUse: Int = verifyRegisterDto(registerDto)
         if (flagsInUse > 0)
-            throw DataAlreadyInTheDatabaseException(flagsInUse.toString())
+            throw DataAlreadyInTheDatabaseException(message = "Data already in the database", inDatabaseFlag = flagsInUse)
 
         val newUser = User(
             nickname = registerDto.nickname,
@@ -265,8 +265,8 @@ class UserService(
             password = registerDto.password,
             profilePictureUri = Constants.DEFAULT_PROFILE_URI,
             friends = setOf(),
-            blockedUsers = setOf(),
-            tokens = emptyMap(),
+//            blockedUsers = setOf(),
+//            tokens = emptyMap(),
             role = Constants.ROLE_USER
         )
 
@@ -335,7 +335,7 @@ class UserService(
             password = user.password,
             profilePictureUri = user.profilePictureUri,
             friends = user.friends,
-            blockedUsers = user.blockedUsers,
+//            blockedUsers = user.blockedUsers,
             profilePicture = icon,
             role = user.role
         )
@@ -472,8 +472,8 @@ class UserService(
         val senderId: String = request.senderId.toString()
         val recipientId: String = request.recipientId.toString()
 
-        if (isUserBlockedByGivenUser(senderId, recipientId))
-            throw UserBlockedByGivenUserException()
+//        if (isUserBlockedByGivenUser(senderId, recipientId))
+//            throw UserBlockedByGivenUserException()
 
         val senderUser = getUserById(senderId)
         val recipientUser = getUserById(recipientId)
@@ -486,38 +486,38 @@ class UserService(
         friendRequestService.delete(request)
     }
 
-    /**
-     * Is user blocked by given user
-     *
-     * @param userId
-     * @param userIdToCheckIfBlockedId
-     * @return
-     */
-    @Throws(IllegalArgumentException::class, UserNotFoundException::class)
-    fun isUserBlockedByGivenUser(userId: String, userIdToCheckIfBlockedId: String): Boolean {
-
-        logger.info("UserService.isUserBlockedByGivenUser()")
-
-        require( ObjectId.isValid(userId) ) {
-            ErrorMessageCommons.objectIdIsNotValid(
-                objectIdValue = userId,
-                className = ClassName.USER,
-                functionName = "UserService.isUserBlockedByGivenUser()"
-            )
-        }
-
-        require( ObjectId.isValid(userIdToCheckIfBlockedId) ) {
-            ErrorMessageCommons.objectIdIsNotValid(
-                objectIdValue = userIdToCheckIfBlockedId,
-                className = ClassName.USER,
-                functionName = "UserService.isUserBlockedByGivenUser()"
-            )
-        }
-
-        val user = userRepository.findById(userId).getOrNull()
-            ?: throw UserNotFoundException()
-        return user.blockedUsers.contains(userIdToCheckIfBlockedId)
-    }
+//    /**
+//     * Is user blocked by given user
+//     *
+//     * @param userId
+//     * @param userIdToCheckIfBlockedId
+//     * @return
+//     */
+//    @Throws(IllegalArgumentException::class, UserNotFoundException::class)
+//    fun isUserBlockedByGivenUser(userId: String, userIdToCheckIfBlockedId: String): Boolean {
+//
+//        logger.info("UserService.isUserBlockedByGivenUser()")
+//
+//        require( ObjectId.isValid(userId) ) {
+//            ErrorMessageCommons.objectIdIsNotValid(
+//                objectIdValue = userId,
+//                className = ClassName.USER,
+//                functionName = "UserService.isUserBlockedByGivenUser()"
+//            )
+//        }
+//
+//        require( ObjectId.isValid(userIdToCheckIfBlockedId) ) {
+//            ErrorMessageCommons.objectIdIsNotValid(
+//                objectIdValue = userIdToCheckIfBlockedId,
+//                className = ClassName.USER,
+//                functionName = "UserService.isUserBlockedByGivenUser()"
+//            )
+//        }
+//
+//        val user = userRepository.findById(userId).getOrNull()
+//            ?: throw UserNotFoundException()
+//        return user.blockedUsers.contains(userIdToCheckIfBlockedId)
+//    }
 
     /**
      * Get all friend requests for user
@@ -746,23 +746,23 @@ class UserService(
 
     fun saveToken(userId: String, jwt: String): Boolean {
 //        expireAllUserTokens(user)
-        val success = userRepository.saveNewTokensByUserId(userId, jwt, false)
+        val success = userRepository.updateTokenByUserId(userId, jwt)
         return success > 0
 //        return true
     }
 
 
 
-    fun expireAllUserTokens(user: User) {
-
-        val tokens: Map<String, Boolean> = user.tokens.map { (key, _) -> key to false }.toMap()
-
-        val userWithExpiredTokens: User = user.copy(
-            tokens = tokens
-        )
-
-        userRepository.saveNewTokensByUserId(user.userId.toString(), tokens.keys.toList(), tokens.values.toList())
-    }
+//    fun expireAllUserTokens(user: User) {
+//
+//        val tokens: Map<String, Boolean> = user.tokens.map { (key, _) -> key to false }.toMap()
+//
+//        val userWithExpiredTokens: User = user.copy(
+//            tokens = tokens
+//        )
+//
+//        userRepository.saveNewTokensByUserId(user.userId.toString(), tokens.keys.toList(), tokens.values.toList())
+//    }
 
 //    fun findByToken(jwt: String?): User {
 //        return userRepository.findByToken(jwt)

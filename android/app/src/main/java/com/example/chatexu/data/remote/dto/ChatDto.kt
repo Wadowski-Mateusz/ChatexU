@@ -14,10 +14,10 @@ data class ChatDto @JsonCreator constructor(
         val typeOfChat:ChatType,
     @JsonProperty("participants")
         val participants: Set<String>,
-    @JsonProperty("lastViewedBy")
-        val lastViewedBy:String,
-    @JsonProperty("mutedBy")
-        val mutedBy: Map<String, String>,
+//    @JsonProperty("lastViewedBy")
+//        val lastViewedBy:String,
+//    @JsonProperty("mutedBy")
+//        val mutedBy: Map<String, String>,
 )
 
 //

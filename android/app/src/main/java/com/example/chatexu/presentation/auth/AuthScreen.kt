@@ -150,8 +150,6 @@ fun AuthScreen(
             FastButton(
                 txt = "Register",
                 onClick = {
-
-
                     if(
                         viewModel.validateRegisterInput(
                             registerNickname.value.text,

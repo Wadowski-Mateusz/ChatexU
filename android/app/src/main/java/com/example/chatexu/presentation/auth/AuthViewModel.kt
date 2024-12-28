@@ -185,14 +185,29 @@ class AuthViewModel @Inject constructor(
                 is DataWrapper.Success -> {
 //                    Log.d("REGISTER - VM", "VM register success")
                     val data: Authentication = result.data!!
-                    _state.value = _state.value.copy(
-                        users = emptyList(),
-                        userId = data.userId,
-                        jwt = data.token,
-                        registerStatus = true,
-                        isLoading = false,
-                        error = "",
-                    )
+                    if(ObjectId().isStringValid(data.userId)) {
+                        _state.value = _state.value.copy(
+                            users = emptyList(),
+                            userId = data.userId,
+                            jwt = data.token,
+                            registerStatus = true,
+                            isLoading = false,
+                            error = "",
+                        )
+                    } else {
+//                        Log.w(DebugConstants.PEEK, "vm - Register else")
+                        val registerDataAlreadyInUseFlags = data.token.toInt()
+
+                        val mailInUse = (registerDataAlreadyInUseFlags and 1) != 0
+                        val nicknameInUse = (registerDataAlreadyInUseFlags and 2) != 0
+
+                        _state.value = _state.value.copy(
+                                badRegisterEmail = mailInUse,
+                                badRegisterNickname = nicknameInUse,
+                                isLoading = false,
+                                error = "",
+                            )
+                    }
                 }
 
                 is DataWrapper.Loading -> {
