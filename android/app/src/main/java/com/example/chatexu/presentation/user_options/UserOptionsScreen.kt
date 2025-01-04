@@ -31,6 +31,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -92,7 +93,12 @@ fun UserOptionsScreen(
             Row {
                 if (state.error.isNotBlank()) {
                     Text(
-                        text = state.error,
+                        // TODO very ugly and bad
+                        text = if (state.error.contains("409")) {
+                            "Nickname already in use"
+                        } else{
+                            state.error
+                        },
                         color = MaterialTheme.colorScheme.error,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -211,12 +217,13 @@ fun UserOptionsScreen(
 
                 // Change nickname form
                 Row {
+
                     TextField(
                         modifier = Modifier
                             .weight(1f)
                             .border(
                                 width = 4.dp,
-                                color = if (showNicknameInputError.value) Color.Red else Color.Gray,
+                                color = if (showNicknameInputError.value or state.nicknameUpdateFailure) Color.Red else Color.Gray,
                                 shape = RoundedCornerShape(8.dp)
                             ),
                         label = { Text(text = "New nickname", color = Color.Gray) },
@@ -249,8 +256,6 @@ fun UserOptionsScreen(
         }
 
     }
-
-
 
 }
 

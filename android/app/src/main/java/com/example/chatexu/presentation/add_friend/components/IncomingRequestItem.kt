@@ -43,7 +43,7 @@ fun IncomingRequestItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(LightGreen)
+            .background(Color(0xFFA4F4A4))
             .padding(8.dp)
     ) {
         val iconSize = 48.dp
@@ -82,7 +82,7 @@ fun IncomingRequestItem(
                 , modifier = Modifier.size(iconSize)
                     .padding(iconPadding)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color.Green)
+                    .background(Color(0xFF44CC44))
                     .clickable { onItemClickAccept(user) }
             )
 
@@ -92,7 +92,7 @@ fun IncomingRequestItem(
                 , modifier = Modifier.size(iconSize)
                     .padding(iconPadding)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color.Red)
+                    .background(Color(0xFFCC4444))
                     .clickable { onItemClickReject(user) }
             )
         }

@@ -9,7 +9,8 @@ data class UserOptionsState(
     val error: String = "",
     val jwt: String = "",
 
-    val currentUser: User = User.emptyUser()
+    val currentUser: User = User.emptyUser(),
+    val nicknameUpdateFailure: Boolean = false,
 
 )
 

@@ -1,11 +1,7 @@
 package com.example.server.service
 
-import com.example.server.commons.default
 import com.example.server.dto.MessageDto
-import com.example.server.exceptions.ClassName
-import com.example.server.exceptions.ErrorMessageCommons
-import com.example.server.exceptions.Field
-import com.example.server.exceptions.MessageNotFoundException
+import com.example.server.exceptions.*
 import com.example.server.model.Message
 import com.example.server.model.MessageType
 import com.example.server.repository.MessageRepository
@@ -34,6 +30,7 @@ class MessageService(private val messageRepository: MessageRepository) {
             ?: throw MessageNotFoundException("Message not found. Id: $messageId")
     }
 
+    @Throws(MessageNotFoundException::class)
     fun findMessageById(messageId: ObjectId): Message {
         return messageRepository.findById(messageId.toHexString())
             .orElseThrow { (MessageNotFoundException("Message not found. Id: ${messageId.toHexString()}")) }
@@ -48,14 +45,8 @@ class MessageService(private val messageRepository: MessageRepository) {
     }
 
     fun save(message: Message): Message {
-        // TODO check if user is blocked
-        // change last message in the chat document
-
         val savedMessage = messageRepository.save(message)
-
-
         chatService.updateLastMessage(message.chatId, savedMessage)
-
         return savedMessage
     }
 
@@ -114,7 +105,7 @@ class MessageService(private val messageRepository: MessageRepository) {
             messageId = message.messageId.toHexString(),
             senderId = message.senderId.toHexString(),
             chatId = message.chatId.toHexString(),
-            timestamp = message.timestamp.toString(),
+            timestamp = message.creationTime.toString(),
             messageType = getMessageTypeForDtoConversion(message),
 //            isEdited = message.isEdited,
 //            isDeletedForViewer = message.messageType is MessageType.Deleted || viewerId in message.deletedBy,
@@ -126,7 +117,7 @@ class MessageService(private val messageRepository: MessageRepository) {
             messageId = message.messageId.toHexString(),
             senderId = message.senderId.toHexString(),
             chatId = message.chatId.toHexString(),
-            timestamp = message.timestamp.toString(),
+            timestamp = message.creationTime.toString(),
             messageType = getMessageTypeForDtoConversion(message),
 //            isEdited = message.isEdited,
 //            isDeletedForViewer = message.messageType is MessageType.Deleted,
@@ -139,7 +130,7 @@ class MessageService(private val messageRepository: MessageRepository) {
             messageId = message.messageId.toHexString(),
             senderId = message.senderId.toHexString(),
             chatId = message.chatId.toHexString(),
-            timestamp = message.timestamp.toString(),
+            timestamp = message.creationTime.toString(),
             messageType = getMessageTypeForDtoConversion(message),
 //            isEdited = message.isEdited,
 //            isDeletedForViewer = message.messageType is MessageType.Deleted || viewerId in message.deletedBy,
@@ -152,7 +143,7 @@ class MessageService(private val messageRepository: MessageRepository) {
             messageId = ObjectId(messageDto.messageId),
             senderId = ObjectId(messageDto.senderId),
             chatId = ObjectId(messageDto.chatId),
-            timestamp = Instant.parse(messageDto.timestamp),
+            creationTime = Instant.parse(messageDto.timestamp),
             messageType = messageDto.messageType,
 //            isEdited =  messageDto.isEdited,
 //            deletedBy = deletedBy,

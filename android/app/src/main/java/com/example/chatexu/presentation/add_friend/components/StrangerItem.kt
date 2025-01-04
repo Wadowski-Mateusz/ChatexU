@@ -31,7 +31,8 @@ fun StrangerItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onItemClick(user) }
-            .background(Color.LightGray)
+//            .background(Color.LightGray)
+            .background(Color(0xFFEEEEEE))
             .padding(8.dp)
         , verticalAlignment = Alignment.CenterVertically,
     ) {

@@ -7,15 +7,12 @@ import com.example.server.dto.FriendDto
 import com.example.server.dto.FriendRequestDto
 import com.example.server.dto.UserDto
 import com.example.server.dto.UserViewDto
-import com.example.server.exceptions.AlreadyFriendsException
-import com.example.server.exceptions.FriendRequestAlreadyExistsException
-import com.example.server.exceptions.UserBlockedByGivenUserException
-import com.example.server.exceptions.UserNotFoundException
+import com.example.server.exceptions.*
 import com.example.server.model.User
 import com.example.server.service.ChatService
 import com.example.server.service.FriendRequestService
 import com.example.server.service.UserService
-import lombok.AllArgsConstructor
+//import lombok.AllArgsConstructor
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -25,8 +22,6 @@ import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/user")
-@AllArgsConstructor
-@CrossOrigin
 class UserController(
     private val userService: UserService,
     private val friendRequestService: FriendRequestService,
@@ -344,6 +339,8 @@ class UserController(
         } catch(e: UserNotFoundException) {
             println(e.printStackTrace())
             ResponseEntity(HttpStatus.NOT_FOUND)
+        } catch (e: DataAlreadyInTheDatabaseException) {
+            ResponseEntity(HttpStatus.CONFLICT)
         } catch (e: Exception) {
             println(e.printStackTrace())
             ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -365,7 +362,8 @@ class UserController(
         } catch(e: UserNotFoundException) {
             println(e.printStackTrace())
             ResponseEntity(HttpStatus.NOT_FOUND)
-        } catch (e: Exception) {
+        }
+        catch (e: Exception) {
             println(e.printStackTrace())
             ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
         }

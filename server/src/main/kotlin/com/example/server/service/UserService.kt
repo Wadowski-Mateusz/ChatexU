@@ -16,7 +16,7 @@ import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
-import lombok.AllArgsConstructor
+//import lombok.AllArgsConstructor
 import org.bson.types.ObjectId
 import org.jetbrains.annotations.TestOnly
 import org.slf4j.LoggerFactory
@@ -35,7 +35,6 @@ import java.security.Key
 import java.time.Instant
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
-import kotlin.math.log
 import kotlin.math.pow
 
 
@@ -46,7 +45,7 @@ import kotlin.math.pow
  * @constructor Create User service
  */
 @Service
-@AllArgsConstructor
+//@AllArgsConstructor
 class UserService(
     private val userRepository: UserRepository,
 ): UserDetailsService {
@@ -166,7 +165,6 @@ class UserService(
      */
     @Throws(IllegalArgumentException::class, UserNotFoundException::class)
     fun getUserById(userId: ObjectId): User {
-        logger.info("UserService.getUserById(ObjectId)")
         require( ObjectId.isValid(userId.toHexString()) ) { ErrorMessageCommons.objectIdIsNotValid(
             objectIdValue = userId.toHexString(),
             className = ClassName.USER,
@@ -628,7 +626,6 @@ class UserService(
     }
 
     fun updateUserNickname(userId: String, nickname: String): User {
-        logger.info("UserService.updateUserNickname()")
 
         require( ObjectId.isValid(userId) ) {
             ErrorMessageCommons.objectIdIsNotValid(
@@ -640,6 +637,9 @@ class UserService(
 
         if(nickname.isBlank())
             throw Exception("New nickname is blank")
+
+        if(userRepository.existsByNickname(nickname))
+            throw DataAlreadyInTheDatabaseException("Nickname already in use")
 
         val countUpdatedDocuments: Long = userRepository.updateNicknameByUserId(userId, nickname)
         if (countUpdatedDocuments < 1) {

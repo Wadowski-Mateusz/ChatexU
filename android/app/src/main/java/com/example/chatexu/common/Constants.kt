@@ -1,7 +1,8 @@
 package com.example.chatexu.common
 
 object Constants {
-    const val URL_BACKEND = "http://192.168.112.1:8091/" // backend
+//    const val URL_BACKEND = "http://192.168.112.1:8091/" // backend
+    const val URL_BACKEND = "http://192.168.0.192:8091/" // backend
 
     const val CHAT_MAPPING = "chat"
     const val USER_MAPPING = "user"

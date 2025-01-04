@@ -36,7 +36,7 @@ fun RequestedUserItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onItemClick(user) }
-            .background(Color(0xFF246424))
+            .background(Color(0xFF84C484))
             .padding(8.dp)
 //        , verticalAlignment = Alignment.CenterVertically,
     ) {

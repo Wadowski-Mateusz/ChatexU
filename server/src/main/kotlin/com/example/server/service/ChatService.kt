@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service
 import java.time.Instant
 
 @Service
-class ChatService(private val chatRepository: ChatRepository) {
+class ChatService(
+    private val chatRepository: ChatRepository
+) {
 
     // circular reference hack
     @Lazy @Autowired
@@ -26,10 +28,8 @@ class ChatService(private val chatRepository: ChatRepository) {
     private val _messageService: MessageService? = null
     private val messageService: MessageService by lazy { _messageService!! }
 
-
-    fun findAllByUserId(userId: String): List<Chat> {
+    fun findAllChatsByUserId(userId: String): List<Chat> {
         return chatRepository.findByParticipantsContains(ObjectId(userId))
-//        return chatRepository.findByParticipantsContains(userId)
     }
 
     fun findChatById(chatId: String): Chat {
@@ -50,80 +50,75 @@ class ChatService(private val chatRepository: ChatRepository) {
         return messageService.getAllMessagesFromChat(chatId)
     }
 
-
     fun convertUserToUserChatToChatView(chat: Chat, viewerId: String): ChatViewDto {
         if(chat.typeOfChat !is ChatType.UserToUser)
             throw IllegalArgumentException("Unexpected type of chat.")
 
-
-        // TODO what if second participant delete his account?
         val secondParticipantId = chat.participants.first { !it.toHexString().equals(viewerId) }
         val secondParticipant = userService.getUserById(secondParticipantId)
 
         val lastMessage = try {
-            messageService.findMessageById(chat.lastMessage)
-        } catch (err: MessageNotFoundException) {
-            if (chat.lastMessage == ObjectId().default()) {
+                this.getLastChatMessage(chat)
+            } catch (e: MessageNotFoundException) {
+                // if message does not exist, show init message
+                // new message sent on chat should resolve problem
                 Message.initMessage(chat)
-            } else
-                throw err
-        }
+            }
 
         val iconAsByteArray = secondParticipant.getIconAsByteArray()
-
 
         return ChatViewDto(
             chatId = chat.chatId.toHexString(),
             chatName = secondParticipant.nickname,
             lastMessageType = lastMessage.messageType,
             lastMessageSender = lastMessage.senderId.toHexString(),
-            timestamp = lastMessage.timestamp,
+            timestamp = lastMessage.creationTime,
             icon = iconAsByteArray
         )
 
     }
 
+    private fun getLastChatMessage(chat: Chat): Message {
+        val lastMessage = if (chat.lastMessageId == ObjectId().default()) {
+            Message.initMessage(chat)
+        } else {
+            messageService.findMessageById(chat.lastMessageId)
+        }
+        return lastMessage
+    }
+
     fun convertGroupChatToChatView(chat: Chat): ChatViewDto {
         if(chat.typeOfChat !is ChatType.Group)
             throw IllegalArgumentException("Unexpected type of chat.")
-        TODO()
+        TODO("ChatService.convertGroupChatToChatView()")
     }
 
-    fun getAll(): List<Chat> {
+    fun getAllChats(): List<Chat> {
         return chatRepository.findAll()
     }
-
 
     fun getChatMessagesAfter(chatId: String, parse: Instant): List<Message> {
         TODO("Not yet implemented")
     }
 
-    fun createChat(participants: Set<String>): Chat {
-        // TODO blocked users
-        // duplicates of chats between users
-        // ...
+    fun getOrCreateChat(participants: Set<String>): Chat {
+        val chat: Chat = try {
+            // will throw ChatNotFoundException if such a chat does not exist
+            val fetchedChat: Chat = getChatWithParticipants(participants.toList())
+            fetchedChat
+        } catch (e: ChatNotFoundException) {
+            val chatToSave = Chat(
+                chatId = ObjectId(),
+                lastMessageId = ObjectId().default(),
+                typeOfChat = ChatType.UserToUser(),
+                participants = participants.map { ObjectId(it) },
+                created = Instant.now(),
+            )
+            val savedChat: Chat = save(chatToSave)
+            savedChat
+        }
 
-        if(participants.size == 2)
-            try {
-                val chat = getChatWithParticipants(participants.toList())
-                return chat
-            } catch (e: ChatNotFoundException) {
-                println("No such a chat. creating new one")
-                // Chat doesn't exit
-                // catch exception and create new one
-            }
-
-
-        val chat = Chat(
-            chatId = ObjectId(),
-            lastMessage = ObjectId().default(),
-            typeOfChat = ChatType.UserToUser(),
-            participants = participants.map { ObjectId(it) },
-            created = Instant.now(),
-//            lastViewedBy = mapOf(),
-//            mutedBy = mapOf()
-        )
-        return save(chat)
+        return chat
     }
 
     fun getChatWithParticipants(participants: List<String>): Chat {
@@ -132,9 +127,24 @@ class ChatService(private val chatRepository: ChatRepository) {
     }
 
     fun updateLastMessage(chatId: ObjectId, savedMessage: Message) {
-        // TODO no validation or anything
-        chatRepository.updateLastMessage(chatId.toString(), savedMessage.messageId.toString())
 
+        val chat: Chat = chatRepository.findByChatId(chatId)
+            ?: throw ChatNotFoundException()
+
+        if(chat.lastMessageId == ObjectId().default()) {
+            chatRepository.updateLastMessage(
+                chatId = chatId.toString(),
+                lastMessageId = savedMessage.messageId
+            )
+        }
+
+        val lastMessage: Message = messageService.findMessageById(chat.lastMessageId)
+        if (lastMessage.creationTime < savedMessage.creationTime) {
+            chatRepository.updateLastMessage(
+                chatId = chatId.toString(),
+                lastMessageId = savedMessage.messageId
+            )
+        }
     }
 
 }

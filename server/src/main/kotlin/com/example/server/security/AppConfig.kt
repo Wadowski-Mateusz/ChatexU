@@ -3,7 +3,7 @@ package com.example.server.security
 import com.example.server.repository.UserRepository
 import com.example.server.service.FriendRequestService
 import com.example.server.service.UserService
-import lombok.RequiredArgsConstructor
+//import lombok.RequiredArgsConstructor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -17,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 
 
 @Configuration
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 class AppConfig {
 
     @Lazy

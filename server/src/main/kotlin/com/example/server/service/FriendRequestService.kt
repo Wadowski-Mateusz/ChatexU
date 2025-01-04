@@ -3,7 +3,7 @@ package com.example.server.service
 import com.example.server.exceptions.*
 import com.example.server.model.FriendRequest
 import com.example.server.repository.FriendRequestRepository
-import lombok.AllArgsConstructor
+//import lombok.AllArgsConstructor
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -13,7 +13,7 @@ import java.time.Instant
 import kotlin.jvm.optionals.getOrNull
 
 @Service
-@AllArgsConstructor
+//@AllArgsConstructor
 class FriendRequestService(
     private val friendRequestRepository: FriendRequestRepository,
 ) {

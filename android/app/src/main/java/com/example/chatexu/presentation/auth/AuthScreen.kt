@@ -35,7 +35,7 @@ fun AuthScreen(
     val state = viewModel.state.value
     val login = remember { mutableStateOf(TextFieldValue()) }
     val password = remember { mutableStateOf(TextFieldValue()) }
-    val loginMaxLength = 16
+    val loginMaxLength = 32
     val passwordMaxLength = 24
 
     fun navigate() {

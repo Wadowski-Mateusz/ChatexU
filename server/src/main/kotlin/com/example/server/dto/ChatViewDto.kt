@@ -10,5 +10,4 @@ data class ChatViewDto(
     val lastMessageSender: String,
     val timestamp: Instant,
     val icon: ByteArray,
-    // val isMuted
 )

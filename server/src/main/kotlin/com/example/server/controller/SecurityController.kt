@@ -7,7 +7,6 @@ import com.example.server.exceptions.BadLoginDataException
 import com.example.server.exceptions.DataAlreadyInTheDatabaseException
 import com.example.server.model.User
 import com.example.server.service.UserService
-import lombok.AllArgsConstructor
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,8 +18,6 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/auth")
-@AllArgsConstructor
-@CrossOrigin
 class SecurityController(
     private val userService: UserService,
     private val passwordEncoder: PasswordEncoder,

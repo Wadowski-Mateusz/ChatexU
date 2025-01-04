@@ -55,9 +55,11 @@ class UserOptionsViewModel @Inject constructor(
 //                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.updateNickname() - success - start")
                     _state.value = _state.value.copy(
                         currentUser = result.data!!,
+                        nicknameUpdateFailure = false,
                         isLoading = false,
-                        error = ""
+                        error = "",
                     )
+
 //                    Log.d(DebugConstants.PEEK, "UserOptionsViewModel.updateNickname() - success - end")
                 }
 
@@ -72,6 +74,7 @@ class UserOptionsViewModel @Inject constructor(
                 is DataWrapper.Error -> {
                     Log.e(DebugConstants.VM_ERR, "Error in UserOptionsViewModel.updateNickname()")
                     _state.value = state.value.copy(
+                        nicknameUpdateFailure = true,
                         isLoading = false,
                         error = result.message ?: "Unknown error"
                     )

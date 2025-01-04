@@ -25,8 +25,12 @@ repositories {
 }
 
 dependencies {
+
+    // MongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+
+    // Controllers
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
     // Spring boot security
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -36,28 +40,19 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-
-    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-
+    // JACKSON
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 
     implementation 'io.projectreactor.kotlin:reactor-kotlin-extensions'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-reactor'
 
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-
-
-    // https://mvnrepository.com/artifact/com.google.dagger/dagger
+    // DI
     implementation 'com.google.dagger:dagger:2.48.1'
-
 
     // test env
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
-
 
     def mockito_ver = '5.1.0'
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockito_ver"

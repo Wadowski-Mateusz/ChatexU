@@ -1,8 +1,6 @@
 package com.example.server.model
 
 import com.example.server.commons.default
-import com.example.server.converters.MessageMapper
-import com.example.server.service.MessageService
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.bson.types.ObjectId
@@ -21,11 +19,8 @@ data class Message(
     @Indexed
     val chatId: ObjectId,
     @Indexed
-    val timestamp: Instant,
-    val messageType: MessageType,
-//    val isEdited: Boolean = false,
-//    val deletedBy: List<String>,
-//    val replyTo: ObjectId = ObjectId().default(),
+    val creationTime: Instant,
+    val messageType: MessageType
     ) {
 
     companion object {
@@ -34,36 +29,26 @@ data class Message(
                 messageId = ObjectId().default(),
                 senderId = ObjectId().default(),
                 chatId = chat.chatId,
-                timestamp = chat.created,
+                creationTime = chat.created,
                 messageType = MessageType.Initialization(),
-//                isEdited = false,
-//                deletedBy = emptyList(),
-//                replyTo = ObjectId().default(),
             )
         }
     }
-
-
     private fun getImageAsByteArray(): ByteArray {
         require(this.messageType is MessageType.Resource)  {"This message is not a Resource Message, cannot fetch image!"}
         val resourceFolder: File = File("src/main/resources/chats/${this.chatId}/")
         val resource: File = File(resourceFolder, this.messageType.uri)
         return resource.inputStream().readAllBytes()
     }
-
     fun getImageAsBase64(): String {
         val image: ByteArray = this.getImageAsByteArray()
         val cypherBase64 = Base64.getEncoder().encodeToString(image)
         return cypherBase64
     }
 
-
-
 }
 
 
-// why it doesn't work with val?
-// if it is val, finding in the database throw error
 sealed class MessageType(var type: String) {
 
     data class Text(val text: String): MessageType(type = TYPE_TEXT)
@@ -72,13 +57,11 @@ sealed class MessageType(var type: String) {
     class Deleted: MessageType(type = TYPE_DELETED)
     class Initialization: MessageType(type = TYPE_INIT) // first message in the chat, that or null as "last message"
 
-
     private companion object {
         const val TYPE_TEXT = "text"
         const val TYPE_RESOURCE = "resource"
         const val TYPE_DELETED = "deleted"
         const val TYPE_INIT = "init"
-
         @JsonCreator
         @JvmStatic
         private fun fromJson(

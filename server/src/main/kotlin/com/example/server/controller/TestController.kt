@@ -1,35 +1,24 @@
 package com.example.server.controller
 
 import com.example.server.commons.Constants
-import com.example.server.commons.default
-import com.example.server.converters.FriendRequestMapper
-import com.example.server.dto.FriendRequestDto
-import com.example.server.dto.MessageDto
-import com.example.server.dto.UserDto
-import com.example.server.exceptions.UserNotFoundException
 import com.example.server.model.Message
-import com.example.server.model.MessageType
 import com.example.server.model.User
 import com.example.server.repository.FriendRequestRepository
 import com.example.server.repository.UserRepository
 import com.example.server.service.ChatService
 import com.example.server.service.MessageService
 import com.example.server.service.UserService
-import lombok.AllArgsConstructor
+//import lombok.AllArgsConstructor
 import org.bson.types.ObjectId
 import org.jetbrains.annotations.TestOnly
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
-import java.time.Instant
 import kotlin.math.abs
 import kotlin.random.Random
 
 @RestController
 @RequestMapping("/test")
-@AllArgsConstructor
-@CrossOrigin
 class TestController(
     private val friendRequestRepository: FriendRequestRepository,
     private val messageService: MessageService,
@@ -147,7 +136,7 @@ class TestController(
         userService.saveToken(user2, jwt2)
 
         val participants = listOf(user.userId.toHexString(), user2.userId.toHexString())
-        val chatId: String = chatService.createChat(participants.toSet()).chatId.toHexString()
+        val chatId: String = chatService.getOrCreateChat(participants.toSet()).chatId.toHexString()
 
         return listOf(
             "user1: ${user.userId.toHexString()}",
@@ -185,5 +174,63 @@ class TestController(
 //        }
 //    }
 
+    /*
+* UNUSED BELOW
+* */
+
+//    @TestOnly
+//    @GetMapping("/all")
+//    fun getAllChats(): ResponseEntity<List<ChatDto>> {
+//        return ResponseEntity(
+//            chatService.getAll().map{ ChatMapper.toDto(it)},
+//            HttpStatus.OK
+//        )
+//    }
+//
+//    @TestOnly
+//    @GetMapping(value = ["/icon"], produces = [MediaType.IMAGE_JPEG_VALUE])
+//    fun getPicture(): ResponseEntity<ByteArray> {
+//        return try {
+//            val resource: Resource = ClassPathResource("icons/${listOf("red","green","blue").random()}.png")
+//            val inp = resource.inputStream.readAllBytes()
+//            ResponseEntity.ok(inp)
+//        } catch (e: Exception) {
+//            ResponseEntity.internalServerError().build()
+//        }
+//    }
+//
+//    @TestOnly
+//    @GetMapping(
+//        value = ["/chat_view/{chatId}"],
+////        produces = [MediaType.IMAGE_JPEG_VALUE],
+//    ) fun getChatView(
+//        @PathVariable("chatId") chatId: String
+//    ): ResponseEntity<ChatViewIconDto> {
+//        return try {
+//            // TODO
+//            println("Add URIs")
+//            val resource: Resource = ClassPathResource("icons/${listOf("red","green","blue").random()}.png")
+//            val inp = resource.inputStream.readAllBytes()
+//
+//            val chatDto = ChatViewIconDto(
+//                chatId,
+//                "Test Name",
+//                "Test last message",
+//                Instant.now(),
+//                inp
+//            )
+//            return ResponseEntity.ok(chatDto)
+//        } catch (e: Exception) {
+//            ResponseEntity.internalServerError().build()
+//        }
+//    }
+//
+//    @TestOnly
+//    @GetMapping("/messages/all")
+//    fun getAllMessages(): ResponseEntity<List<Message>> {
+//        val messages: List<Message> = messageService.getAllMessages()
+//        return ResponseEntity.ok(messages)
+//    }
+//
 
 }

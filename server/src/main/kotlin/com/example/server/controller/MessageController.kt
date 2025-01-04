@@ -7,7 +7,6 @@ import com.example.server.exceptions.MessageNotFoundException
 import com.example.server.model.Message
 import com.example.server.model.MessageType
 import com.example.server.service.MessageService
-import lombok.AllArgsConstructor
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -16,8 +15,6 @@ import java.time.Instant
 
 @RestController
 @RequestMapping("/message")
-@AllArgsConstructor
-@CrossOrigin
 class MessageController(private val messageService: MessageService) {
 
 
@@ -81,15 +78,9 @@ class MessageController(private val messageService: MessageService) {
 //        )
 //    }
 
-    @GetMapping("/all")
-    fun getAll(): ResponseEntity<List<Message>> {
-        val messages: List<Message> = messageService.getAllMessages()
-        return ResponseEntity.ok(messages)
-    }
-
 
     @PutMapping("/sendImage")
-    fun updateIcon(
+    fun updateImage(
         @RequestPart("image") image: MultipartFile,
         @RequestPart("message") sentMessageDto: SentMessageDto,
     ): ResponseEntity<String> {

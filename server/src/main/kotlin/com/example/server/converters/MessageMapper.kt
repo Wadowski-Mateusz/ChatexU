@@ -12,7 +12,7 @@ object MessageMapper {
             messageId = ObjectId(),
             senderId = ObjectId(sentMessageDto.senderId),
             chatId = ObjectId(sentMessageDto.chatId),
-            timestamp = Instant.now(),
+            creationTime = Instant.now(),
             messageType = sentMessageDto.messageType,
 //            isEdited = false,
 //            deletedBy = emptyList(),

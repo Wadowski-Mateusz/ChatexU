@@ -71,13 +71,7 @@ fun ChatListScreen(
                                 Screen.ChatScreen.route
                                         + "/${state.userId}"
                                         + "/${state.jwt}"
-                                        + "/${chatRow.chatId}"
-                            )
-                        }
-                    )
-                }
-            }
-        }
+                                        + "/${chatRow.chatId}") }) } } }
 
         // Buttons
         Row(

@@ -94,7 +94,7 @@ fun ChatListItem(
 @Composable
 fun ChatRowPreview() {
     val context = LocalContext.current
-    val input = context.resources.openRawResource(R.raw.green)
+    val input = context.resources.openRawResource(R.raw.defaulticon)
     val bitmap = BitmapFactory.decodeStream(input)
     input.close()
 

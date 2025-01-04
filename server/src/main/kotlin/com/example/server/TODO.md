@@ -1,10 +1,4 @@
-* UserController: 
-  * get blocked users list
-  * unblock user
-
-* Chat
-  * Should ChatType be in the body of Chat? 
-  * move mutedBy, participants and viewedBy to one class, so document in the database is smaller? (no user id duplicates)
+* Look at reactive mongo repositories
 
 * ChatService
   * updateLastMessage() - what if:
@@ -15,9 +9,5 @@
     5) message B saved as new last message
     6) message A saved as new last message
     7) result: message A overwrites newer Message B
+	-> add check on timestamp
 
-* ChatController
-  * createChat() - what should be put as response, chat view, chat id, chatDto?
-
-* Message
-  * Should MessageContent be in the body of Message? 

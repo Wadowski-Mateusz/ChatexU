@@ -1,6 +1,5 @@
 package com.example.server
 
-import com.example.server.commons.default
 import com.example.server.model.Message
 import com.example.server.model.MessageType
 import com.example.server.service.MessageService
@@ -22,7 +21,7 @@ class TestDataInitializer(
             messageId = ObjectId(),
             senderId = ObjectId(),
             chatId = ObjectId(),
-            timestamp = Instant.now(),
+            creationTime = Instant.now(),
             messageType = MessageType.Text("Test message"),
 //            isEdited = false,
 //            deletedBy = listOf(),
