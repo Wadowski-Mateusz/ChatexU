@@ -83,7 +83,7 @@ class ChatRepositoryImpl @Inject constructor(
         val loginDto = LoginDto(email, password)
         val response = api.login(loginDto)
         if (response.code() == HTTP_UNAUTHORIZED) {
-            return Authentication("", Constants.ID_DEFAULT)
+            return Authentication("")
         } else if (response.code() != HTTP_OK) {
             val errorResponse = Response.error<String>(
                 response.code(),
@@ -92,8 +92,8 @@ class ChatRepositoryImpl @Inject constructor(
             throw HttpException(errorResponse)
         }
 
-        val body = response.body() ?: return Authentication("", Constants.ID_DEFAULT)
-        return Authentication(token = body.token, userId = body.userId)
+        val body = response.body() ?: return Authentication("")
+        return Authentication(token = body.token)
     }
 
     override suspend fun register(email: String, nickname: String, password: String): Authentication {
@@ -104,7 +104,7 @@ class ChatRepositoryImpl @Inject constructor(
 
             // reuse authenticationdto and authentication to report data in the database
             val errorBody = response.errorBody()
-                ?: return Authentication("", Constants.ID_DEFAULT)
+                ?: return Authentication("")
             val authJson = errorBody.string()
             val auth = Gson().fromJson(authJson, Authentication::class.java)
             return auth
@@ -116,8 +116,8 @@ class ChatRepositoryImpl @Inject constructor(
             throw HttpException(errorResponse)
         }
 
-        val body = response.body() ?: return Authentication("", Constants.ID_DEFAULT)
-        return Authentication(token = body.token, userId = body.userId)
+        val body = response.body() ?: return Authentication("")
+        return Authentication(token = body.token)
     }
 
     override suspend fun getAllUsers(jwt: String): List<User> {

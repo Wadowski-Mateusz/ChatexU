@@ -111,6 +111,9 @@ dependencies {
 //    implementation "io.realm.kotlin:library-sync:$mongodb_realm_version" // If using Device Sync
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1'
 
+    // jwt decode
+    implementation 'com.auth0.android:jwtdecode:2.0.2'
+
     // default
     implementation libs.core.ktx
     implementation libs.lifecycle.runtime.ktx

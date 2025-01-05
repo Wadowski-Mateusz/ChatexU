@@ -40,7 +40,7 @@ class SecurityController(
             val success = userService.saveToken(user, jwt)
 
             if(success) {
-                ResponseEntity.status(HttpStatus.OK).body(AuthenticationDTO(token = jwt, userId = user.userId.toString()))
+                ResponseEntity.status(HttpStatus.OK).body(AuthenticationDTO(token = jwt))
             }
             else {
                 logger.error("register: Could not save JWT to the database")
@@ -48,7 +48,7 @@ class SecurityController(
             }
         } catch (e: DataAlreadyInTheDatabaseException) {
             logger.error("registerUser(): ${e::class.simpleName}")
-            ResponseEntity.status(HttpStatus.CONFLICT).body(AuthenticationDTO(token = "${e.inDatabaseFlag}", userId = "0"))
+            ResponseEntity.status(HttpStatus.CONFLICT).body(AuthenticationDTO(token = "${e.inDatabaseFlag}"))
         } catch (e: Exception) {
             logger.error("registerUser() unknown error- ${e::class.simpleName}")
             ResponseEntity.internalServerError().build()
@@ -77,7 +77,7 @@ class SecurityController(
             val jwt: String = userService.createToken(user)
             val success = userService.saveToken(user, jwt)
             if(success) {
-                ResponseEntity.status(HttpStatus.OK).body(AuthenticationDTO(jwt, user.userId.toString()))
+                ResponseEntity.status(HttpStatus.OK).body(AuthenticationDTO(jwt))
             }
             else {
                 logger.error("login(): Could not save JWT to the database")

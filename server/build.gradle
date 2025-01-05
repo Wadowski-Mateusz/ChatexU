@@ -4,7 +4,7 @@ plugins {
     id 'org.springframework.boot' version '3.4.0'
     id 'io.spring.dependency-management' version '1.1.3'
     id 'org.jetbrains.kotlin.jvm' version '2.1.0'
-    id 'org.jetbrains.kotlin.plugin.spring' version '1.8.22'
+    id 'org.jetbrains.kotlin.plugin.spring' version '2.1.0'
 }
 
 group = 'com.example'
@@ -54,9 +54,15 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
 
+    // junit
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+
+
+
     def mockito_ver = '5.1.0'
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockito_ver"
-
 
 //    def test_containers_ver = '1.19.1'
 //    testImplementation "org.testcontainers:testcontainers:$test_containers_ver"
@@ -75,3 +81,4 @@ tasks.withType(KotlinCompile).configureEach {
 tasks.named('test') {
     useJUnitPlatform()
 }
+

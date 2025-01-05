@@ -15,7 +15,31 @@ data class Chat(
     val typeOfChat: ChatType,
     val created: Instant,
     val participants: List<ObjectId>,
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Chat
+
+        if (chatId != other.chatId) return false
+        if (lastMessageId != other.lastMessageId) return false
+        if (typeOfChat.javaClass != other.typeOfChat.javaClass) return false
+        if (created != other.created) return false
+        if (participants != other.participants) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = chatId.hashCode()
+        result = 31 * result + lastMessageId.hashCode()
+        result = 31 * result + typeOfChat.hashCode()
+        result = 31 * result + created.hashCode()
+        result = 31 * result + participants.hashCode()
+        return result
+    }
+}
 
 sealed class ChatType(var type: String) {
     class UserToUser: ChatType(USER_TO_USER)

@@ -49,10 +49,11 @@ import kotlin.math.pow
 class UserService(
     private val userRepository: UserRepository,
 ): UserDetailsService {
-    @Lazy
-    @Autowired
-    private val _friendRequestService: FriendRequestService? = null
-    private val friendRequestService: FriendRequestService by lazy { _friendRequestService!! }
+
+    @Autowired @Lazy
+    private lateinit var _friendRequestService: FriendRequestService
+    private val friendRequestService: FriendRequestService by lazy { _friendRequestService }
+
     private val logger = LoggerFactory.getLogger(UserService::class.java)
 
     private val KEY =
@@ -794,11 +795,10 @@ class UserService(
 
     fun createToken(user: User): String {
         val map = HashMap<String, Any?>()
-        map["userId"] = user.userId
+        map["userId"] = user.userId.toHexString()
         map["role"] = user.role
-        map["email"] = user.email
-        map["username"] = user.email
-
+//        map["email"] = user.email
+//        map["username"] = user.email
         return createToken(map, user)
     }
 

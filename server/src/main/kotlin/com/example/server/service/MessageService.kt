@@ -19,18 +19,16 @@ import java.util.*
 @Service
 class MessageService(private val messageRepository: MessageRepository) {
 
-    // circular reference hack
-    @Lazy @Autowired
-    private val _chatService: ChatService? = null
-    private val chatService: ChatService by lazy { _chatService!! }
-
+    @Autowired @Lazy
+    private lateinit var _chatService: ChatService
+    private val chatService: ChatService by lazy { _chatService }
 
     fun findMessageById(messageId: String): Message {
         return messageRepository.findMessageByMessageId(messageId)
             ?: throw MessageNotFoundException("Message not found. Id: $messageId")
     }
 
-    @Throws(MessageNotFoundException::class)
+
     fun findMessageById(messageId: ObjectId): Message {
         return messageRepository.findById(messageId.toHexString())
             .orElseThrow { (MessageNotFoundException("Message not found. Id: ${messageId.toHexString()}")) }

@@ -5,6 +5,7 @@ import com.example.server.dto.UserViewDto
 import com.example.server.exceptions.ChatNotFoundException
 import com.example.server.model.User
 import com.example.server.service.ChatService
+import org.bson.types.ObjectId
 
 object UserMapper {
 

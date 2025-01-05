@@ -18,15 +18,13 @@ class ChatService(
     private val chatRepository: ChatRepository
 ) {
 
-    // circular reference hack
-    @Lazy @Autowired
-    private val _userService: UserService? = null
-    private val userService: UserService by lazy { _userService!! }
+    @Autowired @Lazy
+    private lateinit var _userService: UserService
+    private val userService: UserService by lazy { _userService }
 
-    // circular reference hack
-    @Lazy @Autowired
-    private val _messageService: MessageService? = null
-    private val messageService: MessageService by lazy { _messageService!! }
+    @Autowired @Lazy
+    private lateinit var _messageService: MessageService
+    private val messageService: MessageService by lazy { _messageService }
 
     fun findAllChatsByUserId(userId: String): List<Chat> {
         return chatRepository.findByParticipantsContains(ObjectId(userId))

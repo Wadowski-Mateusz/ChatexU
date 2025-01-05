@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.auth0.android.jwt.JWT
 import com.example.chatexu.common.Constants
 import com.example.chatexu.common.DataWrapper
 import com.example.chatexu.common.DebugConstants
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -81,21 +83,22 @@ class AuthViewModel @Inject constructor(
                 is DataWrapper.Success -> {
                     Log.d(DebugConstants.PEEK, "Success AuthViewModel.login() - enter")
                     val data = result.data!!
-                    if (ObjectId().isStringValid(data.userId)) {
-                        Log.d(DebugConstants.PEEK, "Success AuthViewModel.login() - if\nuserid: " + data.userId)
+                    val userId = getUserIdFromJWT(data.token)
+                    if (ObjectId().isStringValid(userId)) {
+//                        Log.d(DebugConstants.PEEK, "Success AuthViewModel.login() - if\nuserid: " + userId)
                         _state.value = _state.value.copy(
                             users = emptyList(),
-                            userId = data.userId,
+                            userId = userId,
                             jwt = data.token,
                             loginStatus = true,
                             isLoading = false,
                             error = "",
                         )
                     } else {
-                        Log.i(DebugConstants.PEEK, "Success AuthViewModel.login() - else - invalid userid \n" + data.userId)
+//                        Log.i(DebugConstants.PEEK, "Success AuthViewModel.login() - else - invalid userid \n" + userId)
                         _state.value = _state.value.copy(
                             users = emptyList(),
-                            error = data.userId,
+                            error = userId,
                             loginStatus = false,
                             isLoading = false,
                             userId = Constants.ID_DEFAULT,
@@ -183,12 +186,14 @@ class AuthViewModel @Inject constructor(
         response.onEach { result ->
             when(result) {
                 is DataWrapper.Success -> {
+
 //                    Log.d("REGISTER - VM", "VM register success")
                     val data: Authentication = result.data!!
-                    if(ObjectId().isStringValid(data.userId)) {
+                    val userId = getUserIdFromJWT(data.token)
+                    if(ObjectId().isStringValid(userId)) {
                         _state.value = _state.value.copy(
                             users = emptyList(),
-                            userId = data.userId,
+                            userId = userId,
                             jwt = data.token,
                             registerStatus = true,
                             isLoading = false,
@@ -303,6 +308,12 @@ class AuthViewModel @Inject constructor(
                 txt.copy(text = txt.text.take(txtLength))
             else
                 txt
+    }
+
+    private fun getUserIdFromJWT(jwt: String): String {
+        val jwtDecoder = JWT(jwt)
+        val userId = jwtDecoder.getClaim("userId").asString() ?: Constants.ID_DEFAULT
+        return userId
     }
 
 }

@@ -3,6 +3,7 @@ package com.example.server.security
 import com.example.server.commons.Constants
 import com.example.server.exceptions.UserNotFoundException
 import com.example.server.model.User
+import com.example.server.service.FriendRequestService
 import com.example.server.service.UserService
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.MalformedJwtException
@@ -27,17 +28,18 @@ import java.io.IOException
 //@RequiredArgsConstructor
 class JwtAuthenticationFilter : OncePerRequestFilter() {
 
-    @Autowired
-    private val usersService: UserService? = null
+    @Autowired @Lazy
+    private lateinit var _usersService: UserService
+    private val usersService: UserService by lazy { _usersService }
 
-    @Throws(ServletException::class, IOException::class)
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
 
-        require(usersService!= null) {"JwtAuthenticationFilter() - userService init error, userService is null"}
+//        require(usersService!= null) {"JwtAuthenticationFilter() - userService init error, userService is null"}
 
         val authHeader: String = request.getHeader(Constants.AUTH_HEADER) ?: ""
         if (!authHeader.startsWith(Constants.AUTH_HEADER_START)) {

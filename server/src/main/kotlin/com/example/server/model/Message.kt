@@ -46,6 +46,33 @@ data class Message(
         return cypherBase64
     }
 
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Message
+
+        if (messageId != other.messageId) return false
+        if (senderId != other.senderId) return false
+        if (chatId != other.chatId) return false
+        if (creationTime != other.creationTime) return false
+        if (messageType.javaClass != other.messageType.javaClass) return false
+
+//        if (messageType != other.messageType) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = messageId.hashCode()
+        result = 31 * result + senderId.hashCode()
+        result = 31 * result + chatId.hashCode()
+        result = 31 * result + creationTime.hashCode()
+        result = 31 * result + messageType.hashCode()
+        return result
+    }
+
 }
 
 
