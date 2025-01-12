@@ -2,8 +2,8 @@
 plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.kotlinAndroid) apply false
-    id 'com.google.devtools.ksp' version '2.0.10-1.0.24' apply false // sync with kotlin version https://github.com/google/ksp/releases
+    id 'com.google.devtools.ksp' version '2.1.0-1.0.29' apply false // sync with kotlin version https://github.com/google/ksp/releases
+    id 'org.jetbrains.kotlin.jvm' version '2.1.0' // for hilt
     id 'io.realm.kotlin' version '2.1.0' apply false // mongoDB realm
     id 'com.google.dagger.hilt.android' version '2.52' apply false
-    id 'org.jetbrains.kotlin.jvm' version '2.0.10' // for hilt
 }

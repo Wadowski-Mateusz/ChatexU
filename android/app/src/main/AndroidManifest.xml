@@ -16,7 +16,7 @@
         android:theme="@style/Theme.ChatexU"
         android:usesCleartextTraffic="true"
         android:enableOnBackInvokedCallback="true"
-        tools:targetApi="34">
+        tools:targetApi="35">
         <activity
             android:name=".ChatexU"
             android:exported="true"
